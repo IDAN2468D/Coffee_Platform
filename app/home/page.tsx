@@ -241,20 +241,20 @@ export default function HomePage() {
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-stone-100">אינטליגנציה ביולוגית AI</h3>
-                  <p className="text-xs text-stone-400 mt-1">התאמת קפאין לפי אנרגיה ואשף ארומה</p>
+                  <h3 className="text-lg font-black text-stone-100">טכנולוגיות עתידניות AI</h3>
+                  <p className="text-xs text-stone-400 mt-1">יישון קולי, מדפסת 3D ושעון צירקדיאני</p>
                 </div>
                 <div className="space-y-2 pt-2 border-t border-stone-800/80">
-                  <Link href="/bio-energy" className="flex items-center justify-between text-xs text-cyan-300 font-bold hover:underline">
-                    <span>תאימות אנרגיה Bio-Match</span>
+                  <Link href="/ultrasonic-aging" className="flex items-center justify-between text-xs text-amber-300 font-bold hover:underline">
+                    <span>תא יישון אולטרסוני & ואקום</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/aroma-scent" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>אשף ניתוח ארומה וטרפנים</span>
+                  <Link href="/ar-latte-art" className="flex items-center justify-between text-xs text-cyan-300 font-bold hover:underline">
+                    <span>מדפסת AR 3D ללאטה ארט</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/whatsapp-voice" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>הזמנות קוליות ב-WhatsApp</span>
+                  <Link href="/circadian-clock" className="flex items-center justify-between text-xs text-emerald-300 font-bold hover:underline">
+                    <span>שעון קפאין סירקדיאני</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
                 </div>

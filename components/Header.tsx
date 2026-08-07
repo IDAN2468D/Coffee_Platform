@@ -275,6 +275,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       title: 'בריסטה & AI',
       color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-300',
       items: [
+        { id: 'ultrasonic-aging', page: '/ultrasonic-aging', label: 'תא יישון אולטרסוני & ואקום', desc: 'פירוק חומציות טאנית ב-45% & איטום', icon: Zap },
+        { id: 'ar-latte-art', page: '/ar-latte-art', label: 'מדפסת 3D ללאטה ארט AR', desc: 'פיסול קצף מוגבה & וקטוריזטור קקאו', icon: Sparkles },
+        { id: 'circadian-clock', page: '/circadian-clock', label: 'שעון קפאין סירקדיאני', desc: 'סנכרון קורטיזול & מניעת התרסקות', icon: Clock },
         { id: 'bio-energy', page: '/bio-energy', label: 'תאימות אנרגיה Bio-Match', desc: 'התאמת קפה לרמת עייפות', icon: Flame },
         { id: 'barista-academy', page: '/barista-academy', label: 'אקדמיית הבריסטה AI', desc: 'מבחני הסמכה ותגי מומחה', icon: Award },
         { id: 'whatsapp-voice', page: '/whatsapp-voice', label: 'הזמנה ב-WhatsApp Voice', desc: 'הודעות קוליות להזמנה', icon: MessageSquare },

@@ -66,3 +66,10 @@ To guarantee optimal user experience and native Hebrew readability:
 2. **HTML Container Formatting:** All chat responses must be wrapped in a `<div dir="rtl" style="text-align: right; direction: rtl;">` container.
 3. **App UI Localization:** All UI components, micro-copy, button labels, and system notifications in Next.js 15 must use native Hebrew RTL (`dir="rtl"`), ILS currency formatting (₪), and logical Tailwind spacing (`ms-*`, `me-*`).
 
+---
+
+## 8. GitHub Feature Deployment Prompt Protocol
+To ensure user control over repository commits:
+1. **Post-Feature Prompting:** Upon completing the development, testing, and verification of any new feature or feature set, the AI Agent MUST explicitly ask the USER if they would like to create a git commit and push all updated code to their GitHub repository.
+
+
