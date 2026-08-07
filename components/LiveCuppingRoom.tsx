@@ -21,7 +21,7 @@ const INITIAL_NOTES: TastingNote[] = [
   {
     id: '1',
     author: 'אריאל כהן (Q-Grader)',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop',
     coffeeName: 'Ethiopia Yirgacheffe G1 Wash',
     origin: 'אתיופיה',
     scaScore: 89.5,

@@ -32,12 +32,12 @@ export function AuthContent() {
     setSuccessMsg('');
 
     try {
-      // Prepared Google OAuth simulation / payload payload
+      // Prepared Google OAuth simulation / payload
       const mockGoogleUser = {
-        email: 'user.google@gmail.com',
-        fullName: 'משתמש Google גורמה',
+        email: 'idankzm@gmail.com',
+        fullName: 'idan kazam',
         googleId: 'google_oauth_1092837465',
-        image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        image: '/idan-profile-circle.png',
       };
 
       const res = await googleLoginAction(mockGoogleUser);

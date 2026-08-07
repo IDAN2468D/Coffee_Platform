@@ -59,13 +59,18 @@ export default function ProfilePage() {
   const [selectedBean, setSelectedBean] = useState<string>('Single Origin Ethiopia Yirgacheffe');
   const [subSaveSuccess, setSubSaveSuccess] = useState<string>('');
 
-  // Security & Account Details Form State (Fully Editable)
-  const [editName, setEditName] = useState(user?.fullName || 'ישראל ישראלי');
+  const defaultGoogleImage = '/idan-profile-circle.png';
+  const sanitizeImage = (img?: string) => {
+    if (!img || img.includes('photo-1534528741775')) {
+      return defaultGoogleImage;
+    }
+    return img;
+  };
+
+  const [editName, setEditName] = useState(user?.fullName || 'idan kazam');
   const [editEmail, setEditEmail] = useState(user?.email || 'idankzm@gmail.com');
   const [editPhone, setEditPhone] = useState(user?.phone || '050-1234567');
-  const [editImage, setEditImage] = useState(
-    user?.image || 'https://lh3.googleusercontent.com/a/default-user=s96-c'
-  );
+  const [editImage, setEditImage] = useState(sanitizeImage(user?.image));
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [enable2FA, setEnable2FA] = useState(true);
@@ -574,36 +579,56 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-                    <label className="text-stone-400 font-bold block mb-1">תמונת פרופיל / Google Avatar (כתובת URL):</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="url"
-                        value={editImage}
-                        onChange={(e) => setEditImage(e.target.value)}
-                        placeholder="https://lh3.googleusercontent.com/..."
-                        className="flex-1 px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-stone-100 focus:outline-none focus:border-amber-500 text-left font-mono text-[11px]"
-                        dir="ltr"
-                      />
-                      {editImage && (
-                        <div className="w-9 h-9 rounded-xl overflow-hidden border border-amber-500/50 shrink-0 bg-stone-950">
-                          <img src={editImage} alt="Avatar Preview" className="w-full h-full object-cover" />
-                        </div>
-                      )}
+                    <label className="text-stone-400 font-bold block mb-1">
+                      תמונת פרופיל / Google Avatar (העלאת קובץ או קישור URL):
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                      <div className="flex-1 w-full flex gap-2">
+                        <input
+                          type="url"
+                          value={editImage}
+                          onChange={(e) => setEditImage(e.target.value)}
+                          placeholder="https://lh3.googleusercontent.com/..."
+                          className="flex-1 px-3 py-2 rounded-xl bg-stone-950 border border-stone-800 text-stone-100 focus:outline-none focus:border-amber-500 text-left font-mono text-[11px]"
+                          dir="ltr"
+                        />
+                        {editImage && (
+                          <div className="w-9 h-9 rounded-xl overflow-hidden border border-amber-500/50 shrink-0 bg-stone-950 shadow-md">
+                            <img src={editImage} alt="Avatar Preview" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Local File Upload Button */}
+                      <label className="px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500 hover:text-stone-950 text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5">
+                        <span>📷 העלה תמונה מהמחשב</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                if (event.target?.result) {
+                                  setEditImage(event.target.result as string);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
                     </div>
-                    <div className="flex gap-1.5 mt-1.5">
+
+                    <div className="flex flex-wrap gap-1.5 mt-2">
                       <button
                         type="button"
-                        onClick={() => setEditImage('https://lh3.googleusercontent.com/a/default-user=s96-c')}
-                        className="px-2 py-1 rounded-lg bg-stone-950 border border-stone-800 text-[10px] text-amber-300 font-bold hover:border-amber-500/50 transition-all"
+                        onClick={() => setEditImage('/idan-profile-circle.png')}
+                        className="px-2.5 py-1.5 rounded-lg bg-stone-950 border border-stone-800 text-[10px] text-amber-300 font-bold hover:border-amber-500/50 transition-all flex items-center gap-1"
                       >
-                        תמונת Google ברירת מחדל
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80')}
-                        className="px-2 py-1 rounded-lg bg-stone-950 border border-stone-800 text-[10px] text-stone-400 font-bold hover:text-stone-200 transition-all"
-                      >
-                        תמונת פרופיל גורמה
+                        <span>תמונת Google ברירת מחדל</span>
                       </button>
                     </div>
                   </div>

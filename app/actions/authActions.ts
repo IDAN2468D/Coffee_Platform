@@ -90,7 +90,7 @@ export async function googleLoginAction(data: {
         email: data.email.toLowerCase(),
         authProvider: 'google',
         googleId: data.googleId || `google_${Date.now()}`,
-        image: data.image || 'https://lh3.googleusercontent.com/a/default-user=s96-c',
+        image: data.image || '/idan-profile-circle.png',
         role: 'CUSTOMER',
       });
     } else {
@@ -120,7 +120,7 @@ export async function googleLoginAction(data: {
         email: user.email,
         phone: user.phone || '',
         role: user.role,
-        image: user.image || 'https://lh3.googleusercontent.com/a/default-user=s96-c',
+        image: user.image || '/idan-profile-circle.png',
       },
     };
   } catch (error: any) {

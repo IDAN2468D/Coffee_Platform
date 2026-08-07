@@ -228,6 +228,33 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
   const [searchQuery, setSearchQuery] = useState('');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownScrollRef = useRef<HTMLDivElement>(null);
+
+  const [isDraggingDropdown, setIsDraggingDropdown] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [dragScrollTop, setDragScrollTop] = useState(0);
+  const [hasDraggedDropdown, setHasDraggedDropdown] = useState(false);
+
+  const handleDropdownMouseDown = (e: React.MouseEvent) => {
+    if (!dropdownScrollRef.current) return;
+    setIsDraggingDropdown(true);
+    setHasDraggedDropdown(false);
+    setDragStartY(e.clientY);
+    setDragScrollTop(dropdownScrollRef.current.scrollTop);
+  };
+
+  const handleDropdownMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingDropdown || !dropdownScrollRef.current) return;
+    const dy = e.clientY - dragStartY;
+    if (Math.abs(dy) > 4) {
+      setHasDraggedDropdown(true);
+    }
+    dropdownScrollRef.current.scrollTop = dragScrollTop - dy;
+  };
+
+  const handleDropdownMouseUp = () => {
+    setIsDraggingDropdown(false);
+  };
 
   const handleToggleMute = () => {
     const newMuted = coffeeSound.toggleMute();
@@ -420,18 +447,27 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180 text-black' : 'text-amber-400'}`} />
                 </button>
 
-                {/* Categorized Dropdown Floating Panel */}
+                {/* Categorized Dropdown Floating Panel - Solid Background & Mouse Drag Scroll */}
                 {isDropdownOpen && (
-                  <div className="absolute top-full right-0 md:-right-20 mt-3 w-[92vw] max-w-[720px] p-5 rounded-3xl bg-[#0d0a0a]/98 border border-amber-500/50 shadow-[0_20px_60px_rgba(0,0,0,0.95)] backdrop-blur-2xl animate-fadeIn z-50 dir-rtl grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto custom-scrollbar">
-                    <div className="col-span-2 pb-2 mb-1 border-b border-amber-500/20 flex items-center justify-between">
+                  <div
+                    ref={dropdownScrollRef}
+                    onMouseDown={handleDropdownMouseDown}
+                    onMouseMove={handleDropdownMouseMove}
+                    onMouseUp={handleDropdownMouseUp}
+                    onMouseLeave={handleDropdownMouseUp}
+                    className={`absolute top-full right-0 md:-right-20 mt-3 w-[92vw] max-w-[720px] p-5 rounded-3xl bg-[#090707] border-2 border-amber-500/60 shadow-[0_25px_70px_rgba(0,0,0,1)] animate-fadeIn z-50 dir-rtl grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
+                      isDraggingDropdown ? 'cursor-grabbing select-none' : 'cursor-grab'
+                    }`}
+                  >
+                    <div className="col-span-2 pb-2 mb-1 border-b border-amber-500/20 flex items-center justify-between pointer-events-none">
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4 text-amber-400" />
                         <span className="text-xs font-black text-amber-300 tracking-wider">
                           מרכז הכלים והאקו-סיסטם הקולי (21 רכיבים)
                         </span>
                       </div>
-                      <span className="text-[10px] text-stone-400 font-mono bg-stone-900 px-2 py-0.5 rounded-full border border-stone-800">
-                        Liquid Glass 4.0
+                      <span className="text-[10px] text-amber-400 font-mono bg-stone-900 px-2 py-0.5 rounded-full border border-stone-800">
+                        גרירת עכבר לפעולה (DRAG TO SCROLL)
                       </span>
                     </div>
 
@@ -440,7 +476,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                         key={category.title}
                         className="p-3.5 rounded-2xl bg-[#141010] border border-stone-800/80 hover:border-amber-500/40 transition-all space-y-2"
                       >
-                        <div className="text-[11px] font-black text-amber-400 tracking-wide border-b border-stone-800/60 pb-1 flex items-center gap-1.5">
+                        <div className="text-[11px] font-black text-amber-400 tracking-wide border-b border-stone-800/60 pb-1 flex items-center gap-1.5 pointer-events-none">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                           <span>{category.title}</span>
                         </div>
@@ -450,7 +486,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                             return (
                               <button
                                 key={item.id}
-                                onClick={() => handleFeatureClick(item.page, item.id)}
+                                onClick={(e) => {
+                                  if (hasDraggedDropdown) {
+                                    e.preventDefault();
+                                    return;
+                                  }
+                                  handleFeatureClick(item.page, item.id);
+                                }}
                                 className="w-full p-2 rounded-xl hover:bg-amber-500/15 text-stone-200 hover:text-amber-300 transition-all flex items-center gap-2.5 text-right group"
                               >
                                 <div className="p-1.5 rounded-lg bg-stone-900 border border-stone-800 text-amber-400 group-hover:border-amber-500/50 group-hover:scale-105 transition-all shrink-0">
@@ -512,10 +554,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                     title="לאונג' ה-VIP והפרופיל שלי"
                   >
                     <div className="w-7 h-7 rounded-xl bg-amber-500 text-black font-extrabold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-amber-500/50 shadow-sm">
-                      {user.image ? (
+                      {user.image && !user.image.includes('photo-1534528741775') ? (
                         <img src={user.image} alt={user.fullName} className="w-full h-full object-cover" />
                       ) : (
-                        user.fullName.charAt(0)
+                        <img src="/idan-profile-circle.png" alt={user.fullName} className="w-full h-full object-cover" />
                       )}
                     </div>
                     <div className="hidden sm:block text-right">
