@@ -176,56 +176,73 @@ export default function HomePage() {
           {/* 3. FEATURE CATEGORY EXPLORER GRID */}
           <section className="space-y-6">
             <div className="text-center space-y-1">
-              <h2 className="text-2xl font-black text-stone-100 tracking-tight">
-                מרכז הכלים והפיצ'רים העצמאיים
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>מרכז המודולים והפיצ'רים החדשים</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-stone-100 tracking-tight">
+                טכנולוגיות העתיד של עולם הקפה
               </h2>
-              <p className="text-stone-400 text-xs">
-                בחר קטגוריה וגש ישירות לעמוד הייעודי של הפיצ'ר
+              <p className="text-stone-400 text-xs sm:text-sm">
+                גש ישירות לכל אחד מ-6 המודולים החדשניים שנבנו בסטנדרט Liquid Glass 4.0 Pro
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Card 1: Shop & Catalog */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Card 1: AI Roast Profile Radar & SCA Cupping Radar */}
               <div className="p-6 rounded-3xl liquid-glass border border-amber-500/30 space-y-4 hover:border-amber-500/60 transition-all duration-300 group">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                  <Coffee className="w-6 h-6" />
+                  <Flame className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-stone-100">חנות & תערובות פולים</h3>
-                  <p className="text-xs text-stone-400 mt-1">קטלוג פולים, מאפים ומנוי חודשי</p>
+                  <h3 className="text-lg font-black text-stone-100">רדאר קלייה RoR & מדד Agtron SCA</h3>
+                  <p className="text-xs text-stone-400 mt-1">גרף תרמי חי, ציוני Cupping ב-10 פרמטרים וסיווג צבע</p>
                 </div>
                 <div className="space-y-2 pt-2 border-t border-stone-800/80">
-                  <Link href="/catalog" className="flex items-center justify-between text-xs text-amber-300 font-bold hover:underline">
-                    <span>תפריט הגורמה והפולים</span>
+                  <Link href="/roast-profile" className="flex items-center justify-between text-xs text-amber-300 font-bold hover:underline">
+                    <span>פתח רדאר קלייה RoR & Agtron</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/subscription" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>מחשבון מנוי חודשי</span>
-                    <ChevronLeft className="w-4 h-4" />
-                  </Link>
-                  <Link href="/sommelier" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>סומלייה מאפים וקפה</span>
+                  <Link href="/sensory-radar" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>גלגל טעמים 5D וסומלייה מאפים</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
 
-              {/* Card 2: Brew Lab & Chemistry */}
-              <div className="p-6 rounded-3xl liquid-glass border border-blue-500/30 space-y-4 hover:border-blue-500/60 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
-                  <TestTube className="w-6 h-6" />
+              {/* Card 2: Acoustic Grind Auto-Tuner & Channeling Detector */}
+              <div className="p-6 rounded-3xl liquid-glass border border-cyan-500/30 space-y-4 hover:border-cyan-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+                  <Activity className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-stone-100">מעבדת חליטה & כימיה</h3>
-                  <p className="text-xs text-stone-400 mt-1">טיימר V60, כימיית מים וטכנולוגיית TDS</p>
+                  <h3 className="text-lg font-black text-stone-100">מכוונן טחינה אקוסטי & גלאי Channeling</h3>
+                  <p className="text-xs text-stone-400 mt-1">ניתוח תדרי סכינים, זיהוי פריצת תעלות וכיול מיקרומטרי</p>
                 </div>
                 <div className="space-y-2 pt-2 border-t border-stone-800/80">
-                  <Link href="/v60" className="flex items-center justify-between text-xs text-blue-300 font-bold hover:underline">
-                    <span>V60 Master Timer</span>
+                  <Link href="/acoustic-tuner" className="flex items-center justify-between text-xs text-cyan-300 font-bold hover:underline">
+                    <span>הפעל מכוונן אקוסטי חי (Web Audio)</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/water-chemistry" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>מחשב כימיית מים SCA</span>
+                  <Link href="/extraction-telemetry" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>טלמטריית מיצוי ו-TDS</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 3: Smart Home IoT Coffee Machine Sync */}
+              <div className="p-6 rounded-3xl liquid-glass border border-blue-500/30 space-y-4 hover:border-blue-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-stone-100">סנכרון מכונת קפה חכמה ב-IoT</h3>
+                  <p className="text-xs text-stone-400 mt-1">דחיפת טמפ׳ PID, פרופיל לחץ 9Bar וטלמטריה חיה</p>
+                </div>
+                <div className="space-y-2 pt-2 border-t border-stone-800/80">
+                  <Link href="/smart-iot" className="flex items-center justify-between text-xs text-blue-300 font-bold hover:underline">
+                    <span>סנכרן פרופיל ל-Decent / La Marzocco</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
                   <Link href="/extraction-sim" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
@@ -235,51 +252,64 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Card 3: AI Bio & Aroma */}
-              <div className="p-6 rounded-3xl liquid-glass border border-cyan-500/30 space-y-4 hover:border-cyan-500/60 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
-                  <Sparkles className="w-6 h-6" />
+              {/* Card 4: AI Ultrasonic Bean Aging & Vacuum Chamber */}
+              <div className="p-6 rounded-3xl liquid-glass border border-emerald-500/30 space-y-4 hover:border-emerald-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <Droplets className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-stone-100">טכנולוגיות עתידניות AI</h3>
-                  <p className="text-xs text-stone-400 mt-1">יישון קולי, מדפסת 3D ושעון צירקדיאני</p>
+                  <h3 className="text-lg font-black text-stone-100">תא יישון אולטרסוני & חיישן ואקום</h3>
+                  <p className="text-xs text-stone-400 mt-1">פירוק חומציות טאנית ב-45% ואיטום ארומטי ל-6 חודשים</p>
                 </div>
                 <div className="space-y-2 pt-2 border-t border-stone-800/80">
-                  <Link href="/ultrasonic-aging" className="flex items-center justify-between text-xs text-amber-300 font-bold hover:underline">
-                    <span>תא יישון אולטרסוני & ואקום</span>
+                  <Link href="/ultrasonic-aging" className="flex items-center justify-between text-xs text-emerald-300 font-bold hover:underline">
+                    <span>פתח תא יישון אולטרסוני & ואקום</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/ar-latte-art" className="flex items-center justify-between text-xs text-cyan-300 font-bold hover:underline">
-                    <span>מדפסת AR 3D ללאטה ארט</span>
-                    <ChevronLeft className="w-4 h-4" />
-                  </Link>
-                  <Link href="/circadian-clock" className="flex items-center justify-between text-xs text-emerald-300 font-bold hover:underline">
-                    <span>שעון קפאין סירקדיאני</span>
+                  <Link href="/aroma-scent" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>אשף ארומה וטרפנים מולקולרי</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
 
-              {/* Card 4: Academy & Roasting */}
-              <div className="p-6 rounded-3xl liquid-glass border border-emerald-500/30 space-y-4 hover:border-emerald-500/60 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                  <Award className="w-6 h-6" />
+              {/* Card 5: Gemini AR Latte Art 3D Printer & Cocoa Vectorizer */}
+              <div className="p-6 rounded-3xl liquid-glass border border-orange-500/30 space-y-4 hover:border-orange-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
+                  <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-stone-100">אקדמיה & מעבדת קלייה</h3>
-                  <p className="text-xs text-stone-400 mt-1">מבחני הסמכה, RoastCoins וגרפי RoR</p>
+                  <h3 className="text-lg font-black text-stone-100">מדפסת 3D ללאטה ארט & וקטוריזטור</h3>
+                  <p className="text-xs text-stone-400 mt-1">המרת איורים ל-G-Code, פיסול קצף מוגבה ודיוק קקאו</p>
                 </div>
                 <div className="space-y-2 pt-2 border-t border-stone-800/80">
-                  <Link href="/barista-academy" className="flex items-center justify-between text-xs text-emerald-300 font-bold hover:underline">
-                    <span>אקדמיית הבריסטה AI</span>
+                  <Link href="/ar-latte-art" className="flex items-center justify-between text-xs text-orange-300 font-bold hover:underline">
+                    <span>הפעל וקטוריזטור והדפסת תלת-ממד</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/roast-profile" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>גרף קלייה RoR Designer</span>
+                  <Link href="/latte-art-trainer" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>מאמן לאטה ארט ויזואלי</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
-                  <Link href="/gamification" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
-                    <span>מועדון Roast Club</span>
+                </div>
+              </div>
+
+              {/* Card 6: Circadian Rhythm Caffeine Clock & Cortisol Sync */}
+              <div className="p-6 rounded-3xl liquid-glass border border-rose-500/30 space-y-4 hover:border-rose-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
+                  <Clock className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-stone-100">שעון קפאין צירקדיאני & סנכרון קורטיזול</h3>
+                  <p className="text-xs text-stone-400 mt-1">הימנעות מנפילת אנרגיה, דחיית קפה ראשון ב-90 דקות</p>
+                </div>
+                <div className="space-y-2 pt-2 border-t border-stone-800/80">
+                  <Link href="/circadian-clock" className="flex items-center justify-between text-xs text-rose-300 font-bold hover:underline">
+                    <span>פתח שעון צירקדיאני ומעקב קפאין</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                  <Link href="/bio-energy" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>התאמת Bio-Energy לעייפות</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
                 </div>

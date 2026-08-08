@@ -1,23 +1,11 @@
-# ☕ The Digital Roast - Sprint Execution History
+# Coffee Platform Sprints & Roadmap
 
-## Sprint 1: Foundation & Liquid Glass UI (COMPLETED ✅)
-- Set up Next.js 15 App Router, React 19, Tailwind CSS, TypeScript.
-- Designed Liquid Glass 4.0 Pro design system (`backdrop-blur-2xl`, `#050404`, neon gradients).
-- Created `Header`, `Footer`, `CartDrawer`, `CoffeeCatalog`, `V60BrewMaster`, `BioEnergyMatcher`.
+## Sprint 1: Coffee Platform Pivot & Liquid Glass 4.0 UI (COMPLETED)
+- [x] Create Coffee Ordering Landing Page with Midnight Espresso, Honey Oak Cortado & V60
+- [x] Configure Liquid Glass 4.0 design language with glassmorphism & ambient glows
+- [x] Complete `.agents` system for Coffee Ordering Platform with full template and skill contents
 
-## Sprint 2: MongoDB Auth & Data Models (COMPLETED ✅)
-- Configured MongoDB Mongoose connection (`lib/mongodb.ts`).
-- Created Mongoose schemas (`User`, `Order`, `CoffeeItem`).
-- Built Auth pages (`app/login`, `app/register`) with Server Actions & Zod validation.
-- Environment variables isolation (`.env.local` / `.env.example`).
-
-## Sprint 3: Gemini 3.5 AI & Interactive Simulators (COMPLETED ✅)
-- Integrated `@google/generative-ai` with `gemini-3.5-flash-lite`.
-- Created `GeminiBaristaModal` for multimodal voice & bean identification.
-- Added `CropsterOriginMap` and `ExtractionSimulator`.
-- Implemented Instant WhatsApp Order Dispatch.
-
-## Sprint 4: Database Seeding & Production Polish (IN PROGRESS 🟡)
-- Live MongoDB database seeding for coffee catalog & user profiles.
-- Two-way WhatsApp Webhook auto-reply.
-- User profile & purchase history dashboard (`app/profile`).
+## Sprint 2: Gemini AI Integration & WhatsApp Sync (IN PROGRESS)
+- [x] Implement Gemini Multimodal Voice & Vision Barista interface
+- [x] Add Gemini Bio-Energy Matcher & V60 Brew Master timer
+- [ ] Connect live WhatsApp Business API webhooks

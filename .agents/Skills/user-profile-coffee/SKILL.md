@@ -1,22 +1,38 @@
 ---
 name: user-profile-coffee
-description: VIP passbook, SCA taste radar, monthly subscription management, and MongoDB user profile guidelines.
+description: Specialized skill for Liquid Glass 4.0 Pro User Profile Page, VIP Loyalty Cards, AI Flavor DNA, Order History Tracking, and Next.js 15 / React 19 architecture.
 ---
 
-# 👤 User Profile & VIP Lounge Skill
+# ☕ User Profile & VIP Lounge Skill - Liquid Glass 4.0 Pro
 
-## Overview
-Guidelines for maintaining the User Profile & VIP Lounge page (`app/profile/page.tsx`) in THE DIGITAL ROAST platform.
+## 1. Overview & Core Mission
+This skill governs the construction and maintenance of the **User Profile & VIP Lounge Page** (`app/profile/page.tsx`) for **THE DIGITAL ROAST** Coffee Platform.
 
-## Key Guidelines
-1. **Holographic VIP Passbook Card:**
-   - Supports tiers: `BLACK_DIAMOND_VIP`, `ROAST_MASTER_VIP`, `BARISTA_GOLD_VIP`.
-   - Displays live RoastCoins points, QR code for order pickup, and member join date.
-2. **SCA Taste Radar & Gemini AI Flavor DNA:**
-   - Visualizes user taste preference vectors (Sweetness, Acidity, Body, Bitterness, Floral Aroma).
-3. **Live Order Tracking:**
-   - Real-time status pipeline: `RECEIVED` ➔ `BREWING` ➔ `OUT_FOR_DELIVERY` ➔ `DELIVERED`.
-4. **Subscription Management:**
-   - Active bean subscription controls: pause, resume, change roast level or delivery frequency.
-5. **MongoDB Security:**
-   - Sensitive user fields (password hash, JWT tokens) must remain isolated in server-side execution context.
+---
+
+## 2. Profile Page Feature Matrix & Architecture
+
+### 1. Holographic VIP Membership Card (`BiometricVIPPass.tsx`)
+- **Tiers:** `MEMBER`, `SILVER_ROAST`, `GOLD_BARISTA`, `BLACK_DIAMOND_VIP`.
+- **Styling:** Holographic glass glare, golden/emerald neon glow, QR code scanner for in-store pickup, loyalty points counter (1,450 pts).
+
+### 2. AI Flavor DNA & SCA Taste Radar
+- 5-axis flavor preference wheel (Acidity, Sweetness, Bitterness, Body, Roast Depth).
+- Saved favorite blends (Midnight Espresso, Honey Oak Cortado).
+
+### 3. Live Order Tracking & History
+- Real-time order status progress bar (`RECEIVED` -> `BREWING` -> `OUT_FOR_DELIVERY` -> `DELIVERED`).
+- Re-order with 1-Click WhatsApp integration.
+
+### 4. Coffee Subscription Manager
+- Manage active monthly bean delivery frequency, quantity, and pause/resume controls.
+
+### 5. MongoDB Auth & Account Security
+- Password change handler, phone number verification, 2FA toggle, `.env` isolation.
+
+---
+
+## 3. Design System (Liquid Glass 4.0 Pro)
+- **Container Styling:** `liquid-glass` (`backdrop-blur-2xl`, `bg-slate-900/60`, `border-amber-500/22`).
+- **Typography:** Hebrew RTL (`dir="rtl"`), ILS currency formatting (`₪`).
+- **Framework:** Next.js 15 App Router, React 19 Client/Server Components.

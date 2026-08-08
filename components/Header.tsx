@@ -34,6 +34,7 @@ import {
   Layers,
   Search,
   LogOut,
+  Wifi,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -302,6 +303,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       title: 'בריסטה & AI',
       color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-300',
       items: [
+        { id: 'acoustic-tuner', page: '/acoustic-tuner', label: 'מכוונן טחינה אקוסטי', desc: 'ניתוח תדרי סכינים וגלאי Channeling', icon: Activity },
         { id: 'ultrasonic-aging', page: '/ultrasonic-aging', label: 'תא יישון אולטרסוני & ואקום', desc: 'פירוק חומציות טאנית ב-45% & איטום', icon: Zap },
         { id: 'ar-latte-art', page: '/ar-latte-art', label: 'מדפסת 3D ללאטה ארט AR', desc: 'פיסול קצף מוגבה & וקטוריזטור קקאו', icon: Sparkles },
         { id: 'circadian-clock', page: '/circadian-clock', label: 'שעון קפאין סירקדיאני', desc: 'סנכרון קורטיזול & מניעת התרסקות', icon: Clock },
@@ -314,6 +316,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       title: 'מעבדת חליטה',
       color: 'from-blue-500/20 to-indigo-500/10 border-blue-500/30 text-blue-300',
       items: [
+        { id: 'smart-iot', page: '/smart-iot', label: 'סנכרון מכונה חכמה IoT', desc: 'דחיפת פרופיל לחץ 9Bar וטמפ׳ PID', icon: Wifi },
         { id: 'v60', page: '/v60', label: 'V60 Master Timer', desc: 'טיימר חליטה חיה עם Bloom', icon: Clock },
         { id: 'water-chemistry', page: '/water-chemistry', label: 'מחשב כימיית מים', desc: 'מינרלים ותקן SCA', icon: TestTube },
         { id: 'extraction-telemetry', page: '/extraction-telemetry', label: 'טלמטריית TDS', desc: 'אחוז מיצוי אספרסו (EY%)', icon: Activity },
@@ -325,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       title: 'סטודיו & מועדון',
       color: 'from-orange-500/20 to-amber-500/10 border-orange-500/30 text-orange-300',
       items: [
-        { id: 'roast-profile', page: '/roast-profile', label: 'גרף קלייה RoR Designer', desc: 'ניטור וסימולציית First Crack', icon: Flame },
+        { id: 'roast-profile', page: '/roast-profile', label: 'רדאר קלייה RoR & SCA', desc: 'ניטור First Crack וסקאלת Agtron', icon: Flame },
         { id: 'custom-roast-studio', page: '/custom-roast-studio', label: 'מעבדת קלייה', desc: 'עיצוב דרגות קלייה אישיות', icon: Sliders },
         { id: 'personal-brew-journal', page: '/personal-brew-journal', label: 'יומן חליטה Dial-in', desc: 'תיעוד וניטור חליטות', icon: BookOpen },
         { id: 'latte-art-trainer', page: '/latte-art-trainer', label: 'מאמן לאטה ארט', desc: 'אימון ויזואלי ומזיגות', icon: Droplets },
