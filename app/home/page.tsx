@@ -11,6 +11,9 @@ import { ScrollToTop } from '@/components/ScrollToTop';
 import { AuthGuard } from '@/components/AuthGuard';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useCartStore } from '@/lib/store/useCartStore';
+import { StickyParallaxCoffee } from '@/components/StickyParallaxCoffee';
+import { ScrollParallaxCoffeeShowcase } from '@/components/ScrollParallaxCoffeeShowcase';
+import { ParallaxBeanCanvas } from '@/components/ParallaxBeanCanvas';
 import {
   Sparkles,
   Coffee,
@@ -94,6 +97,9 @@ export default function HomePage() {
   return (
     <AuthGuard>
       <div className="min-h-screen bg-obsidian text-stone-100 flex flex-col relative overflow-hidden dir-rtl">
+        {/* Multi-Layer 3D Floating Coffee Beans Parallax Canvas */}
+        <ParallaxBeanCanvas beanCount={36} interactiveMouse={true} />
+
         {/* Ambient Glows */}
         <div className="absolute top-10 right-10 w-96 h-96 bg-amber-500/10 rounded-full filter blur-[120px] pointer-events-none animate-pulse-slow" />
         <div className="absolute top-1/2 left-10 w-80 h-80 bg-cyan-500/10 rounded-full filter blur-[100px] pointer-events-none animate-float" />
@@ -103,7 +109,7 @@ export default function HomePage() {
         <Header onOpenBarista={() => setIsBaristaOpen(true)} />
 
         {/* Main Body */}
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-16">
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-16 relative z-10">
           {/* 1. HERO SECTION */}
           <section className="text-center relative pt-6 pb-10 space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold shadow-inner animate-fadeIn">
@@ -317,7 +323,13 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* 4. FEATURED SINGLE-ORIGIN COFFEE BEANS */}
+          {/* 4. STICKY PARALLAX COFFEE CREATION JOURNEY */}
+          <StickyParallaxCoffee />
+
+          {/* 5. INSTAGRAM REEL 1-TO-1 WARM PARALLAX SHOWCASE */}
+          <ScrollParallaxCoffeeShowcase />
+
+          {/* 6. FEATURED SINGLE-ORIGIN COFFEE BEANS */}
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <div>

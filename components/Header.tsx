@@ -303,6 +303,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       title: 'בריסטה & AI',
       color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-300',
       items: [
+        { id: 'instagram-reel', page: '/instagram-reel', label: 'קונספט אינסטגרם Reel 1-to-1', desc: 'אדים, חלב, קרח 3D, סוכר ופולים צפים', icon: Sparkles },
+        { id: 'parallax-experience', page: '/parallax-experience', label: 'חוויית פרלקס & שלבי חליטה', desc: 'מסע Sticky Scroll ושלבי פיתוח 3D', icon: Layers },
         { id: 'acoustic-tuner', page: '/acoustic-tuner', label: 'מכוונן טחינה אקוסטי', desc: 'ניתוח תדרי סכינים וגלאי Channeling', icon: Activity },
         { id: 'ultrasonic-aging', page: '/ultrasonic-aging', label: 'תא יישון אולטרסוני & ואקום', desc: 'פירוק חומציות טאנית ב-45% & איטום', icon: Zap },
         { id: 'ar-latte-art', page: '/ar-latte-art', label: 'מדפסת 3D ללאטה ארט AR', desc: 'פיסול קצף מוגבה & וקטוריזטור קקאו', icon: Sparkles },
