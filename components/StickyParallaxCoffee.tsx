@@ -181,9 +181,9 @@ export const StickyParallaxCoffee: React.FC = () => {
   };
 
   return (
-    <section id="parallax-coffee-journey" className="w-full py-16 relative dir-rtl">
+    <section id="parallax-coffee-journey" className="w-full py-6 relative dir-rtl">
       {/* Top Banner Header */}
-      <div className="text-center space-y-3 mb-16 max-w-4xl mx-auto px-4">
+      <div className="text-center space-y-3 mb-6 max-w-4xl mx-auto px-4">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold shadow-inner">
           <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
           <span>מסע החליטה והקלייה ב-4 שלבים • STICKY SCROLL & PARALLAX</span>
@@ -337,7 +337,7 @@ export const StickyParallaxCoffee: React.FC = () => {
         </div>
 
         {/* LEFT (Scrollable Storyline Timeline Stages) - 7 Cols */}
-        <div className="lg:col-span-7 space-y-20 pb-20">
+        <div className="lg:col-span-7 space-y-6 pb-2">
           {STAGES.map((stage, index) => {
             const isCurrent = activeStageIndex === index;
             return (

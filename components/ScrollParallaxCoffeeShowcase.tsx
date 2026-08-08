@@ -551,10 +551,10 @@ export const ScrollParallaxCoffeeShowcase: React.FC = () => {
     <div
       ref={containerRef}
       id="instagram-reel-parallax"
-      className="relative min-h-[350vh] w-full dir-rtl"
+      className="relative w-full dir-rtl py-4"
     >
-      {/* Sticky Full-Viewport Container */}
-      <div className="sticky top-20 h-[88vh] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between py-6">
+      {/* Interactive Showcase Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between gap-6">
         
         {/* Top Concept Header Banner */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-[#18110e]/80 border border-amber-500/30 backdrop-blur-2xl shadow-2xl relative z-20">

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const dynamic = 'force-dynamic';
+
 export interface VoiceOrderEntities {
   baseDrink: 'ESPRESSO' | 'CORTADO' | 'LATTE' | 'V60' | 'COLD_BREW';
   drinkName: string;

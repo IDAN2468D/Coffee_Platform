@@ -109,9 +109,9 @@ export default function HomePage() {
         <Header onOpenBarista={() => setIsBaristaOpen(true)} />
 
         {/* Main Body */}
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-16 relative z-10">
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-8 relative z-10">
           {/* 1. HERO SECTION */}
-          <section className="text-center relative pt-6 pb-10 space-y-8">
+          <section className="text-center relative pt-2 pb-4 space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold shadow-inner animate-fadeIn">
               <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
               פלטפורמת קפה גורמה בבינה מלאכותית Gemini 3.5
