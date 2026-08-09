@@ -63,7 +63,7 @@ async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions)
             tls: {
               rejectUnauthorized: false,
             },
-          });
+          } as any);
 
           const info = await transporter.sendMail({
             ...mailOptions,
