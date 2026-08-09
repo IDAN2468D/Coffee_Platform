@@ -1,19 +1,14 @@
-# Coffee Platform Architecture State
+# ☕ Coffee Platform Architecture State (v5.0 Pro)
 
-## Active Modules & Components
-- `CoffeeLandingPage`: Liquid Glass 4.0 Pro Coffee Ordering Landing Page (`app/page.tsx`).
-- `Next15App`: Next.js 15 & React 19 App Router page.
-- `GeminiBaristaModal`: Multimodal voice & vision AI assistant component.
-- `V60BrewMaster`: Live interactive V60 brewing timer with Web Audio API spatial sound pacing, Web Haptics phase transitions, and real-time Gold Cup TDS yield simulator.
-- `SmartInventoryManager`: AI coffee consumption rate forecaster with bean blend selector and automated WhatsApp replenishment link generator.
-- `ThreeDCardPayment`: 3D Credit Card payment simulator component with auto-typing Hebrew RTL digits and mouse parallax/tilt effect.
-- `CoffeeCustomizer`: Live interactive coffee & nutrition builder.
-- `WhatsAppOrderDispatcher`: Server action formatting and dispatching orders to WhatsApp.
-- `GlobalFXCoffeeTicker`: Real-time multi-currency commodity ticker & converter connected to `rapidapi_currency` with spatial audio feedback (`components/GlobalFXCoffeeTicker.tsx`).
-- `NotebookLMBrewSync`: Brew recipe & cupping note synchronization engine for Google Workspace / Docs via `notebooklm` MCP (`components/NotebookLMBrewSync.tsx`).
+## Active Modules & Component Mapping
+- **AI Barista & Sensory:** `GeminiBaristaModal` (`app/ai-barista/`), `BioEnergyMatcher` (`app/bio-energy/`), `SensoryRadarWheel` (`app/sensory-radar/`), `AromaScentProfiler` (`app/aroma-scent/`), `CoffeeFoodSommelier` (`app/sommelier/`).
+- **Telemetry & Science:** `V60BrewMaster` (`app/v60/`), `EspressoExtractionTelemetry` (`app/extraction-telemetry/`), `ExtractionSimulator` (`app/extraction-sim/`), `AcousticGrindTuner` (`app/acoustic-tuner/`), `WaterChemistryProfiler` (`app/water-chemistry/`), `UltrasonicBeanAging` (`app/ultrasonic-aging/`).
+- **IoT & Automation:** `SmartIoTSync` (`app/smart-iot/`), `SmartInventoryManager` (`app/smart-inventory/`), `CircadianCaffeineClock` (`app/circadian-clock/`), `NotebookLMBrewSync` (`app/notebook-sync/`), `WhatsAppVoiceOrderModal` (`app/whatsapp-voice/`).
+- **E-Commerce & Liquid Glass 4.0:** `CoffeeCatalog` (`app/shop/`, `app/catalog/`), `CartDrawer`, `ThreeDCardPayment`, `SubscriptionCalculator` (`app/subscription/`), `ScrollParallaxCoffeeShowcase` (`app/parallax-experience/`), `MultiRoasterMarketplace` (`app/multi-roaster-marketplace/`), `CorporateCoffeeLounge` (`app/corporate-lounge/`).
+- **Gamification & Academy:** `RoastClubGamification` (`app/gamification/`), `BaristaSkillAcademy` (`app/barista-academy/`), `ArLatteArtPrinter` (`app/ar-latte-art/`), `PersonalBrewJournal` (`app/personal-brew-journal/`), `LiveCuppingRoom` (`app/live-cupping-room/`).
+- **Auth & User Management:** `AuthModal` / `AuthContent` (`app/login/`, `app/register/`, `app/auth/`), `UserProfileClient` (`app/profile/`).
 
-## Database Schemas (Mongoose)
+## Mongoose Schemas (`models/`)
+- `User`: `{ name, email, passwordHash, phone, role, vipLevel, roastCoins, createdAt }`
+- `Order`: `{ orderNumber, fullName, phone, deliveryAddress, items, totalPrice, status, createdAt }`
 - `CoffeeItem`: `{ name, hebrewName, category, price, roastLevel, origin, flavorNotes, imageUrl }`
-- `Order`: `{ orderNumber, fullName, phone, deliveryAddress, items, totalPrice, status }`
-- `User`: `{ name, email, passwordHash, phone, role, createdAt }`
-
