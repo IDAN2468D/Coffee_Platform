@@ -2,18 +2,21 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { GeminiBaristaModal } from '@/components/GeminiBaristaModal';
-import { CartDrawer } from '@/components/CartDrawer';
-import { AuthModal } from '@/components/AuthModal';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { AuthGuard } from '@/components/AuthGuard';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useCartStore } from '@/lib/store/useCartStore';
-import { StickyParallaxCoffee } from '@/components/StickyParallaxCoffee';
-import { ScrollParallaxCoffeeShowcase } from '@/components/ScrollParallaxCoffeeShowcase';
-import { ParallaxBeanCanvas } from '@/components/ParallaxBeanCanvas';
+
+const GeminiBaristaModal = dynamic(() => import('@/components/GeminiBaristaModal').then(mod => mod.GeminiBaristaModal), { ssr: false });
+const CartDrawer = dynamic(() => import('@/components/CartDrawer').then(mod => mod.CartDrawer), { ssr: false });
+const AuthModal = dynamic(() => import('@/components/AuthModal').then(mod => mod.AuthModal), { ssr: false });
+const StickyParallaxCoffee = dynamic(() => import('@/components/StickyParallaxCoffee').then(mod => mod.StickyParallaxCoffee), { ssr: false });
+const ScrollParallaxCoffeeShowcase = dynamic(() => import('@/components/ScrollParallaxCoffeeShowcase').then(mod => mod.ScrollParallaxCoffeeShowcase), { ssr: false });
+const ParallaxBeanCanvas = dynamic(() => import('@/components/ParallaxBeanCanvas').then(mod => mod.ParallaxBeanCanvas), { ssr: false });
+
 import {
   Sparkles,
   Coffee,
