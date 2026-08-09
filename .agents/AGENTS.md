@@ -38,6 +38,7 @@ To maximize execution speed and eliminate token waste across agent turns:
 
 ---
 
-## 5. Security & Compliance
-- **Data Protection:** Encrypt user passwords (HMAC/bcrypt), phone numbers, and delivery addresses in database logs.
-- **Secret Isolation:** NEVER commit or log API keys, JWT secrets, or database URI credentials.
+## 6. Global Hebrew RTL Response Directive (MANDATORY RULE)
+- **Language & Direction:** All agent outputs, explanations, walkthroughs, responses, and user interactions MUST be in Hebrew with Right-To-Left (`dir="rtl"`) formatting.
+- **Scope:** Applies unconditionally across all current and future conversations opened by the user.
+
