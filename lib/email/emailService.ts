@@ -31,31 +31,46 @@ async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions)
     const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
 
-    // Mode 1: Gmail via App Password
+    // Mode 1: Gmail via App Password (Explicit Host/Port for Cloud Hosting compatibility e.g. Render)
     if ((user || pass) && (pass || user?.includes('@gmail.com'))) {
       const gmailUser = user || (mailOptions.to as string);
       console.log(`📧 Attempting direct Gmail dispatch via App Password for ${gmailUser}...`);
-      try {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: gmailUser,
-            pass,
-          },
-        });
+      
+      // Try Port 465 (SSL direct) first, then Port 587 (STARTTLS)
+      const portsToTry = host && port ? [{ host, port, secure: port === 465 }] : [
+        { host: 'smtp.gmail.com', port: 465, secure: true },
+        { host: 'smtp.gmail.com', port: 587, secure: false }
+      ];
 
-        const info = await transporter.sendMail({
-          ...mailOptions,
-          from: process.env.EMAIL_FROM || `"The Digital Roast ☕" <${gmailUser}>`,
-        });
+      for (const config of portsToTry) {
+        try {
+          const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
+            auth: {
+              user: gmailUser,
+              pass,
+            },
+            connectionTimeout: 10000, // 10s timeout to prevent hanging on cloud instances
+            greetingTimeout: 7000,
+            socketTimeout: 15000,
+          });
 
-        return {
-          messageId: info.messageId,
-          previewUrl: null,
-          isRealSmtp: true,
-        };
-      } catch (err: any) {
-        console.warn('⚠️ Gmail App Password dispatch failed, falling back:', err.message);
+          const info = await transporter.sendMail({
+            ...mailOptions,
+            from: process.env.EMAIL_FROM || `"The Digital Roast ☕" <${gmailUser}>`,
+          });
+
+          console.log(`✅ Direct Gmail dispatch succeeded via ${config.host}:${config.port} [MessageID: ${info.messageId}]`);
+          return {
+            messageId: info.messageId,
+            previewUrl: null,
+            isRealSmtp: true,
+          };
+        } catch (err: any) {
+          console.warn(`⚠️ Gmail dispatch failed on ${config.host}:${config.port}:`, err.message);
+        }
       }
     }
 
