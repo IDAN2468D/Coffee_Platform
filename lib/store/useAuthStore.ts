@@ -8,6 +8,10 @@ export interface AuthUser {
   phone: string;
   role: 'CUSTOMER' | 'BARISTA' | 'ADMIN';
   image?: string;
+  cardNo?: string;
+  cardHolder?: string;
+  cardExpiry?: string;
+  cardCvv?: string;
 }
 
 interface AuthStore {

@@ -18,6 +18,8 @@ import {
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { createStandardOrder, sendOrderEmailAction } from '@/app/actions/orderActions';
+import { orderSchema } from '@/lib/validations/auth';
+import { ThreeDCardPayment } from './ThreeDCardPayment';
 
 export const CartDrawer: React.FC = () => {
   const { items, isOpen, closeCart, updateQuantity, removeItem, getTotalPrice, clearCart } =
@@ -31,6 +33,7 @@ export const CartDrawer: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [completedOrder, setCompletedOrder] = useState<any>(null);
+  const [showPaymentSim, setShowPaymentSim] = useState(false);
 
   // Custom email resend state
   const [resendEmail, setResendEmail] = useState('');
@@ -55,14 +58,33 @@ export const CartDrawer: React.FC = () => {
 
   const handleStandardCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !phone || !address) {
-      setErrorMsg('אנא מלא את כל שדות החובה למשלוח (שם, טלפון, וכתובת)');
+    setErrorMsg('');
+
+    const validation = orderSchema.safeParse({
+      fullName,
+      email,
+      phone,
+      deliveryAddress: address,
+      items: items.map((item) => ({
+        coffeeItemId: item.coffeeItemId,
+        itemName: item.hebrewName,
+        quantity: item.quantity,
+        pricePerUnit: item.price,
+        shots: item.shots,
+        milkType: item.milkType,
+      })),
+    });
+
+    if (!validation.success) {
+      setErrorMsg(validation.error.errors[0].message);
       return;
     }
 
-    setLoading(true);
-    setErrorMsg('');
+    setShowPaymentSim(true);
+  };
 
+  const executeStandardCheckout = async () => {
+    setLoading(true);
     try {
       const orderPayload = {
         fullName,
@@ -102,6 +124,7 @@ export const CartDrawer: React.FC = () => {
       setErrorMsg('אירעה שגיאה בעיבוד ההזמנה במערכת');
     } finally {
       setLoading(false);
+      setShowPaymentSim(false);
     }
   };
 
@@ -112,6 +135,7 @@ export const CartDrawer: React.FC = () => {
     setResending(true);
     setResendSuccessMsg('');
     setResendErrorMsg('');
+
 
     try {
       const res = await sendOrderEmailAction({
@@ -418,6 +442,17 @@ export const CartDrawer: React.FC = () => {
           )}
         </div>
       </div>
+      {showPaymentSim && (
+        <ThreeDCardPayment
+          amount={totalPrice}
+          fullName={fullName}
+          phone={phone}
+          address={address}
+          onPaymentComplete={executeStandardCheckout}
+          onCancel={() => setShowPaymentSim(false)}
+        />
+      )}
     </div>
   );
 };
+

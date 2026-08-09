@@ -24,7 +24,6 @@ export const MobileNav: React.FC = () => {
     { href: '/shop', label: 'חנות', icon: ShoppingBag },
     { href: '/ai-barista', label: 'בריסטה AI', icon: Sparkles },
     { href: '/brew-lab', label: 'חליטה', icon: TestTube },
-    { href: '/auth', label: 'כניסה', icon: User },
   ];
 
   return (

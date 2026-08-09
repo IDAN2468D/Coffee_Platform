@@ -35,6 +35,7 @@ import {
   ToggleRight,
 } from 'lucide-react';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { creditCardSchema, profileSchema } from '@/lib/validations/auth';
 import { TiltGlassCard } from '@/components/TiltGlassCard';
 import { MagneticButton } from '@/components/MagneticButton';
 import { CanvasCoffeeSteam } from '@/components/CanvasCoffeeSteam';
@@ -77,6 +78,67 @@ export default function ProfilePage() {
   const [securitySuccessMsg, setSecuritySuccessMsg] = useState('');
   const [securityErrorMsg, setSecurityErrorMsg] = useState('');
 
+  // Credit Card States
+  const [cardNo, setCardNo] = useState(user?.cardNo || '');
+  const [cardHolder, setCardHolder] = useState(user?.cardHolder || '');
+  const [cardExpiry, setCardExpiry] = useState(user?.cardExpiry || '');
+  const [cardCvv, setCardCvv] = useState(user?.cardCvv || '');
+  const [cardSaveSuccess, setCardSaveSuccess] = useState('');
+  const [cardErrorMsg, setCardErrorMsg] = useState('');
+
+  // Card Number Handler: Only digits, auto-formatted into 4-digit groups
+  const handleCardNoChange = (val: string) => {
+    const raw = val.replace(/\D/g, '').slice(0, 16);
+    const formatted = raw.match(/.{1,4}/g)?.join(' ') || raw;
+    setCardNo(formatted);
+  };
+
+  // Expiry Handler: Only digits, auto / formatting MM/YY
+  const handleExpiryChange = (val: string) => {
+    const raw = val.replace(/\D/g, '').slice(0, 4);
+    if (raw.length >= 3) {
+      setCardExpiry(`${raw.slice(0, 2)}/${raw.slice(2)}`);
+    } else {
+      setCardExpiry(raw);
+    }
+  };
+
+  // CVV Handler: Only digits (max 4 digits)
+  const handleCvvChange = (val: string) => {
+    const raw = val.replace(/\D/g, '').slice(0, 4);
+    setCardCvv(raw);
+  };
+
+  const handleSaveCreditCard = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCardErrorMsg('');
+    setCardSaveSuccess('');
+
+    const validation = creditCardSchema.safeParse({
+      cardNo,
+      cardHolder,
+      cardExpiry,
+      cardCvv,
+    });
+
+    if (!validation.success) {
+      setCardErrorMsg(validation.error.errors[0].message);
+      return;
+    }
+
+    if (user) {
+      setUser({
+        ...user,
+        cardNo,
+        cardHolder,
+        cardExpiry,
+        cardCvv,
+      });
+      setCardSaveSuccess('פרטי כרטיס האשראי אומתו ועודכנו בהצלחה בארנק הדיגיטלי המאובטח!');
+      setTimeout(() => setCardSaveSuccess(''), 3500);
+    }
+  };
+
   // Save Flavor DNA
   const handleSaveFlavorDna = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,8 +159,17 @@ export default function ProfilePage() {
     setSecurityErrorMsg('');
     setSecuritySuccessMsg('');
 
-    if (newPassword && newPassword !== confirmPassword) {
-      setSecurityErrorMsg('הסיסמאות אינן תואמות! אנא וודא שהזנת סיסמאות זהות.');
+    const validation = profileSchema.safeParse({
+      fullName: editName,
+      email: editEmail,
+      phone: editPhone,
+      image: editImage,
+      newPassword,
+      confirmPassword,
+    });
+
+    if (!validation.success) {
+      setSecurityErrorMsg(validation.error.errors[0].message);
       return;
     }
 
@@ -669,6 +740,102 @@ export default function ProfilePage() {
             </TiltGlassCard>
           </div>
 
+        </div>
+
+        {/* SECTION 6: Saved Credit Card Details */}
+        <div className="grid grid-cols-1">
+          <div className="w-full">
+            <TiltGlassCard maxTiltDeg={4} className="bg-stone-900/80 border-amber-500/25">
+              <form onSubmit={handleSaveCreditCard} className="space-y-5">
+                <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-5 h-5 text-amber-400" />
+                    <h3 className="font-bold text-base text-stone-100">פרטי כרטיס אשראי שמור לתשלום</h3>
+                  </div>
+                  <span className="text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
+                    SECURED WALLET
+                  </span>
+                </div>
+
+                {cardSaveSuccess && (
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold text-center flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>{cardSaveSuccess}</span>
+                  </div>
+                )}
+
+                {cardErrorMsg && (
+                  <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold text-center">
+                    {cardErrorMsg}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+                  <div className="md:col-span-2">
+                    <label className="text-stone-400 font-bold block mb-1">מספר כרטיס אשראי:</label>
+                    <input
+                      type="text"
+                      maxLength={19}
+                      placeholder="XXXX XXXX XXXX XXXX"
+                      value={cardNo}
+                      onChange={(e) => handleCardNoChange(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-stone-100 focus:outline-none focus:border-amber-500 text-right font-mono tracking-wider placeholder:text-right"
+                      dir="rtl"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-stone-400 font-bold block mb-1">תוקף (MM/YY):</label>
+                    <input
+                      type="text"
+                      maxLength={5}
+                      placeholder="MM/YY"
+                      value={cardExpiry}
+                      onChange={(e) => handleExpiryChange(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-stone-100 focus:outline-none focus:border-amber-500 text-center font-mono"
+                      dir="ltr"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-stone-400 font-bold block mb-1">CVV:</label>
+                    <input
+                      type="text"
+                      maxLength={4}
+                      placeholder="XXX"
+                      value={cardCvv}
+                      onChange={(e) => handleCvvChange(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-stone-100 focus:outline-none focus:border-amber-500 text-center font-mono"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 text-xs">
+                  <div>
+                    <label className="text-stone-400 font-bold block mb-1">שם מחזיק הכרטיס (בעברית):</label>
+                    <input
+                      type="text"
+                      placeholder="שם מלא כפי שמופיע על הכרטיס"
+                      value={cardHolder}
+                      onChange={(e) => setCardHolder(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-stone-100 focus:outline-none focus:border-amber-500 text-right font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-black text-xs hover:brightness-110 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>שמור כרטיס בארנק המאובטח</span>
+                  </button>
+                </div>
+              </form>
+            </TiltGlassCard>
+          </div>
         </div>
 
       </div>

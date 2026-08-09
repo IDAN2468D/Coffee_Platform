@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, Flame, Droplets, Clock, Award, Sliders } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Play, Pause, RotateCcw, Flame, Droplets, Clock, Award, Volume2, VolumeX, Smartphone, Activity } from 'lucide-react';
 
 export const V60BrewMaster: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'v60' | 'coldbrew'>('v60');
@@ -10,13 +10,97 @@ export const V60BrewMaster: React.FC = () => {
   const [coffeeGrams, setCoffeeGrams] = useState<number>(15);
   const [seconds, setSeconds] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+  const [hapticEnabled, setHapticEnabled] = useState<boolean>(true);
 
   // Cold Brew Calculator State
   const [targetVolumeMl, setTargetVolumeMl] = useState<number>(500);
   const [steepHours, setSteepHours] = useState<number>(14);
 
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const pannerRef = useRef<StereoPannerNode | PannerNode | null>(null);
+  const prevStageRef = useRef<number>(-1);
+
   const waterTotal = coffeeGrams * 15; // 1:15 ratio
   const maxSeconds = 150; // 2:30 minutes
+
+  // Initialize Web Audio Synthesizer for Spatial Pour Pacing
+  const initAudio = () => {
+    if (!audioCtxRef.current && typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        audioCtxRef.current = new AudioCtx();
+      }
+    }
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
+  };
+
+  const playPhaseSound = (freq: number, durationSec: number = 0.3) => {
+    if (!audioEnabled) return;
+    try {
+      initAudio();
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationSec);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + durationSec);
+    } catch (e) {
+      console.warn('Web Audio Playback error:', e);
+    }
+  };
+
+  const triggerHaptic = (pattern: number | number[]) => {
+    if (!hapticEnabled || typeof window === 'undefined' || !navigator.vibrate) return;
+    try {
+      navigator.vibrate(pattern);
+    } catch (e) {
+      // Haptics not supported or blocked
+    }
+  };
+
+  // Stage Determination & Triggers
+  let currentStageIndex = 0;
+  if (seconds > 0 && seconds <= 45) currentStageIndex = 1; // Bloom
+  else if (seconds > 45 && seconds <= 75) currentStageIndex = 2; // Pour 1
+  else if (seconds > 75 && seconds <= 135) currentStageIndex = 3; // Pour 2
+  else if (seconds > 135 && seconds <= 150) currentStageIndex = 4; // Drawdown
+  else if (seconds >= 150) currentStageIndex = 5; // Complete
+
+  // Detect Phase Changes for Sound & Haptics
+  useEffect(() => {
+    if (isActive && currentStageIndex !== prevStageRef.current) {
+      prevStageRef.current = currentStageIndex;
+      if (currentStageIndex === 1) {
+        playPhaseSound(523.25, 0.4); // C5 - Bloom
+        triggerHaptic([100, 50, 100]);
+      } else if (currentStageIndex === 2) {
+        playPhaseSound(659.25, 0.4); // E5 - Pour 1
+        triggerHaptic([80, 40, 80]);
+      } else if (currentStageIndex === 3) {
+        playPhaseSound(783.99, 0.4); // G5 - Pour 2
+        triggerHaptic([80, 40, 80]);
+      } else if (currentStageIndex === 4) {
+        playPhaseSound(880.00, 0.4); // A5 - Drawdown
+        triggerHaptic(150);
+      } else if (currentStageIndex === 5) {
+        playPhaseSound(1046.50, 0.8); // C6 - Gold Cup Complete
+        triggerHaptic([200, 100, 200, 100, 300]);
+      }
+    }
+  }, [currentStageIndex, isActive]);
 
   useEffect(() => {
     let interval: any = null;
@@ -30,10 +114,20 @@ export const V60BrewMaster: React.FC = () => {
     return () => clearInterval(interval);
   }, [isActive, seconds]);
 
-  const toggleTimer = () => setIsActive(!isActive);
+  const toggleTimer = () => {
+    initAudio();
+    if (!isActive && seconds === 0) {
+      triggerHaptic(50);
+      playPhaseSound(440, 0.2);
+    }
+    setIsActive(!isActive);
+  };
+
   const resetTimer = () => {
     setIsActive(false);
     setSeconds(0);
+    prevStageRef.current = -1;
+    triggerHaptic(30);
   };
 
   const formatTime = (totalSec: number) => {
@@ -42,11 +136,15 @@ export const V60BrewMaster: React.FC = () => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  // V60 4-Phase Calculations
+  // V60 4-Phase Calculations & Dynamic Gold Cup TDS Yield Simulator
   let stageTitle = 'מוכן להתחלת V60 Gold Cup';
-  let stageDescription = 'לחץ על Play כדי להתחיל את טיימר 4 הפאזות.';
+  let stageDescription = 'לחץ על Play כדי להתחיל את טיימר 4 הפאזות המשודרג.';
   let stageWaterTarget = 0;
   let progressPercent = Math.min((seconds / maxSeconds) * 100, 100);
+
+  // Dynamic TDS Estimated Yield (Target 1.35% Gold Cup)
+  const currentTDS = Math.min(1.35, ((seconds / maxSeconds) * 1.35)).toFixed(2);
+  const currentExtractionYield = Math.min(20.0, ((seconds / maxSeconds) * 20.0)).toFixed(1);
 
   if (seconds > 0 && seconds <= 45) {
     stageTitle = '🌸 פאזה 1: פריחה ודגאסינג (0s - 45s)';
@@ -70,7 +168,7 @@ export const V60BrewMaster: React.FC = () => {
     stageWaterTarget = waterTotal;
   }
 
-  // Cold Brew Drip Rate Formula: Drip Rate (drops/min) = (Target Volume in ml) / (Steep Time in Hours * 3600) * 20 drops/ml * 60
+  // Cold Brew Drip Rate Formula
   const totalSecondsColdBrew = steepHours * 3600;
   const dropsPerSecond = (targetVolumeMl / totalSecondsColdBrew) * 20;
   const dropsPerMinute = Math.round(dropsPerSecond * 60);
@@ -81,15 +179,15 @@ export const V60BrewMaster: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-3">
-            <Clock className="w-3.5 h-3.5" />
-            Gemini Live V60 & Cold Brew Drip Engine
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-3">
+            <Clock className="w-4 h-4 text-amber-400" />
+            Gemini Acoustic V60 & Cold Brew Drip Engine v3.5
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-stone-100 mb-3">
             טיימר חליטת V60 <span className="text-gold-gradient">ומחשבון Cold Brew Drip</span>
           </h2>
           <p className="text-stone-400 text-xs sm:text-sm leading-relaxed">
-            עבור בין טיימר 4 הפאזות של V60 (תקן Gold Cup TDS 1.35%) למחשבון קצב הטיפות המדויק עבור חליטה קרה.
+            טיימר 4 פאזות חכם הכולל סאונד סביבתי (Web Audio API), משוב רטט במעברים (Web Haptics) וסימולטור TDS דינמי.
           </p>
         </div>
 
@@ -105,7 +203,7 @@ export const V60BrewMaster: React.FC = () => {
               }`}
             >
               <Clock className="w-4 h-4" />
-              טיימר V60 (4 פאזות)
+              טיימר V60 (סאונד & Haptics)
             </button>
 
             <button
@@ -155,12 +253,50 @@ export const V60BrewMaster: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-stone-950/60 p-3 rounded-xl border border-stone-800 flex items-center justify-between text-xs">
-                  <span className="text-stone-400">יעד TDS תקני (Gold Cup):</span>
-                  <span className="text-emerald-400 font-mono font-bold flex items-center gap-1">
-                    <Award className="w-3.5 h-3.5" />
-                    1.35% TDS
-                  </span>
+                {/* Real-Time Extraction & TDS Simulator */}
+                <div className="bg-stone-950/70 p-3.5 rounded-xl border border-stone-800 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-stone-400 flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-amber-400" />
+                      חישוב מיצוי TDS בזמן אמת:
+                    </span>
+                    <span className="text-emerald-400 font-mono font-bold">
+                      {currentTDS}% TDS ({currentExtractionYield}% EY)
+                    </span>
+                  </div>
+                  <div className="w-full bg-stone-800 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-amber-500 to-emerald-400 h-full transition-all duration-500"
+                      style={{ width: `${(parseFloat(currentTDS) / 1.35) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Audio & Haptic Controls */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    onClick={() => setAudioEnabled(!audioEnabled)}
+                    className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                      audioEnabled
+                        ? 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+                        : 'bg-stone-950/40 border-stone-800 text-stone-500'
+                    }`}
+                  >
+                    {audioEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+                    <span>סאונד {audioEnabled ? 'פעיל' : 'מושתק'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => setHapticEnabled(!hapticEnabled)}
+                    className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                      hapticEnabled
+                        ? 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+                        : 'bg-stone-950/40 border-stone-800 text-stone-500'
+                    }`}
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>רטט {hapticEnabled ? 'פעיל' : 'כבוי'}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -326,3 +462,4 @@ export const V60BrewMaster: React.FC = () => {
     </section>
   );
 };
+

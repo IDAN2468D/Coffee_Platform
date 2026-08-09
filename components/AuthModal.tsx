@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Coffee, Lock, Mail, User, Phone, X, Loader2, Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Coffee, Lock, Mail, User, Phone, X, Eye, EyeOff, Loader2, Sparkles, ShieldCheck, CheckCircle2, Check } from 'lucide-react';
 import { loginUserAction, registerUserAction } from '@/app/actions/authActions';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { loginSchema, registerSchema } from '@/lib/validations/auth';
+import { CoffeeSpillCanvas } from '@/components/CoffeeSpillCanvas';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -19,12 +21,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
   // Login state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Register state
   const [regFullName, setRegFullName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regPassword, setRegPassword] = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   // Status state
   const [loading, setLoading] = useState(false);
@@ -32,6 +36,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
   const [successMsg, setSuccessMsg] = useState('');
 
   const setUser = useAuthStore((state) => state.setUser);
+
+  // Password strength calculation
+  const getPasswordStrength = (pass: string) => {
+    if (!pass) return { score: 0, label: '', color: 'bg-stone-800', width: 'w-0', text: '', hasLength: false, hasNumber: false, hasLetter: false };
+
+    const hasLength = pass.length >= 6;
+    const hasNumber = /[0-9]/.test(pass);
+    const hasLetter = /[a-zA-Z\u0590-\u05FF]/.test(pass);
+
+    let score = 0;
+    if (pass.length > 0) score = 1;
+    if (hasLength) score++;
+    if (hasNumber) score++;
+    if (hasLetter) score++;
+
+    if (!hasLength) {
+      return { score: 1, label: 'חלשה (קצרה מדי)', color: 'bg-rose-500', width: 'w-1/4', text: 'text-rose-400', hasLength, hasNumber, hasLetter };
+    } else if (score === 2) {
+      return { score: 2, label: 'חלשה', color: 'bg-orange-500', width: 'w-2/4', text: 'text-orange-400', hasLength, hasNumber, hasLetter };
+    } else if (score === 3) {
+      return { score: 3, label: 'בינונית', color: 'bg-amber-500', width: 'w-3/4', text: 'text-amber-400', hasLength, hasNumber, hasLetter };
+    } else {
+      return { score: 4, label: 'חזקה ומאובטחת', color: 'bg-emerald-500', width: 'w-full', text: 'text-emerald-400', hasLength, hasNumber, hasLetter };
+    }
+  };
+
+  const strength = getPasswordStrength(regPassword);
 
   useEffect(() => {
     setMounted(true);
@@ -58,9 +89,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg('');
     setSuccessMsg('');
+
+    const validation = loginSchema.safeParse({ email: loginEmail, password: loginPassword });
+    if (!validation.success) {
+      setErrorMsg(validation.error.errors[0].message);
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await loginUserAction({ email: loginEmail, password: loginPassword });
@@ -89,9 +127,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setErrorMsg('');
     setSuccessMsg('');
+
+    const validation = registerSchema.safeParse({
+      fullName: regFullName,
+      email: regEmail,
+      phone: regPhone,
+      password: regPassword,
+    });
+
+    if (!validation.success) {
+      setErrorMsg(validation.error.errors[0].message);
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await registerUserAction({
@@ -125,13 +176,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fadeIn dir-rtl">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl animate-fadeIn" dir="rtl">
+      {/* Interactive Falling Coffee Beans & Spilling Liquid Canvas Background */}
+      <CoffeeSpillCanvas beanCount={30} enableSpill={true} />
+
       {/* Background Orbs */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full filter blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full filter blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-amber-500/15 rounded-full filter blur-[120px] pointer-events-none animate-pulse-slow z-0" />
+      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-orange-600/15 rounded-full filter blur-[120px] pointer-events-none animate-float z-0" />
 
       {/* Main Glass Modal */}
-      <div className="w-full max-w-md bg-[#0a0808]/95 border border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative space-y-6 z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div className="w-full max-w-md bg-stone-950/90 border border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(245,158,11,0.2)] relative space-y-6 z-10 max-h-[90vh] overflow-y-auto custom-scrollbar backdrop-blur-3xl">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -144,12 +198,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-            THE DIGITAL ROAST AUTH
+            <span>THE DIGITAL ROAST AUTH</span>
           </div>
 
           <div className="flex items-center justify-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black font-black shadow-lg">
-              <Coffee className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-stone-950 font-black shadow-lg shadow-amber-500/20">
+              <Coffee className="w-6 h-6 animate-pulse-slow" />
             </div>
             <h2 className="text-2xl font-black text-gold-gradient tracking-tight">
               פורטל כניסה וזיהוי
@@ -168,13 +222,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
               setErrorMsg('');
               setSuccessMsg('');
             }}
-            className={`py-2.5 rounded-xl text-xs font-extrabold transition-all ${
+            className={`py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'login'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-md'
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 shadow-md shadow-amber-500/20'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            התחברות לחשבון
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>התחברות לחשבון</span>
           </button>
           <button
             onClick={() => {
@@ -182,25 +237,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
               setErrorMsg('');
               setSuccessMsg('');
             }}
-            className={`py-2.5 rounded-xl text-xs font-extrabold transition-all ${
+            className={`py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'register'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-md'
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 shadow-md shadow-amber-500/20'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            הרשמת משתמש
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>הרשמת משתמש</span>
           </button>
         </div>
 
         {/* Notifications */}
         {errorMsg && (
-          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs text-center font-bold">
+          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center font-medium animate-in fade-in">
             {errorMsg}
           </div>
         )}
         {successMsg && (
-          <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs text-center font-bold flex items-center justify-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium flex items-center justify-center gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}
@@ -208,48 +264,75 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
         {/* LOGIN FORM */}
         {activeTab === 'login' && (
           <form onSubmit={handleLoginSubmit} className="space-y-4">
-            <div>
-              <label className="text-xs font-bold text-stone-300 block mb-1.5">כתובת אימייל</label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-stone-300 block text-right">כתובת אימייל</label>
+              <div className="relative group">
                 <input
                   type="email"
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full pr-10 pl-4 py-3 rounded-2xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  dir="rtl"
+                  className="w-full pr-11 pl-4 py-3.5 rounded-2xl bg-stone-950/80 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 transition-all text-right group-hover:border-stone-700"
                 />
-                <Mail className="w-4 h-4 text-amber-500/70 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors" />
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-stone-300 block mb-1.5">סיסמה</label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <label className="font-bold text-stone-300">סיסמה</label>
+                <button
+                  type="button"
+                  onClick={() => alert('לשחזור סיסמה אנא צור קשר עם תמיכת הקפה ב-WhatsApp')}
+                  className="text-amber-400/80 hover:text-amber-300 transition-colors font-medium text-[11px]"
+                >
+                  שכחת סיסמה?
+                </button>
+              </div>
+              <div className="relative group">
                 <input
-                  type="password"
+                  type={showLoginPassword ? 'text' : 'password'}
                   required
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pr-10 pl-4 py-3 rounded-2xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  dir="rtl"
+                  className="w-full pr-11 pl-11 py-3.5 rounded-2xl bg-stone-950/80 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 transition-all text-right group-hover:border-stone-700"
                 />
-                <Lock className="w-4 h-4 text-amber-500/70 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors" />
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  aria-label={showLoginPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                  title={showLoginPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-amber-400 transition-colors p-1 rounded-lg focus:outline-none hover:bg-stone-900/60"
+                >
+                  {showLoginPassword ? (
+                    <EyeOff className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-black font-extrabold text-xs hover:brightness-110 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-stone-950 font-black text-xs hover:brightness-110 active:scale-[0.99] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.3)] mt-2"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-stone-950" />
                   <span>מתחבר למערכת...</span>
                 </>
               ) : (
-                <span>התחבר כעת</span>
+                <>
+                  <span>התחבר כעת</span>
+                  <Sparkles className="w-4 h-4" />
+                </>
               )}
             </button>
           </form>
@@ -258,79 +341,139 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
         {/* REGISTER FORM */}
         {activeTab === 'register' && (
           <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
-            <div>
-              <label className="text-xs font-bold text-stone-300 block mb-1">שם מלא</label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-stone-300 block text-right">שם מלא</label>
+              <div className="relative group">
                 <input
                   type="text"
                   required
                   value={regFullName}
                   onChange={(e) => setRegFullName(e.target.value)}
                   placeholder="ישראל ישראלי"
-                  className="w-full pr-10 pl-4 py-2.5 rounded-2xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  dir="rtl"
+                  className="w-full pr-11 pl-4 py-3 rounded-2xl bg-stone-950/80 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 transition-all text-right group-hover:border-stone-700"
                 />
-                <User className="w-4 h-4 text-amber-500/70 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                <User className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors" />
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-stone-300 block mb-1">כתובת אימייל</label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-stone-300 block text-right">כתובת אימייל</label>
+              <div className="relative group">
                 <input
                   type="email"
                   required
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full pr-10 pl-4 py-2.5 rounded-2xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  dir="rtl"
+                  className="w-full pr-11 pl-4 py-3 rounded-2xl bg-stone-950/80 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 transition-all text-right group-hover:border-stone-700"
                 />
-                <Mail className="w-4 h-4 text-amber-500/70 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors" />
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-stone-300 block mb-1">מספר טלפון</label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-stone-300 block text-right">מספר טלפון</label>
+              <div className="relative group">
                 <input
                   type="tel"
                   required
                   value={regPhone}
                   onChange={(e) => setRegPhone(e.target.value)}
                   placeholder="050-1234567"
-                  className="w-full pr-10 pl-4 py-2.5 rounded-2xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500 text-right"
                   dir="rtl"
+                  className="w-full pr-11 pl-4 py-3 rounded-2xl bg-stone-950/80 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 transition-all text-right group-hover:border-stone-700"
                 />
-                <Phone className="w-4 h-4 text-amber-500/70 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors" />
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-stone-300 block mb-1">סיסמה מאובטחת</label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-stone-300 block text-right">סיסמה מאובטחת</label>
+              <div className="relative group">
                 <input
-                  type="password"
+                  type={showRegPassword ? 'text' : 'password'}
                   required
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pr-10 pl-4 py-2.5 rounded-2xl bg-stone-950 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+                  dir="rtl"
+                  className="w-full pr-11 pl-11 py-3 rounded-2xl bg-stone-950/80 border border-stone-800 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500/80 focus:ring-2 focus:ring-amber-500/20 transition-all text-right group-hover:border-stone-700"
                 />
-                <Lock className="w-4 h-4 text-amber-500/70 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors" />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPassword(!showRegPassword)}
+                  aria-label={showRegPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                  title={showRegPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-amber-400 transition-colors p-1 rounded-lg focus:outline-none hover:bg-stone-900/60"
+                >
+                  {showRegPassword ? (
+                    <EyeOff className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
+
+              {/* Password Strength Indicator & Badges */}
+              {regPassword && (
+                <div className="pt-2 space-y-2 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-stone-400">חוזק סיסמה:</span>
+                    <span className={`font-bold ${strength.text}`}>{strength.label}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-stone-900 rounded-full overflow-hidden border border-stone-800">
+                    <div className={`h-full ${strength.color} ${strength.width} transition-all duration-300`} />
+                  </div>
+
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-1.5 pt-0.5 text-[10px]">
+                    <span className={`px-2 py-0.5 rounded-full border flex items-center gap-1 transition-all ${
+                      strength.hasLength 
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-bold' 
+                        : 'bg-stone-900/80 border-stone-800 text-stone-500'
+                    }`}>
+                      {strength.hasLength ? <Check className="w-3 h-3" /> : '•'}
+                      לפחות 6 תווים
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full border flex items-center gap-1 transition-all ${
+                      strength.hasLetter 
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-bold' 
+                        : 'bg-stone-900/80 border-stone-800 text-stone-500'
+                    }`}>
+                      {strength.hasLetter ? <Check className="w-3 h-3" /> : '•'}
+                      אותיות
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full border flex items-center gap-1 transition-all ${
+                      strength.hasNumber 
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-bold' 
+                        : 'bg-stone-900/80 border-stone-800 text-stone-500'
+                    }`}>
+                      {strength.hasNumber ? <Check className="w-3 h-3" /> : '•'}
+                      ספרות
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-black font-extrabold text-xs hover:brightness-110 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 mt-2"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 text-stone-950 font-black text-xs hover:brightness-110 active:scale-[0.99] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.3)] mt-2"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-stone-950" />
                   <span>יוצר חשבון ב-MongoDB...</span>
                 </>
               ) : (
-                <span>צור חשבון חדש כעת</span>
+                <>
+                  <span>צור חשבון חדש כעת</span>
+                  <Sparkles className="w-4 h-4" />
+                </>
               )}
             </button>
           </form>

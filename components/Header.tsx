@@ -549,8 +549,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                 <span className="hidden sm:inline">בריסטה Gemini</span>
               </button>
 
-              {/* Auth User Profile or Login Button */}
-              {isAuthenticated && user ? (
+              {/* Auth User Profile */}
+              {isAuthenticated && user && (
                 <div className="flex items-center gap-2 bg-stone-900 border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow-md">
                   <Link
                     href="/profile"
@@ -585,18 +585,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                     <LogOut className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    coffeeSound.playBaristaClick();
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="px-3.5 py-2 rounded-2xl bg-neutral-900 border border-neutral-800 text-neutral-200 hover:text-amber-400 hover:border-amber-500/50 text-xs font-bold transition-all flex items-center gap-1.5 shadow-md"
-                  title="התחברות / הרשמה"
-                >
-                  <User className="w-4 h-4 text-amber-400" />
-                  <span className="hidden sm:inline">התחברות / הרשמה</span>
-                </button>
               )}
 
               {/* Shopping Cart Drawer Trigger */}
