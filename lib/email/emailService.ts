@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export interface EmailOrderItem {
   itemName: string;
@@ -19,9 +20,48 @@ export interface SendOrderEmailParams {
   orderDate?: string;
 }
 
-// Helper to get or create transport with Gmail / OAuth2 / SMTP / Ethereal support
+// Helper to get or create transport with Resend / Gmail / OAuth2 / SMTP / Ethereal support
 async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions) {
   const dispatchInner = async () => {
+    // Mode 0: Resend Cloud API (Top tier reliability for cloud platforms like Render)
+    const resendApiKey = process.env.RESEND_API_KEY?.trim();
+    if (resendApiKey) {
+      console.log(`📧 Attempting Resend API dispatch for ${mailOptions.to}...`);
+      try {
+        const resend = new Resend(resendApiKey);
+        const fromAddress =
+          process.env.RESEND_FROM ||
+          process.env.EMAIL_FROM ||
+          'The Digital Roast ☕ <onboarding@resend.dev>';
+        const toAddress =
+          typeof mailOptions.to === 'string'
+            ? mailOptions.to
+            : Array.isArray(mailOptions.to)
+            ? (mailOptions.to[0] as string)
+            : '';
+
+        const { data, error } = await resend.emails.send({
+          from: fromAddress,
+          to: [toAddress],
+          subject: mailOptions.subject as string,
+          html: mailOptions.html as string,
+        });
+
+        if (error) {
+          console.warn('⚠️ Resend API returned error, falling back to SMTP:', error.message);
+        } else if (data?.id) {
+          console.log(`✅ Resend API dispatch succeeded! [ID: ${data.id}]`);
+          return {
+            messageId: data.id,
+            previewUrl: null,
+            isRealSmtp: true,
+          };
+        }
+      } catch (err: any) {
+        console.warn('⚠️ Resend dispatch exception, falling back:', err.message);
+      }
+    }
+
     const host = process.env.SMTP_HOST?.trim();
     const port = Number(process.env.SMTP_PORT?.trim()) || 465;
     const rawUser = process.env.SMTP_USER || process.env.EMAIL_USER || 'idankzm@gmail.com';
