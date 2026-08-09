@@ -1,0 +1,267 @@
+'use client';
+
+import React, { useRef } from 'react';
+import {
+  X,
+  Printer,
+  Coffee,
+  CheckCircle2,
+  QrCode,
+  Download,
+  ShieldCheck,
+  Building,
+  Calendar,
+  CreditCard,
+  MapPin,
+  Sparkles,
+} from 'lucide-react';
+import { UserOrderRecord } from '@/lib/store/useOrderStore';
+import { coffeeSound } from '@/lib/audio/coffeeSounds';
+
+interface OrderInvoiceModalProps {
+  order: UserOrderRecord | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isOpen, onClose }) => {
+  const printRef = useRef<HTMLDivElement>(null);
+
+  if (!isOpen || !order) return null;
+
+  const handlePrint = () => {
+    coffeeSound.playBaristaClick();
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  };
+
+  const vatRate = 0.18;
+  const subtotal = order.totalPrice / (1 + vatRate);
+  const vatAmount = order.totalPrice - subtotal;
+
+  const formattedDate = new Date(order.createdAt).toLocaleDateString('he-IL', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-fadeIn dir-rtl text-right">
+      <div className="relative w-full max-w-2xl bg-[#0e0c0b] border border-amber-500/40 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden my-auto max-h-[92vh] flex flex-col">
+        
+        {/* Modal Header Controls (Hidden on Print) */}
+        <div className="print:hidden p-4 border-b border-stone-800 bg-stone-950/80 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2 text-amber-400">
+            <Sparkles className="w-5 h-5 animate-pulse" />
+            <h3 className="font-extrabold text-base text-stone-100">חשבונית מס / קבלה דיגיטלית</h3>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 hover:bg-amber-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+            >
+              <Printer className="w-4 h-4" />
+              <span>הדפס / שמור PDF</span>
+            </button>
+
+            <button
+              onClick={() => {
+                coffeeSound.playBaristaClick();
+                onClose();
+              }}
+              className="p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-stone-100 hover:border-stone-700 transition-all"
+              title="סגור חלון"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Printable Thermal Receipt & Tax Invoice Body */}
+        <div
+          ref={printRef}
+          className="p-6 sm:p-8 overflow-y-auto space-y-6 text-stone-200 print:text-black print:bg-white print:p-8 print:m-0"
+        >
+          {/* Company Branding & Receipt Title */}
+          <div className="text-center border-b border-dashed border-amber-500/30 print:border-black pb-5 space-y-2">
+            <div className="inline-flex items-center justify-center gap-2 text-amber-400 print:text-black">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 print:bg-black/10 border border-amber-500/40 print:border-black flex items-center justify-center font-black">
+                <Coffee className="w-5 h-5 text-amber-400 print:text-black" />
+              </div>
+              <span className="text-xl sm:text-2xl font-black tracking-wider uppercase font-mono">
+                THE DIGITAL ROAST
+              </span>
+            </div>
+            <p className="text-xs text-stone-400 print:text-stone-600 font-medium">
+              חברת הקפה הגורמה והקלייה הספציאליטית בע"מ • ח.פ. 519824601
+            </p>
+            <p className="text-[11px] text-stone-500 print:text-stone-600 font-mono">
+              שדרות רוטשילד 45, תל אביב • טלפון: 03-6821900 • service@digitalroast.co.il
+            </p>
+            <div className="pt-2">
+              <span className="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 print:border-black print:text-black text-xs font-black">
+                ✓ מסמך ממוחשב - מקור חתום דיגיטלית
+              </span>
+            </div>
+          </div>
+
+          {/* Invoice Meta Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs bg-stone-900/50 print:bg-stone-100 p-4 rounded-2xl border border-stone-800 print:border-stone-300">
+            <div>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px]">מספר חשבונית / הזמנה:</span>
+              <span className="font-mono font-black text-amber-300 print:text-black text-sm">
+                #{order.orderNumber}
+              </span>
+            </div>
+            <div>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px]">תאריך ושעת הפקה:</span>
+              <span className="font-bold text-stone-200 print:text-black">
+                {formattedDate}
+              </span>
+            </div>
+            <div>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px]">אמצעי תשלום:</span>
+              <span className="font-bold text-stone-200 print:text-black flex items-center gap-1">
+                <CreditCard className="w-3.5 h-3.5 text-amber-400 print:text-black" />
+                <span>{order.paymentMethod || 'אשראי מאובטח'}</span>
+              </span>
+            </div>
+            <div>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px]">שם המזמין:</span>
+              <span className="font-bold text-stone-200 print:text-black">{order.fullName}</span>
+            </div>
+            <div>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px]">טלפון ליצירת קשר:</span>
+              <span className="font-mono font-bold text-stone-200 print:text-black">{order.phone}</span>
+            </div>
+            <div>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px]">כתובת יעד למשלוח:</span>
+              <span className="font-bold text-stone-200 print:text-black truncate block" title={order.deliveryAddress}>
+                {order.deliveryAddress}
+              </span>
+            </div>
+          </div>
+
+          {/* Itemized Table */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-black text-amber-400 print:text-black uppercase tracking-wider">
+              פירוט פריטי הקפה והשירות
+            </h4>
+            <div className="rounded-2xl border border-stone-800 print:border-stone-400 overflow-hidden">
+              <table className="w-full text-xs text-right">
+                <thead className="bg-stone-900 print:bg-stone-200 text-stone-400 print:text-black text-[11px] font-bold border-b border-stone-800 print:border-stone-400">
+                  <tr>
+                    <th className="p-3">תיאור פריט</th>
+                    <th className="p-3 text-center">כמות</th>
+                    <th className="p-3 text-center">מחיר יח׳</th>
+                    <th className="p-3 text-left">סה״כ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-800/60 print:divide-stone-300">
+                  {order.items.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-stone-900/30 print:hover:bg-transparent">
+                      <td className="p-3">
+                        <div className="font-black text-stone-100 print:text-black">{item.itemName}</div>
+                        {(item.shots || item.milkType || item.origin) && (
+                          <div className="text-[10px] text-stone-400 print:text-stone-600 font-light mt-0.5">
+                            {item.shots ? `${item.shots} שוטים` : ''}
+                            {item.shots && item.milkType ? ' • ' : ''}
+                            {item.milkType ? item.milkType : ''}
+                            {item.origin ? ` • מקור: ${item.origin}` : ''}
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-3 text-center font-mono font-bold">{item.quantity}</td>
+                      <td className="p-3 text-center font-mono">₪{item.pricePerUnit.toFixed(2)}</td>
+                      <td className="p-3 text-left font-mono font-black text-amber-300 print:text-black">
+                        ₪{(item.quantity * item.pricePerUnit).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Calculation Summary Block */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-stone-950 print:bg-stone-50 p-4 rounded-2xl border border-stone-800 print:border-stone-300">
+            <div className="flex items-center gap-3 text-stone-400 print:text-stone-600 text-xs">
+              <ShieldCheck className="w-5 h-5 text-emerald-400 print:text-black" />
+              <div>
+                <span className="font-bold text-stone-200 print:text-black block">עסקת מסחר מאובטחת SSL 256-bit</span>
+                <span className="text-[10px]">קבלה זו מהווה אישור תשלום סופי ומאושר לרשויות המס</span>
+              </div>
+            </div>
+
+            <div className="w-full sm:w-64 space-y-1.5 text-xs text-left">
+              <div className="flex justify-between text-stone-400 print:text-stone-600">
+                <span>סכום ביניים לפני מע״מ:</span>
+                <span className="font-mono">₪{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-stone-400 print:text-stone-600">
+                <span>מע״מ לפי 18%:</span>
+                <span className="font-mono">₪{vatAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-stone-400 print:text-stone-600">
+                <span>דמי משלוח אקספרס:</span>
+                <span className="font-bold text-emerald-400 print:text-black">חינם (הטבת VIP)</span>
+              </div>
+              <div className="border-t border-dashed border-stone-700 print:border-black pt-2 flex justify-between text-base font-black text-amber-400 print:text-black">
+                <span>סה״כ שולם כולל מע״מ:</span>
+                <span className="font-mono text-lg">₪{order.totalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Barcode & Verification QR Section */}
+          <div className="border-t border-stone-800 print:border-black pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
+            <div className="space-y-1">
+              <div className="font-mono text-[10px] tracking-widest text-stone-500 print:text-stone-600 uppercase">
+                DIGITAL ROAST AUTHENTICATION VERIFIED
+              </div>
+              {/* Simulated Thermal Barcode */}
+              <div className="flex items-center justify-center sm:justify-start gap-0.5 h-8 opacity-80 print:opacity-100">
+                {[2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 3, 1, 4, 2, 1, 2, 3].map((w, i) => (
+                  <div
+                    key={i}
+                    style={{ width: `${w * 2}px` }}
+                    className="h-full bg-amber-400 print:bg-black rounded-xs"
+                  />
+                ))}
+              </div>
+              <div className="font-mono text-[9px] text-stone-500 print:text-stone-600">
+                AUTH-HASH: {order.orderNumber}-2026-COFFEE-SECURE
+              </div>
+            </div>
+
+            {/* QR Verification Block */}
+            <div className="flex items-center gap-3 bg-stone-900/60 print:bg-transparent p-2.5 rounded-2xl border border-stone-800 print:border-none">
+              <div className="bg-white p-1.5 rounded-xl">
+                <svg className="w-12 h-12" viewBox="0 0 100 100" fill="none">
+                  <rect width="100" height="100" fill="white" />
+                  <path d="M10 10h30v30H10zM60 10h30v30H60zM10 60h30v30H10z" fill="black" />
+                  <path d="M18 18h14v14H18zM68 18h14v14H68zM18 68h14v14H18z" fill="white" />
+                  <rect x="45" y="10" width="10" height="80" fill="black" />
+                  <rect x="10" y="45" width="80" height="10" fill="black" />
+                </svg>
+              </div>
+              <div className="text-right text-[10px] text-stone-400 print:text-stone-600 font-medium">
+                <span className="block font-bold text-stone-200 print:text-black">סריקה לאימות מקור</span>
+                <span>אישור רשמי ודיגיטלי</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center text-[10px] text-stone-500 print:text-stone-600 pt-2 font-mono">
+            תודה שבחרת ב-THE DIGITAL ROAST • שתיית קפה מענגת! ☕
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};

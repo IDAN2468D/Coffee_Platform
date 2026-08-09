@@ -62,6 +62,8 @@ export async function createStandardOrder(data: OrderInput) {
       console.warn('MongoDB order save fallback:', dbErr);
     }
 
+    const createdAtIso = new Date().toISOString();
+
     return {
       success: true,
       orderNumber,
@@ -74,11 +76,63 @@ export async function createStandardOrder(data: OrderInput) {
       itemCount: validated.items.length,
       items: validated.items,
       phone: validated.phone,
+      createdAt: createdAtIso,
+      status: 'PENDING',
     };
   } catch (error: any) {
     return {
       success: false,
       error: error.message || 'שגיאה ביצירת ההזמנה במערכת',
+    };
+  }
+}
+
+// Action to fetch user order history from MongoDB
+export async function getUserOrdersAction(userEmail?: string, userPhone?: string) {
+  try {
+    await connectToDatabase();
+    const query: any = {};
+    if (userEmail && userPhone) {
+      query.$or = [{ email: userEmail }, { phone: userPhone }];
+    } else if (userEmail) {
+      query.email = userEmail;
+    } else if (userPhone) {
+      query.phone = userPhone;
+    }
+
+    const rawOrders = await Order.find(query).sort({ createdAt: -1 }).limit(30).lean();
+
+    const orders = rawOrders.map((o: any) => ({
+      orderNumber: o.orderNumber,
+      fullName: o.fullName,
+      email: o.email || '',
+      phone: o.phone,
+      deliveryAddress: o.deliveryAddress,
+      items: (o.items || []).map((item: any) => ({
+        coffeeItemId: item.coffeeItemId,
+        itemName: item.itemName,
+        quantity: item.quantity,
+        pricePerUnit: item.pricePerUnit,
+        shots: item.shots,
+        milkType: item.milkType,
+      })),
+      totalPrice: o.totalPrice,
+      status: o.status,
+      createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
+      whatsappSent: !!o.whatsappSent,
+      emailSent: !!o.emailSent,
+    }));
+
+    return {
+      success: true,
+      orders,
+    };
+  } catch (err: any) {
+    console.warn('Could not fetch orders from MongoDB:', err.message);
+    return {
+      success: false,
+      error: err.message || 'לא ניתן למשוך הזמנות ממסד הנתונים',
+      orders: [],
     };
   }
 }

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Coffee, ShoppingBag, Sparkles, TestTube, User, ShoppingCart } from 'lucide-react';
+import { Coffee, ShoppingBag, Sparkles, TestTube, User, ShoppingCart, Clock } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
@@ -22,8 +22,9 @@ export const MobileNav: React.FC = () => {
   const navItems = [
     { href: '/home', label: 'ראשי', icon: Coffee },
     { href: '/shop', label: 'חנות', icon: ShoppingBag },
+    { href: '/orders', label: 'הזמנות', icon: Clock },
     { href: '/ai-barista', label: 'בריסטה AI', icon: Sparkles },
-    { href: '/brew-lab', label: 'חליטה', icon: TestTube },
+    { href: '/profile', label: 'פרופיל', icon: User },
   ];
 
   return (

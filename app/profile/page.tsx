@@ -40,6 +40,7 @@ import { TiltGlassCard } from '@/components/TiltGlassCard';
 import { MagneticButton } from '@/components/MagneticButton';
 import { CanvasCoffeeSteam } from '@/components/CanvasCoffeeSteam';
 import { updateUserProfileImageAction } from '@/app/actions/authActions';
+import { coffeeSound } from '@/lib/audio/coffeeSounds';
 
 export default function ProfilePage() {
   const { user, setUser } = useAuthStore();
@@ -477,6 +478,22 @@ export default function ProfilePage() {
             <div className="absolute top-7 left-[12%] right-[12%] h-1 bg-stone-800 -z-0">
               <div className="h-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-500 w-[66%]" />
             </div>
+          </div>
+
+          {/* Direct Link to Full Order History Archive */}
+          <div className="pt-3 border-t border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-xs text-stone-400">
+              רוצה לראות את כל ההזמנות שביצעת בעבר, להזמין שוב או להוריד חשבוניות?
+            </div>
+            <Link
+              href="/orders"
+              onClick={() => coffeeSound.playBaristaClick()}
+              className="px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500 hover:text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 self-start sm:self-auto shadow-md"
+            >
+              <Package className="w-3.5 h-3.5" />
+              <span>צפה בכל היסטוריית ההזמנות והקניות</span>
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 

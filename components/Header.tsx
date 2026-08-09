@@ -7,10 +7,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Coffee,
   ShoppingBag,
-  Flame,
-  User,
   Clock,
   Sparkles,
+  Flame,
   Activity,
   Globe,
   Volume2,
@@ -35,6 +34,8 @@ import {
   Search,
   LogOut,
   Wifi,
+  User,
+  MousePointer,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -52,11 +53,13 @@ interface FeatureItem {
   label: string;
   desc: string;
   icon: React.ComponentType<{ className?: string }>;
+  tag?: string;
 }
 
 interface CategoryGroup {
   title: string;
   color: string;
+  badgeBg: string;
   items: FeatureItem[];
 }
 
@@ -100,113 +103,130 @@ const MobileMenuOverlay: React.FC<MobileMenuOverlayProps> = ({
 
   if (!mounted || !isOpen || typeof window === 'undefined') return null;
 
+  const filteredFeatures = allFeatures.filter(
+    (item) =>
+      item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return createPortal(
-    <div className="lg:hidden fixed inset-0 z-[9999] w-screen h-screen min-h-screen bg-[#070505]/98 backdrop-blur-3xl p-5 overflow-y-auto animate-fadeIn dir-rtl flex flex-col space-y-5">
-      {/* Mobile Header Top Bar */}
+    <div className="lg:hidden fixed inset-0 z-[9999] w-screen h-screen min-h-screen bg-[#070505] p-5 sm:p-7 overflow-y-auto animate-fadeIn dir-rtl flex flex-col space-y-6 text-right">
+      {/* Mobile Top Bar */}
       <div className="flex items-center justify-between pb-4 border-b border-amber-500/30">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-black font-black shadow-lg">
-            <Coffee className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-stone-950 font-black shadow-lg shadow-amber-500/25">
+            <Coffee className="w-6 h-6 text-stone-950" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-amber-300">תפריט ניווט ראשי</h3>
-            <p className="text-[10px] text-stone-400 font-mono">THE DIGITAL ROAST AI</p>
+            <h3 className="text-base font-black text-amber-300">תפריט ניווט ראשי</h3>
+            <p className="text-xs text-stone-400 font-mono">THE DIGITAL ROAST AI</p>
           </div>
         </div>
 
         <button
           onClick={onClose}
-          className="p-2.5 rounded-2xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-amber-400 transition-all active:scale-95"
+          className="p-3 rounded-2xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-amber-400 transition-all active:scale-95"
           title="סגור תפריט"
         >
           <X className="w-6 h-6" />
         </button>
       </div>
 
-      {/* Primary Pages Links Grid for Mobile */}
-      <div className="grid grid-cols-2 gap-2.5">
-        {primaryPages.map((page) => {
-          const Icon = page.icon;
-          const isActive = pathname === page.href;
-          return (
-            <Link
-              key={page.href}
-              href={page.href}
-              onClick={onClose}
-              className={`p-3.5 rounded-2xl text-xs font-black flex items-center gap-3 transition-all ${
-                isActive
-                  ? 'bg-amber-500/25 text-amber-300 border border-amber-500/60 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
-                  : 'bg-[#141010] text-stone-200 border border-stone-800 hover:border-amber-500/40'
-              }`}
-            >
-              <div className={`p-2 rounded-xl ${isActive ? 'bg-amber-500 text-stone-950' : 'bg-stone-900 text-amber-400'}`}>
-                <Icon className="w-4 h-4 shrink-0" />
-              </div>
-              <span>{page.label}</span>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Search Filter Input */}
-      <div className="relative pt-1">
-        <Search className="w-4 h-4 text-amber-400 absolute right-3.5 top-4" />
+      {/* Mobile Search Bar */}
+      <div className="relative">
         <input
           type="text"
-          placeholder="חפש פיצ'ר או כלי חליטה..."
+          placeholder="חפש כלי, עמוד או פיצ'ר במערכת..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pr-10 pl-3.5 py-3 text-xs bg-[#1a1515] border border-amber-500/40 rounded-2xl text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500"
+          className="w-full pl-4 pr-11 py-3.5 rounded-2xl bg-stone-900 border border-amber-500/40 text-stone-100 placeholder-stone-400 text-sm focus:outline-none focus:border-amber-400 shadow-inner"
         />
+        <Search className="w-5 h-5 text-amber-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
       </div>
 
-      {/* Categorized Features List */}
-      <div className="space-y-3 flex-1 pb-16">
-        <div className="text-xs font-black text-amber-300 flex items-center gap-2 border-b border-stone-800 pb-2">
-          <Layers className="w-4 h-4 text-amber-400" />
-          <span>כל הכלים והפיצ'רים הקוליים (21 רכיבים)</span>
+      {/* Primary Links Grid */}
+      <div className="space-y-2.5">
+        <div className="text-xs font-black text-stone-400 px-1">עמודים מרכזיים:</div>
+        <div className="grid grid-cols-2 gap-2.5">
+          {primaryPages.map((page) => {
+            const Icon = page.icon;
+            const isActive = pathname === page.href;
+            return (
+              <Link
+                key={page.href}
+                href={page.href}
+                onClick={() => {
+                  coffeeSound.playBaristaClick();
+                  onClose();
+                }}
+                className={`p-3.5 rounded-2xl border text-sm font-bold transition-all flex items-center gap-2.5 ${
+                  isActive
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-md'
+                    : 'bg-stone-900/90 border-stone-800 text-stone-300 hover:text-amber-300'
+                }`}
+              >
+                <div className={`p-2 rounded-xl ${isActive ? 'bg-amber-500 text-stone-950' : 'bg-stone-800 text-amber-400'}`}>
+                  <Icon className="w-4.5 h-4.5" />
+                </div>
+                <span>{page.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Filtered Feature Cards */}
+      <div className="space-y-2.5 flex-1">
+        <div className="text-xs font-black text-amber-400 px-1 flex items-center justify-between">
+          <span>כל כלי הפלטפורמה ({filteredFeatures.length}):</span>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-xs text-stone-400 hover:text-amber-300 underline"
+            >
+              נקה חיפוש
+            </button>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {allFeatures
-            .filter(
-              (item) =>
-                item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.desc.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            .map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleFeatureClick(item.page, item.id)}
-                  className="p-3 rounded-2xl bg-[#141010] border border-stone-800 hover:border-amber-500/50 text-neutral-200 text-xs font-semibold flex items-center justify-between transition-all group text-right active:scale-[0.98]"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-stone-950 border border-stone-800 text-amber-400 group-hover:border-amber-500/50">
-                      <Icon className="w-4 h-4 shrink-0" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-stone-200 group-hover:text-amber-300">
-                        {item.label}
-                      </div>
-                      <div className="text-[10px] text-stone-400 font-light truncate">
-                        {item.desc}
-                      </div>
-                    </div>
+        <div className="space-y-2 max-h-[44vh] overflow-y-auto pr-1">
+          {filteredFeatures.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleFeatureClick(item.page, item.id)}
+                className="w-full p-3 rounded-2xl bg-stone-900 border border-stone-800 hover:border-amber-500/50 hover:bg-amber-500/10 text-right transition-all flex items-center gap-3.5 group"
+              >
+                <div className="p-2.5 rounded-xl bg-stone-950 border border-stone-800 text-amber-400 group-hover:scale-105 transition-transform shrink-0">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <div className="text-sm font-bold text-stone-100 group-hover:text-amber-300">
+                    {item.label}
                   </div>
-                </button>
-              );
-            })}
+                  <div className="text-xs text-stone-400 truncate mt-0.5">
+                    {item.desc}
+                  </div>
+                </div>
+                {item.tag && (
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">
+                    {item.tag}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="p-3.5 rounded-2xl bg-[#1e1510] border border-amber-500/40 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
-          <Zap className="w-4 h-4 text-amber-400" />
-          <span className="text-xs text-amber-200 font-bold">סוכן ה-AI פעיל ברקע</span>
+      {/* Footer Status Badge */}
+      <div className="p-4 rounded-2xl bg-[#140e0b] border border-amber-500/40 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2.5">
+          <Zap className="w-5 h-5 text-amber-400" />
+          <span className="text-sm text-amber-200 font-bold">סוכן ה-AI פעיל ומחובר ברקע</span>
         </div>
-        <span className="text-[10px] text-amber-400 bg-amber-500/30 px-2 py-0.5 rounded-md border border-amber-500/40 font-mono">
+        <span className="text-xs text-emerald-400 bg-emerald-500/20 px-2.5 py-1 rounded-md border border-emerald-500/40 font-mono">
           ONLINE
         </span>
       </div>
@@ -224,38 +244,59 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
   const itemCount = getItemCount();
   const [isMuted, setIsMuted] = useState(coffeeSound.getMutedState());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [megaSearchQuery, setMegaSearchQuery] = useState('');
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // Mouse Drag Scroll States for Mega Menu
+  const megaMenuRef = useRef<HTMLDivElement>(null);
   const dropdownScrollRef = useRef<HTMLDivElement>(null);
-
-  const [isDraggingDropdown, setIsDraggingDropdown] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragScrollTop, setDragScrollTop] = useState(0);
-  const [hasDraggedDropdown, setHasDraggedDropdown] = useState(false);
+  const [hasDragged, setHasDragged] = useState(false);
 
-  const handleDropdownMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
     if (!dropdownScrollRef.current) return;
-    setIsDraggingDropdown(true);
-    setHasDraggedDropdown(false);
+    setIsDragging(true);
+    setHasDragged(false);
     setDragStartY(e.clientY);
     setDragScrollTop(dropdownScrollRef.current.scrollTop);
   };
 
-  const handleDropdownMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingDropdown || !dropdownScrollRef.current) return;
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !dropdownScrollRef.current) return;
     const dy = e.clientY - dragStartY;
     if (Math.abs(dy) > 4) {
-      setHasDraggedDropdown(true);
+      setHasDragged(true);
     }
     dropdownScrollRef.current.scrollTop = dragScrollTop - dy;
   };
 
-  const handleDropdownMouseUp = () => {
-    setIsDraggingDropdown(false);
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
+
+  // Close mega-menu on click outside or Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (megaMenuRef.current && !megaMenuRef.current.contains(e.target as Node)) {
+        setIsMegaMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMegaMenuOpen(false);
+        setIsMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleToggleMute = () => {
     const newMuted = coffeeSound.toggleMute();
@@ -265,99 +306,92 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
     }
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Primary top-level navigation pages
+  // Primary Clean Core Pages (4 key routes)
   const primaryPages = [
     { href: '/home', label: 'ראשי', icon: Coffee },
-    { href: '/shop', label: 'חנות וקטלוג', icon: ShoppingBag },
-    { href: '/global-fx', label: 'בורסה & FX', icon: Globe },
-    { href: '/notebook-sync', label: 'סנכרון Workspace', icon: BookOpen },
-    { href: '/ai-barista', label: 'בריסטה AI', icon: Sparkles },
-    { href: '/brew-lab', label: 'מעבדת חליטה', icon: TestTube },
+    { href: '/shop', label: 'חנות', icon: ShoppingBag },
+    { href: '/orders', label: 'הזמנות', icon: Clock },
+    { href: '/brew-lab', label: 'מעבדה', icon: TestTube },
   ];
 
-  // Categorized feature tools for the Dropdown menu
+  // Categorized feature tools for the Mega Menu
   const featureCategories: CategoryGroup[] = [
     {
       title: 'חנות & טעמים',
-      color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-300',
+      color: 'border-amber-500/40 from-amber-500/20 to-orange-500/10 text-amber-300',
+      badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
       items: [
-        { id: 'catalog', page: '/catalog', label: 'תפריט גורמה', desc: 'קטלוג פולים ומוצרי קפה', icon: Coffee },
-        { id: 'aroma-scent', page: '/aroma-scent', label: 'ניתוח ארומה וטרפנים AI', desc: 'ניתוח מולקולרי ומדד VAI%', icon: Sparkles },
+        { id: 'catalog', page: '/catalog', label: 'תפריט גורמה', desc: 'קטלוג פולים ומוצרי קפה', icon: Coffee, tag: 'SHOP' },
+        { id: 'orders', page: '/orders', label: 'היסטוריית הזמנות & קבלות', desc: 'מעקב משלוח חי, חשבוניות והזמנה חוזרת', icon: Clock, tag: 'LIVE' },
+        { id: 'aroma-scent', page: '/aroma-scent', label: 'ניתוח ארומה וטרפנים AI', desc: 'ניתוח מולקולרי ומדד VAI%', icon: Sparkles, tag: 'AI 5D' },
         { id: 'sensory-radar', page: '/sensory-radar', label: 'גלגל טעמים 5D', desc: 'ניתוח ארומה ופרופיל טעם', icon: Sparkles },
         { id: 'sommelier', page: '/sommelier', label: 'סומלייה מאפים', desc: 'התאמת קפה למאפי שף', icon: Utensils },
-        { id: 'subscription', page: '/subscription', label: 'מנוי חודשי', desc: 'אספקת פולים חודשית לבית', icon: Globe },
+        { id: 'subscription', page: '/subscription', label: 'מנוי חודשי', desc: 'אספקת פולים חודשית לבית', icon: Globe, tag: 'VIP' },
       ],
     },
     {
       title: 'בריסטה & AI',
-      color: 'from-cyan-500/20 to-blue-500/10 border-cyan-500/30 text-cyan-300',
+      color: 'border-cyan-500/40 from-cyan-500/20 to-blue-500/10 text-cyan-300',
+      badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
       items: [
-        { id: 'instagram-reel', page: '/instagram-reel', label: 'קונספט אינסטגרם Reel 1-to-1', desc: 'אדים, חלב, קרח 3D, סוכר ופולים צפים', icon: Sparkles },
+        { id: 'ai-barista', page: '/ai-barista', label: 'בריסטה Gemini 3.5 AI', desc: 'הזמנה קולית, זיהוי פולים והמלצות', icon: Sparkles, tag: 'VOICE' },
+        { id: 'instagram-reel', page: '/instagram-reel', label: 'קונספט אינסטגרם Reel 3D', desc: 'אדים, חלב, קרח 3D ופולים צפים', icon: Sparkles },
         { id: 'parallax-experience', page: '/parallax-experience', label: 'חוויית פרלקס & שלבי חליטה', desc: 'מסע Sticky Scroll ושלבי פיתוח 3D', icon: Layers },
-        { id: 'acoustic-tuner', page: '/acoustic-tuner', label: 'מכוונן טחינה אקוסטי', desc: 'ניתוח תדרי סכינים וגלאי Channeling', icon: Activity },
+        { id: 'acoustic-tuner', page: '/acoustic-tuner', label: 'מכוונן טחינה אקוסטי', desc: 'ניתוח תדרי סכינים וגלאי Channeling', icon: Activity, tag: 'FFT' },
         { id: 'ultrasonic-aging', page: '/ultrasonic-aging', label: 'תא יישון אולטרסוני & ואקום', desc: 'פירוק חומציות טאנית ב-45% & איטום', icon: Zap },
         { id: 'ar-latte-art', page: '/ar-latte-art', label: 'מדפסת 3D ללאטה ארט AR', desc: 'פיסול קצף מוגבה & וקטוריזטור קקאו', icon: Sparkles },
         { id: 'circadian-clock', page: '/circadian-clock', label: 'שעון קפאין סירקדיאני', desc: 'סנכרון קורטיזול & מניעת התרסקות', icon: Clock },
         { id: 'bio-energy', page: '/bio-energy', label: 'תאימות אנרגיה Bio-Match', desc: 'התאמת קפה לרמת עייפות', icon: Flame },
-        { id: 'barista-academy', page: '/barista-academy', label: 'אקדמיית הבריסטה AI', desc: 'מבחני הסמכה ותגי מומחה', icon: Award },
         { id: 'whatsapp-voice', page: '/whatsapp-voice', label: 'הזמנה ב-WhatsApp Voice', desc: 'הודעות קוליות להזמנה', icon: MessageSquare },
       ],
     },
     {
-      title: 'מעבדת חליטה',
-      color: 'from-blue-500/20 to-indigo-500/10 border-blue-500/30 text-blue-300',
+      title: 'מעבדת חליטה & מדע',
+      color: 'border-blue-500/40 from-blue-500/20 to-indigo-500/10 text-blue-300',
+      badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
       items: [
-        { id: 'smart-iot', page: '/smart-iot', label: 'סנכרון מכונה חכמה IoT', desc: 'דחיפת פרופיל לחץ 9Bar וטמפ׳ PID', icon: Wifi },
+        { id: 'smart-iot', page: '/smart-iot', label: 'סנכרון מכונה חכמה IoT', desc: 'דחיפת פרופיל לחץ 9Bar וטמפ׳ PID', icon: Wifi, tag: 'MQTT' },
         { id: 'v60', page: '/v60', label: 'V60 Master Timer', desc: 'טיימר חליטה חיה עם Bloom', icon: Clock },
-        { id: 'water-chemistry', page: '/water-chemistry', label: 'מחשב כימיית מים', desc: 'מינרלים ותקן SCA', icon: TestTube },
-        { id: 'extraction-telemetry', page: '/extraction-telemetry', label: 'טלמטריית TDS', desc: 'אחוז מיצוי אספרסו (EY%)', icon: Activity },
-        { id: 'extraction-sim', page: '/extraction-sim', label: 'סימולטור 9Bar', desc: 'סימולציית לחץ וחליטה', icon: Activity },
-        { id: 'cold-brew-calculator', page: '/cold-brew-calculator', label: 'Cold & Nitro Brew', desc: 'מחשבון חליטות קרות', icon: Snowflake },
+        { id: 'water-chemistry', page: '/water-chemistry', label: 'מחשב כימיית מים SCA', desc: 'מינרלים, קשיות GH/KH ואיזון pH', icon: TestTube, tag: 'CHEM' },
+        { id: 'extraction-telemetry', page: '/extraction-telemetry', label: 'טלמטריית TDS & EY%', desc: 'אחוז מיצוי אספרסו מדויק', icon: Activity },
+        { id: 'extraction-sim', page: '/extraction-sim', label: 'סימולטור 9Bar לחץ', desc: 'סימולציית לחץ וחליטה', icon: Activity },
+        { id: 'cold-brew-calculator', page: '/cold-brew-calculator', label: 'Cold & Nitro Brew', desc: 'מחשבון חליטות קרות וניטרו', icon: Snowflake },
       ],
     },
     {
-      title: 'סטודיו & מועדון',
-      color: 'from-orange-500/20 to-amber-500/10 border-orange-500/30 text-orange-300',
+      title: 'סטודיו, קלייה & מועדון',
+      color: 'border-orange-500/40 from-orange-500/20 to-amber-500/10 text-orange-300',
+      badgeBg: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
       items: [
-        { id: 'roast-profile', page: '/roast-profile', label: 'רדאר קלייה RoR & SCA', desc: 'ניטור First Crack וסקאלת Agtron', icon: Flame },
-        { id: 'custom-roast-studio', page: '/custom-roast-studio', label: 'מעבדת קלייה', desc: 'עיצוב דרגות קלייה אישיות', icon: Sliders },
+        { id: 'roast-profile', page: '/roast-profile', label: 'רדאר קלייה RoR & SCA', desc: 'ניטור First Crack וסקאלת Agtron', icon: Flame, tag: 'RoR' },
+        { id: 'custom-roast-studio', page: '/custom-roast-studio', label: 'מעבדת קלייה אישית', desc: 'עיצוב דרגות קלייה אישיות', icon: Sliders },
         { id: 'personal-brew-journal', page: '/personal-brew-journal', label: 'יומן חליטה Dial-in', desc: 'תיעוד וניטור חליטות', icon: BookOpen },
         { id: 'latte-art-trainer', page: '/latte-art-trainer', label: 'מאמן לאטה ארט', desc: 'אימון ויזואלי ומזיגות', icon: Droplets },
-        { id: 'gamification', page: '/gamification', label: 'מועדון Roast Club', desc: 'אתגרים ודרגות בריסטה', icon: Award },
-        { id: 'live-cupping-room', page: '/live-cupping-room', label: 'Cupping Room', desc: 'חדר טעימות שיתופי', icon: Star },
+        { id: 'gamification', page: '/gamification', label: 'מועדון Roast Club VIP', desc: 'אתגרים, משימות ודרגות בריסטה', icon: Award, tag: 'QUESTS' },
+        { id: 'live-cupping-room', page: '/live-cupping-room', label: 'Cupping Room שיתופי', desc: 'חדר טעימות שיתופי וירטואלי', icon: Star },
+        { id: 'barista-academy', page: '/barista-academy', label: 'אקדמיית הבריסטה AI', desc: 'מבחני הסמכה ותגי מומחה', icon: Award },
       ],
     },
     {
-      title: 'עסקים & מלאי',
-      color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-300',
+      title: 'עסקים, B2B & טרואר',
+      color: 'border-emerald-500/40 from-emerald-500/20 to-teal-500/10 text-emerald-300',
+      badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
       items: [
-        { id: 'corporate-lounge', page: '/corporate-lounge', label: 'B2B משרדים', desc: 'לאונג קפה לחברות', icon: Building2 },
+        { id: 'corporate-lounge', page: '/corporate-lounge', label: 'B2B משרדים וחברות', desc: 'לאונג קפה אקסקלוסיבי לחברות', icon: Building2, tag: 'B2B' },
         { id: 'gift-sommelier', page: '/gift-sommelier', label: 'אשף מתנות AI', desc: 'מארזים מותאמים אישית', icon: Gift },
-        { id: 'multi-roaster-marketplace', page: '/multi-roaster-marketplace', label: 'שוק קולים', desc: 'פולי קפה מקולים עצמאיים', icon: Store },
-        { id: 'smart-inventory', page: '/smart-inventory', label: 'ניהול מלאי', desc: 'חיזוי צריכה והזמנות', icon: Zap },
-        { id: 'farm-story', page: '/farm-story', label: 'סיפור החווה', desc: 'מקורות הפולים וטרואר', icon: BookOpen },
+        { id: 'multi-roaster-marketplace', page: '/multi-roaster-marketplace', label: 'שוק קולים עצמאיים', desc: 'פולי קפה מקולים עצמאיים בישראל', icon: Store },
+        { id: 'smart-inventory', page: '/smart-inventory', label: 'ניהול מלאי חכם AI', desc: 'חיזוי צריכה והזמנות אוטומטיות', icon: Zap },
+        { id: 'farm-story', page: '/farm-story', label: 'סיפור החווה והטרואר', desc: 'מקורות הפולים, גבהים וחקלאים', icon: BookOpen },
       ],
     },
   ];
 
-  // Flattened list for mobile search
   const allFeatures = featureCategories.flatMap((cat) => cat.items);
 
-  // Navigate to feature page + scroll smoothly to section
   const handleFeatureClick = (pageUrl: string, sectionId: string) => {
+    if (hasDragged) return;
     coffeeSound.playBaristaClick();
-    setIsDropdownOpen(false);
+    setIsMegaMenuOpen(false);
     setIsMobileMenuOpen(false);
 
     if (pathname === pageUrl) {
@@ -374,248 +408,329 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
     }
   };
 
+  const filteredMegaItems = allFeatures.filter(
+    (item) =>
+      item.label.toLowerCase().includes(megaSearchQuery.toLowerCase()) ||
+      item.desc.toLowerCase().includes(megaSearchQuery.toLowerCase())
+  );
+
   return (
     <>
-      <header className="sticky top-2 z-50 w-full max-w-[98%] mx-auto px-2 sm:px-4">
-        {/* Liquid Glass Header Container */}
-        <div className="relative rounded-3xl bg-[#0a0808]/95 backdrop-blur-xl border border-amber-500/40 shadow-[0_10px_45px_rgba(0,0,0,0.85)] transition-all duration-300">
-          <div className="h-20 px-3 sm:px-5 flex items-center justify-between gap-3">
-            
-            {/* Brand Logo & Title */}
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                href="/home"
-                onClick={() => coffeeSound.playBaristaClick()}
-                className="flex items-center gap-3 group"
-              >
-                <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform duration-300">
-                  <Coffee className="w-6 h-6 text-black" />
-                  <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-black"></span>
-                  </span>
-                </div>
-                <div className="hidden xl:block">
-                  <span className="text-base font-black tracking-wide bg-gradient-to-r from-amber-200 via-orange-300 to-amber-500 bg-clip-text text-transparent whitespace-nowrap">
-                    THE DIGITAL ROAST
-                  </span>
-                  <div className="flex items-center gap-1.5 -mt-1">
-                    <span className="text-[9px] tracking-widest text-amber-400 font-mono">
-                      GEMINI 3.5 BARISTA
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </div>
+      <header className="sticky top-3 sm:top-4 z-50 w-full max-w-[98%] 2xl:max-w-[1750px] mx-auto px-2 sm:px-4 dir-rtl">
+        {/* Unified Solid Luxury Navigation Bar - Expanded Full Width */}
+        <div className="relative rounded-2xl sm:rounded-3xl bg-[#0c0a09] border-2 border-amber-500/30 shadow-[0_12px_45px_rgba(0,0,0,0.95)] h-18 sm:h-20 px-4 sm:px-8 flex items-center justify-between gap-4 lg:gap-8 w-full transition-all">
+          
+          {/* 1. BRAND LOGO (Right in RTL) */}
+          <div className="flex items-center gap-3.5 shrink-0">
+            <Link
+              href="/home"
+              onClick={() => coffeeSound.playBaristaClick()}
+              className="flex items-center gap-3 group"
+            >
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform shrink-0 border border-amber-300/40">
+                <Coffee className="w-6 h-6 text-stone-950" />
+              </div>
 
-            {/* Desktop Navigation Deck: Primary Pages + Feature Dropdown */}
-            <nav className="hidden lg:flex items-center gap-2 p-1.5 rounded-2xl bg-[#141010]/90 border border-amber-500/30 flex-1 justify-center max-w-4xl">
-              {/* Primary Main Pages Links */}
-              {primaryPages.map((page) => {
-                const Icon = page.icon;
-                const isActive = pathname === page.href;
-                return (
-                  <Link
-                    key={page.href}
-                    href={page.href}
-                    onClick={() => coffeeSound.playBaristaClick()}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
-                      isActive
-                        ? 'bg-amber-500/25 text-amber-300 border border-amber-500/60 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
-                        : 'text-stone-300 hover:text-amber-300 hover:bg-amber-500/15 border border-transparent hover:border-amber-500/30'
+              <div className="hidden sm:block text-right">
+                <div className="text-sm sm:text-base font-black tracking-wide text-stone-100 whitespace-nowrap">
+                  THE DIGITAL ROAST
+                </div>
+                <div className="text-[10px] font-mono text-amber-400 font-extrabold tracking-wider -mt-0.5">
+                  SPECIALTY COFFEE & AI
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* 2. CENTER SPACIOUS NAVIGATION DECK */}
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3">
+            {primaryPages.map((page) => {
+              const Icon = page.icon;
+              const isActive = pathname === page.href;
+              return (
+                <Link
+                  key={page.href}
+                  href={page.href}
+                  onClick={() => coffeeSound.playBaristaClick()}
+                  className={`h-11 px-3.5 lg:px-4 rounded-xl sm:rounded-2xl text-sm font-extrabold transition-all flex items-center gap-2 shrink-0 whitespace-nowrap ${
+                    isActive
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-sm'
+                      : 'text-stone-300 hover:text-amber-300 hover:bg-stone-900/80 border border-transparent hover:border-stone-800'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-stone-400'}`} />
+                  <span className="whitespace-nowrap">{page.label}</span>
+                </Link>
+              );
+            })}
+
+            {/* Mega-Menu Dropdown Button */}
+            <div className="relative shrink-0" ref={megaMenuRef}>
+              <button
+                onClick={() => {
+                  coffeeSound.playBaristaClick();
+                  setIsMegaMenuOpen(!isMegaMenuOpen);
+                }}
+                className={`h-11 px-3.5 sm:px-4 rounded-xl sm:rounded-2xl text-sm font-extrabold transition-all flex flex-row items-center gap-2 sm:gap-2.5 shrink-0 whitespace-nowrap border cursor-pointer select-none active:scale-95 ${
+                  isMegaMenuOpen
+                    ? 'bg-amber-500/25 text-amber-300 border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.25)]'
+                    : 'bg-stone-900/90 text-stone-200 border-stone-800 hover:border-amber-500/50 hover:bg-amber-500/15 hover:text-amber-300 shadow-sm'
+                }`}
+              >
+                <div className="p-1 rounded-lg bg-stone-950 border border-amber-500/30 text-amber-400 shrink-0 flex items-center justify-center">
+                  <Layers className="w-3.5 h-3.5" />
+                </div>
+
+                <span className="whitespace-nowrap text-xs sm:text-sm font-bold text-stone-100">
+                  כל הכלים
+                </span>
+
+                <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono font-bold text-[10px] sm:text-[11px] border border-amber-500/30 shrink-0">
+                  21
+                </span>
+
+                <ChevronDown
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 transition-transform duration-300 shrink-0 ${
+                    isMegaMenuOpen ? 'rotate-180 text-amber-300' : ''
+                  }`}
+                />
+              </button>
+
+              {/* MEGA MENU FLOATING DROPDOWN - SOLID OPAQUE BACKGROUND & NO VISIBLE SCROLLBAR */}
+              {isMegaMenuOpen && (
+                <div className="absolute top-full -left-28 sm:-left-40 md:-left-56 mt-4 w-[95vw] max-w-[920px] p-6 rounded-3xl bg-[#0c0a09] border-2 border-amber-500/50 shadow-[0_25px_80px_rgba(0,0,0,1)] animate-fadeIn z-50 dir-rtl text-right space-y-5">
+                  
+                  {/* Top Bar: Search + Drag Notice */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-800">
+                    <div className="flex items-center gap-2.5 text-amber-400">
+                      <Sparkles className="w-5 h-5 animate-spin-slow" />
+                      <div>
+                        <h4 className="text-sm font-black tracking-wider uppercase text-stone-100">
+                          מרכז האקו-סיסטם והכלים (21 מודולים פעילים)
+                        </h4>
+                        <p className="text-[11px] text-stone-400">
+                          גלול עם גלגלת העכבר או גרור בחופשיות
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="relative w-full sm:w-72">
+                      <input
+                        type="text"
+                        placeholder="חיפוש מהיר בין כל הכלים..."
+                        value={megaSearchQuery}
+                        onChange={(e) => setMegaSearchQuery(e.target.value)}
+                        className="w-full pl-4 pr-10 py-2 rounded-xl bg-stone-900 border border-stone-700 text-stone-100 placeholder-stone-400 text-xs focus:outline-none focus:border-amber-400 shadow-inner"
+                      />
+                      <Search className="w-4 h-4 text-stone-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+
+                  {/* Scrollable Container without visible scrollbar + Mouse Drag Support */}
+                  <div
+                    ref={dropdownScrollRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    className={`max-h-[65vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
+                      isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-amber-500/80'}`} />
-                    <span>{page.label}</span>
-                  </Link>
-                );
-              })}
+                    {/* Filtered Search Results or Categorized Cards */}
+                    {megaSearchQuery.trim() ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pb-2">
+                        {filteredMegaItems.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <button
+                              key={item.id}
+                              onClick={() => handleFeatureClick(item.page, item.id)}
+                              className="p-3.5 rounded-2xl bg-stone-900 border border-stone-800 hover:border-amber-500/50 hover:bg-amber-500/10 text-right transition-all flex items-center gap-3.5 group"
+                            >
+                              <div className="p-2.5 rounded-xl bg-stone-950 border border-stone-800 text-amber-400 group-hover:scale-105 transition-transform shrink-0">
+                                <Icon className="w-5 h-5" />
+                              </div>
+                              <div className="flex-1 overflow-hidden">
+                                <div className="text-sm font-bold text-stone-100 group-hover:text-amber-300">
+                                  {item.label}
+                                </div>
+                                <div className="text-xs text-stone-400 truncate mt-0.5">
+                                  {item.desc}
+                                </div>
+                              </div>
+                              {item.tag && (
+                                <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">
+                                  {item.tag}
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2">
+                        {featureCategories.map((cat) => (
+                          <div
+                            key={cat.title}
+                            className="p-4 rounded-2xl bg-[#13100f] border border-stone-800/90 hover:border-amber-500/40 transition-all space-y-2.5"
+                          >
+                            <div className="flex items-center justify-between pb-2 border-b border-stone-800">
+                              <span className="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                                {cat.title}
+                              </span>
+                              <span className="text-[10px] text-stone-400 font-mono bg-stone-900 px-2 py-0.5 rounded-md border border-stone-800">
+                                {cat.items.length} כלים
+                              </span>
+                            </div>
 
-              {/* Separator Divider */}
-              <div className="w-[1px] h-6 bg-amber-500/20 mx-1 shrink-0" />
+                            <div className="grid grid-cols-1 gap-1.5">
+                              {cat.items.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                  <button
+                                    key={item.id}
+                                    onClick={() => handleFeatureClick(item.page, item.id)}
+                                    className="w-full p-2 rounded-xl hover:bg-amber-500/15 text-stone-300 hover:text-amber-300 transition-all flex items-center justify-between text-right group"
+                                  >
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                      <div className="p-1.5 rounded-lg bg-stone-900 border border-stone-800 text-amber-400 group-hover:border-amber-500/50 shrink-0">
+                                        <Icon className="w-4 h-4" />
+                                      </div>
+                                      <div className="truncate">
+                                        <div className="text-xs sm:text-sm font-bold leading-tight group-hover:text-amber-300 truncate">
+                                          {item.label}
+                                        </div>
+                                        <div className="text-[11px] text-stone-400 truncate font-light mt-0.5">
+                                          {item.desc}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {item.tag && (
+                                      <span className="text-[9px] px-2 py-0.5 rounded-md bg-stone-900 text-amber-400 font-mono border border-stone-800 shrink-0 ml-1">
+                                        {item.tag}
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </nav>
 
-              {/* Dropdown Trigger Button */}
-              <div className="relative" ref={dropdownRef}>
+          {/* 3. RIGHT CONTROLS CLUSTER (Audio, AI Barista, Profile, Cart, Mobile Menu) */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            
+            {/* Audio Sound FX Toggle */}
+            <button
+              onClick={handleToggleMute}
+              className={`h-11 w-11 rounded-xl sm:rounded-2xl border transition-all flex items-center justify-center ${
+                isMuted
+                  ? 'bg-stone-900 border-stone-800 text-stone-500 hover:text-stone-300'
+                  : 'bg-amber-950 border-amber-500/60 text-amber-400 shadow-md shadow-amber-500/20'
+              }`}
+              title={isMuted ? 'הפעל צלילי ממשק' : 'השתק צלילים'}
+            >
+              {isMuted ? <VolumeX className="w-4.5 h-4.5" /> : <Volume2 className="w-4.5 h-4.5 animate-pulse" />}
+            </button>
+
+            {/* AI Barista Button - Clean, Prominent & Sized Well */}
+            <button
+              onClick={() => {
+                coffeeSound.playCoffeeSteam();
+                onOpenBarista?.();
+              }}
+              className="h-11 px-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:brightness-110 text-stone-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/25 active:scale-95 whitespace-nowrap"
+              title="פתח את בריסטה הבינה המלאכותית"
+            >
+              <Sparkles className="w-4 h-4 text-stone-950 animate-spin-slow" />
+              <span>בריסטה AI</span>
+            </button>
+
+            {/* Shopping Cart Button */}
+            <button
+              onClick={() => {
+                coffeeSound.playBaristaClick();
+                toggleCart();
+              }}
+              className="relative h-11 w-11 rounded-xl sm:rounded-2xl bg-stone-900 hover:bg-amber-500/20 border border-stone-800 hover:border-amber-500/50 text-stone-300 hover:text-amber-300 flex items-center justify-center transition-all active:scale-95"
+              title="עגלת קניות"
+            >
+              <ShoppingBag className="w-4.5 h-4.5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-amber-500 text-stone-950 font-black text-[10px] flex items-center justify-center shadow-md border border-stone-950 animate-bounce">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+
+            {/* VIP User Profile Capsule */}
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-2 bg-stone-900 border border-stone-800 hover:border-amber-500/40 rounded-xl sm:rounded-2xl px-3 h-11 transition-all">
+                <Link
+                  href="/profile"
+                  onClick={() => coffeeSound.playBaristaClick()}
+                  className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
+                  title="לאונג' הפרופיל וה-VIP שלי"
+                >
+                  <div className="w-7 h-7 rounded-xl bg-amber-500 text-stone-950 font-extrabold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-amber-500/50">
+                    {user.image && !user.image.includes('photo-1534528741775') ? (
+                      <img src={user.image} alt={user.fullName} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src="/idan-profile-circle.png" alt={user.fullName} className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                  <span className="hidden xl:inline text-xs sm:text-sm font-bold text-stone-200 truncate max-w-[90px]">
+                    {user.fullName}
+                  </span>
+                </Link>
+
                 <button
                   onClick={() => {
                     coffeeSound.playBaristaClick();
-                    setIsDropdownOpen(!isDropdownOpen);
+                    logout();
                   }}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 border shrink-0 whitespace-nowrap shadow-md ${
-                    isDropdownOpen
-                      ? 'bg-amber-500 text-stone-950 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.4)]'
-                      : 'bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 text-amber-300 border-amber-500/50 hover:bg-amber-500/25 hover:border-amber-400'
-                  }`}
+                  className="p-1 rounded-md text-stone-500 hover:text-rose-400 transition-colors border-r border-stone-800 pr-1.5 mr-1"
+                  title="התנתק"
                 >
-                  <Layers className="w-4 h-4 text-amber-400" />
-                  <span>כל הכלים והפיצ'רים</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180 text-black' : 'text-amber-400'}`} />
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
-
-                {/* Categorized Dropdown Floating Panel - Solid Background & Mouse Drag Scroll */}
-                {isDropdownOpen && (
-                  <div
-                    ref={dropdownScrollRef}
-                    onMouseDown={handleDropdownMouseDown}
-                    onMouseMove={handleDropdownMouseMove}
-                    onMouseUp={handleDropdownMouseUp}
-                    onMouseLeave={handleDropdownMouseUp}
-                    className={`absolute top-full right-0 md:-right-20 mt-3 w-[92vw] max-w-[720px] p-5 rounded-3xl bg-[#090707] border-2 border-amber-500/60 shadow-[0_25px_70px_rgba(0,0,0,1)] animate-fadeIn z-50 dir-rtl grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${
-                      isDraggingDropdown ? 'cursor-grabbing select-none' : 'cursor-grab'
-                    }`}
-                  >
-                    <div className="col-span-2 pb-2 mb-1 border-b border-amber-500/20 flex items-center justify-between pointer-events-none">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-amber-400" />
-                        <span className="text-xs font-black text-amber-300 tracking-wider">
-                          מרכז הכלים והאקו-סיסטם הקולי (21 רכיבים)
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-amber-400 font-mono bg-stone-900 px-2 py-0.5 rounded-full border border-stone-800">
-                        גרירת עכבר לפעולה (DRAG TO SCROLL)
-                      </span>
-                    </div>
-
-                    {featureCategories.map((category) => (
-                      <div
-                        key={category.title}
-                        className="p-3.5 rounded-2xl bg-[#141010] border border-stone-800/80 hover:border-amber-500/40 transition-all space-y-2"
-                      >
-                        <div className="text-[11px] font-black text-amber-400 tracking-wide border-b border-stone-800/60 pb-1 flex items-center gap-1.5 pointer-events-none">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                          <span>{category.title}</span>
-                        </div>
-                        <div className="space-y-1">
-                          {category.items.map((item) => {
-                            const Icon = item.icon;
-                            return (
-                              <button
-                                key={item.id}
-                                onClick={(e) => {
-                                  if (hasDraggedDropdown) {
-                                    e.preventDefault();
-                                    return;
-                                  }
-                                  handleFeatureClick(item.page, item.id);
-                                }}
-                                className="w-full p-2 rounded-xl hover:bg-amber-500/15 text-stone-200 hover:text-amber-300 transition-all flex items-center gap-2.5 text-right group"
-                              >
-                                <div className="p-1.5 rounded-lg bg-stone-900 border border-stone-800 text-amber-400 group-hover:border-amber-500/50 group-hover:scale-105 transition-all shrink-0">
-                                  <Icon className="w-3.5 h-3.5" />
-                                </div>
-                                <div className="overflow-hidden">
-                                  <div className="text-xs font-bold leading-tight group-hover:text-amber-300">
-                                    {item.label}
-                                  </div>
-                                  <div className="text-[10px] text-stone-400 truncate font-light">
-                                    {item.desc}
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            </nav>
-
-            {/* Right Control Actions Center */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Audio Sound Effects Toggle */}
-              <button
-                onClick={handleToggleMute}
-                className={`p-2.5 rounded-2xl border transition-all duration-300 ${
-                  isMuted
-                    ? 'bg-neutral-900 border-neutral-800 text-neutral-500 hover:text-neutral-400'
-                    : 'bg-amber-950 border-amber-500/60 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
-                }`}
-                title={isMuted ? 'הפעל אפקטי קול' : 'השתק אפקטי קול'}
-              >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 animate-pulse" />}
-              </button>
-
-              {/* AI Barista Voice Modal Launcher */}
-              <button
-                onClick={() => {
-                  coffeeSound.playCoffeeSteam();
-                  onOpenBarista?.();
-                }}
-                className="relative px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-black font-extrabold text-xs shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all flex items-center gap-2 group"
-              >
-                <Sparkles className="w-4 h-4 text-black animate-spin-slow" />
-                <span className="hidden sm:inline">בריסטה Gemini</span>
-              </button>
-
-              {/* Auth User Profile */}
-              {isAuthenticated && user && (
-                <div className="flex items-center gap-2 bg-stone-900 border border-amber-500/30 rounded-2xl px-3 py-1.5 shadow-md">
-                  <Link
-                    href="/profile"
-                    onClick={() => coffeeSound.playBaristaClick()}
-                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-                    title="לאונג' ה-VIP והפרופיל שלי"
-                  >
-                    <div className="w-7 h-7 rounded-xl bg-amber-500 text-black font-extrabold text-xs flex items-center justify-center overflow-hidden shrink-0 border border-amber-500/50 shadow-sm">
-                      {user.image && !user.image.includes('photo-1534528741775') ? (
-                        <img src={user.image} alt={user.fullName} className="w-full h-full object-cover" />
-                      ) : (
-                        <img src="/idan-profile-circle.png" alt={user.fullName} className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <div className="hidden sm:block text-right">
-                      <div className="text-[11px] font-bold text-amber-300 leading-tight">
-                        {user.fullName}
-                      </div>
-                      <div className="text-[9px] text-stone-400 font-mono">
-                        {user.role} • VIP
-                      </div>
-                    </div>
-                  </Link>
-                  <button
-                    onClick={() => {
-                      coffeeSound.playBaristaClick();
-                      logout();
-                    }}
-                    className="p-1.5 rounded-lg text-stone-400 hover:text-rose-400 transition-colors ms-1 border-r border-stone-800 pr-1.5"
-                    title="התנתק מהחשבון"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
-
-              {/* Shopping Cart Drawer Trigger */}
+            ) : (
               <button
                 onClick={() => {
                   coffeeSound.playBaristaClick();
-                  toggleCart();
+                  setIsAuthModalOpen(true);
                 }}
-                className="relative p-2.5 rounded-2xl bg-amber-950 border border-amber-500/50 text-amber-300 hover:bg-amber-900 transition-all shadow-md"
-                title="עגלת קניות"
+                className="h-11 px-4 rounded-xl sm:rounded-2xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-amber-300 hover:border-amber-500/40 text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
               >
-                <ShoppingBag className="w-4 h-4" />
-                {itemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black font-extrabold text-[10px] flex items-center justify-center shadow-lg border border-black">
-                    {itemCount}
-                  </span>
-                )}
+                <User className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline">התחברות</span>
               </button>
+            )}
 
-              {/* Mobile Menu Toggle Button */}
-              <button
-                onClick={() => {
-                  coffeeSound.playBaristaClick();
-                  setIsMobileMenuOpen(!isMobileMenuOpen);
-                }}
-                className="lg:hidden p-2.5 rounded-2xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-amber-400 transition-all"
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
+            {/* Mobile Menu Hamburger Trigger */}
+            <button
+              onClick={() => {
+                coffeeSound.playBaristaClick();
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+              }}
+              className="md:hidden h-11 w-11 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-amber-400 flex items-center justify-center transition-all"
+              title="פתח תפריט מובייל"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+
           </div>
+
         </div>
       </header>
 
@@ -625,7 +740,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
         onClose={() => setIsAuthModalOpen(false)}
       />
 
-      {/* Standalone External Full Screen Mobile Overlay Portal */}
+      {/* Mobile Drawer Overlay */}
       <MobileMenuOverlay
         isOpen={isMobileMenuOpen}
         onClose={() => {
@@ -634,8 +749,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
         }}
         primaryPages={primaryPages}
         allFeatures={allFeatures}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        searchQuery={megaSearchQuery}
+        setSearchQuery={setMegaSearchQuery}
         handleFeatureClick={handleFeatureClick}
         pathname={pathname}
       />

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   X,
   Trash2,
@@ -14,9 +15,11 @@ import {
   Send,
   Check,
   ExternalLink,
+  History,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { useOrderStore } from '@/lib/store/useOrderStore';
 import { createStandardOrder, sendOrderEmailAction } from '@/app/actions/orderActions';
 import { orderSchema } from '@/lib/validations/auth';
 import { ThreeDCardPayment } from './ThreeDCardPayment';
@@ -104,7 +107,7 @@ export const CartDrawer: React.FC = () => {
       const result = await createStandardOrder(orderPayload);
 
       if (result.success) {
-        setCompletedOrder({
+        const orderData = {
           orderNumber: result.orderNumber,
           totalPrice: result.totalPrice,
           fullName: result.fullName,
@@ -114,8 +117,33 @@ export const CartDrawer: React.FC = () => {
           phone: result.phone,
           deliveryAddress: result.deliveryAddress,
           items: result.items,
-        });
+        };
+
+        setCompletedOrder(orderData);
         setResendEmail(result.email || email);
+
+        // Add to persistent user order history store
+        useOrderStore.getState().addOrder({
+          orderNumber: result.orderNumber || `DR-${Math.floor(100000 + Math.random() * 900000)}`,
+          fullName: result.fullName || fullName || 'לקוח VIP',
+          email: result.email || email || '',
+          phone: result.phone || phone || '',
+          deliveryAddress: result.deliveryAddress || address || 'משלוח אקספרס',
+          items: (result.items || []).map((i: any) => ({
+            coffeeItemId: i.coffeeItemId,
+            itemName: i.itemName,
+            quantity: i.quantity,
+            pricePerUnit: i.pricePerUnit,
+            shots: i.shots,
+            milkType: i.milkType,
+          })),
+          totalPrice: result.totalPrice || 0,
+          status: 'PENDING',
+          createdAt: result.createdAt || new Date().toISOString(),
+          paymentMethod: 'כרטיס אשראי מאובטח',
+          trackingStep: 1,
+        });
+
         clearCart();
       } else {
         setErrorMsg(result.error || 'שגיאה בביצוע ההזמנה');
@@ -277,13 +305,24 @@ export const CartDrawer: React.FC = () => {
                 )}
               </div>
 
-              <button
-                onClick={handleCloseAndReset}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
-              >
-                <PackageCheck className="w-4 h-4" />
-                <span>המשך בקניות</span>
-              </button>
+              <div className="w-full grid grid-cols-2 gap-2">
+                <Link
+                  href="/orders"
+                  onClick={handleCloseAndReset}
+                  className="py-3 px-3 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500 hover:text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-md text-center"
+                >
+                  <History className="w-4 h-4" />
+                  <span>היסטוריית הזמנות</span>
+                </Link>
+
+                <button
+                  onClick={handleCloseAndReset}
+                  className="py-3 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20"
+                >
+                  <PackageCheck className="w-4 h-4" />
+                  <span>המשך בקניות</span>
+                </button>
+              </div>
             </div>
           ) : (
             /* Normal Cart Drawer View */
