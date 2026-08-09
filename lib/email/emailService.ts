@@ -46,7 +46,7 @@ async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions)
 
         const info = await transporter.sendMail({
           ...mailOptions,
-          from: mailOptions.from || `The Digital Roast ☕ <${gmailUser}>`,
+          from: process.env.EMAIL_FROM || `"The Digital Roast ☕" <${gmailUser}>`,
         });
 
         return {
@@ -306,7 +306,11 @@ export function generateOrderEmailHtml(params: SendOrderEmailParams): string {
 export async function sendOrderConfirmationEmail(params: SendOrderEmailParams) {
   try {
     const htmlContent = generateOrderEmailHtml(params);
-    const fromEmail = process.env.EMAIL_FROM || `"The Digital Roast ☕" <orders@digitalroast.co.il>`;
+    const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const defaultFrom = smtpUser
+      ? `"The Digital Roast ☕" <${smtpUser}>`
+      : `"The Digital Roast ☕" <orders@digitalroast.co.il>`;
+    const fromEmail = process.env.EMAIL_FROM || defaultFrom;
 
     const result = await createTransporterAndSend({
       from: fromEmail,
