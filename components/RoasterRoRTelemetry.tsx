@@ -77,7 +77,7 @@ export default function RoasterRoRTelemetry() {
           סימולטור עקומת קלייה וקצב עליית טמפרטורה (RoR)
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
-          ניטור בזמן אמת של חום פולים (BT), חום אוויר (ET), וקצב עליית טמפרטורה ($RoR$ ב- $^\circ\text{C}/\text{min}$) לזיהוי פיצוץ ראשון.
+          ניטור בזמן אמת של חום פולים (BT), חום אוויר (ET), וקצב עליית טמפרטורה (RoR ב-°C/min) לזיהוי פיצוץ ראשון.
         </p>
       </div>
 
