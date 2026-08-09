@@ -22,16 +22,20 @@ export interface SendOrderEmailParams {
 // Helper to get or create transport with Gmail / OAuth2 / SMTP / Ethereal support
 async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions) {
   const dispatchInner = async () => {
-    const host = process.env.SMTP_HOST;
-    const port = Number(process.env.SMTP_PORT) || 587;
-    const user = process.env.SMTP_USER || process.env.EMAIL_USER || 'idankzm@gmail.com';
-    const pass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || 'enqbfpaaxpzvvial';
+    const host = process.env.SMTP_HOST?.trim();
+    const port = Number(process.env.SMTP_PORT?.trim()) || 465;
+    const rawUser = process.env.SMTP_USER || process.env.EMAIL_USER || 'idankzm@gmail.com';
+    const rawPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || 'enqbfpaaxpzvvial';
+    
+    // Sanitize credentials against quotes, trailing spaces, or 4-group app password spacing
+    const user = rawUser.trim().replace(/^["']|["']$/g, '');
+    const pass = rawPass.trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
 
-    const googleClientId = process.env.GOOGLE_CLIENT_ID;
-    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+    const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
+    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+    const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN?.trim();
 
-    // Mode 1: Gmail via App Password (Explicit Host/Port for Cloud Hosting compatibility e.g. Render)
+    // Mode 1: Gmail via App Password (Explicit Host/Port & IPv4 for Cloud Hosting compatibility e.g. Render)
     if ((user || pass) && (pass || user?.includes('@gmail.com'))) {
       const gmailUser = user || (mailOptions.to as string);
       console.log(`📧 Attempting direct Gmail dispatch via App Password for ${gmailUser}...`);
@@ -52,9 +56,13 @@ async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions)
               user: gmailUser,
               pass,
             },
-            connectionTimeout: 10000, // 10s timeout to prevent hanging on cloud instances
+            family: 4, // Force IPv4 to prevent cloud container IPv6 routing blackholes/timeouts on Render
+            connectionTimeout: 10000,
             greetingTimeout: 7000,
             socketTimeout: 15000,
+            tls: {
+              rejectUnauthorized: false,
+            },
           });
 
           const info = await transporter.sendMail({
@@ -69,7 +77,7 @@ async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions)
             isRealSmtp: true,
           };
         } catch (err: any) {
-          console.warn(`⚠️ Gmail dispatch failed on ${config.host}:${config.port}:`, err.message);
+          console.warn(`⚠️ Gmail dispatch failed on ${config.host}:${config.port} [Code: ${err.code || 'N/A'}, Response: ${err.response || 'N/A'}]:`, err.message);
         }
       }
     }
