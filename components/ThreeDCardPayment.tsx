@@ -9,7 +9,7 @@ interface ThreeDCardPaymentProps {
   fullName: string;
   phone: string;
   address: string;
-  onPaymentComplete: () => void;
+  onPaymentComplete: () => Promise<void> | void;
   onCancel: () => void;
 }
 
@@ -106,10 +106,15 @@ export const ThreeDCardPayment: React.FC<ThreeDCardPaymentProps> = ({
       await new Promise((r) => setTimeout(r, 1000));
       setStatusText('מבצע הצפנת AES-256 ושולח בקשה לסולק...');
       await new Promise((r) => setTimeout(r, 1200));
-      setStatusText('העסקה אושרה בהצלחה! מייצר קבלה...');
-      await new Promise((r) => setTimeout(r, 800));
+      setStatusText('העסקה אושרה בהצלחה! מנפיק קבלה ורושם הזמנה...');
+      await new Promise((r) => setTimeout(r, 500));
 
-      onPaymentComplete();
+      try {
+        await onPaymentComplete();
+      } catch (err) {
+        console.error('Order creation error:', err);
+        setStatusText('שגיאה בתקשורת עם השרת, אנא נסה שנית.');
+      }
     };
 
     runSimulation();

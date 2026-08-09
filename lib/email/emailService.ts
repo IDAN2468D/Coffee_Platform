@@ -21,125 +21,139 @@ export interface SendOrderEmailParams {
 
 // Helper to get or create transport with Gmail / OAuth2 / SMTP / Ethereal support
 async function createTransporterAndSend(mailOptions: nodemailer.SendMailOptions) {
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT) || 587;
-  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
-  const pass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS;
+  const dispatchInner = async () => {
+    const host = process.env.SMTP_HOST;
+    const port = Number(process.env.SMTP_PORT) || 587;
+    const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const pass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS;
 
-  const googleClientId = process.env.GOOGLE_CLIENT_ID;
-  const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
 
-  // Mode 1: Gmail via App Password
-  if ((user || pass) && (pass || user?.includes('@gmail.com'))) {
-    const gmailUser = user || (mailOptions.to as string);
-    console.log(`📧 Attempting direct Gmail dispatch via App Password for ${gmailUser}...`);
+    // Mode 1: Gmail via App Password
+    if ((user || pass) && (pass || user?.includes('@gmail.com'))) {
+      const gmailUser = user || (mailOptions.to as string);
+      console.log(`📧 Attempting direct Gmail dispatch via App Password for ${gmailUser}...`);
+      try {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: gmailUser,
+            pass,
+          },
+        });
+
+        const info = await transporter.sendMail({
+          ...mailOptions,
+          from: mailOptions.from || `The Digital Roast ☕ <${gmailUser}>`,
+        });
+
+        return {
+          messageId: info.messageId,
+          previewUrl: null,
+          isRealSmtp: true,
+        };
+      } catch (err: any) {
+        console.warn('⚠️ Gmail App Password dispatch failed, falling back:', err.message);
+      }
+    }
+
+    // Mode 2: Gmail via OAuth2 (GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN)
+    if (googleClientId && googleClientSecret && googleRefreshToken) {
+      console.log('📧 Attempting Gmail OAuth2 dispatch...');
+      try {
+        const targetUser = user || (mailOptions.to as string);
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            type: 'OAuth2',
+            user: targetUser,
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+            refreshToken: googleRefreshToken,
+          },
+        });
+
+        const info = await transporter.sendMail({
+          ...mailOptions,
+          from: mailOptions.from || `The Digital Roast ☕ <${targetUser}>`,
+        });
+
+        return {
+          messageId: info.messageId,
+          previewUrl: null,
+          isRealSmtp: true,
+        };
+      } catch (err: any) {
+        console.warn('⚠️ Gmail OAuth2 dispatch failed, falling back:', err.message);
+      }
+    }
+
+    // Mode 3: Custom SMTP Host
+    if (host && user && pass) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host,
+          port,
+          secure: port === 465,
+          auth: { user, pass },
+        });
+
+        const info = await transporter.sendMail(mailOptions);
+        return {
+          messageId: info.messageId,
+          previewUrl: null,
+          isRealSmtp: true,
+        };
+      } catch (err: any) {
+        console.warn('⚠️ Custom SMTP dispatch failed:', err.message);
+      }
+    }
+
+    // Mode 4: Automatic Ethereal Live Test Transport (For instant browser preview link)
     try {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
+      const testAccount = await nodemailer.createTestAccount();
+      const testTransporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
         auth: {
-          user: gmailUser,
-          pass,
+          user: testAccount.user,
+          pass: testAccount.pass,
         },
       });
 
-      const info = await transporter.sendMail({
-        ...mailOptions,
-        from: mailOptions.from || `The Digital Roast ☕ <${gmailUser}>`,
-      });
+      const info = await testTransporter.sendMail(mailOptions);
+      const previewUrl = nodemailer.getTestMessageUrl(info) || null;
 
+      console.log(`📧 [ETHEREAL LIVE EMAIL] Message sent to Ethereal! Preview URL: ${previewUrl}`);
       return {
         messageId: info.messageId,
-        previewUrl: null,
-        isRealSmtp: true,
+        previewUrl,
+        isRealSmtp: false,
       };
-    } catch (err: any) {
-      console.warn('⚠️ Gmail App Password dispatch failed, falling back:', err.message);
-    }
-  }
-
-  // Mode 2: Gmail via OAuth2 (GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN)
-  if (googleClientId && googleClientSecret && googleRefreshToken) {
-    console.log('📧 Attempting Gmail OAuth2 dispatch...');
-    try {
-      const targetUser = user || (mailOptions.to as string);
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          type: 'OAuth2',
-          user: targetUser,
-          clientId: googleClientId,
-          clientSecret: googleClientSecret,
-          refreshToken: googleRefreshToken,
-        },
-      });
-
-      const info = await transporter.sendMail({
-        ...mailOptions,
-        from: mailOptions.from || `The Digital Roast ☕ <${targetUser}>`,
-      });
-
+    } catch (err) {
+      console.warn('Ethereal setup failed, falling back to simulated logger:', err);
       return {
-        messageId: info.messageId,
+        messageId: `simulated_${Date.now()}`,
         previewUrl: null,
-        isRealSmtp: true,
+        isRealSmtp: false,
       };
-    } catch (err: any) {
-      console.warn('⚠️ Gmail OAuth2 dispatch failed, falling back:', err.message);
     }
-  }
+  };
 
-  // Mode 3: Custom SMTP Host
-  if (host && user && pass) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: { user, pass },
+  const timeoutPromise = new Promise<{ messageId: string; previewUrl: string | null; isRealSmtp: boolean }>((resolve) => {
+    setTimeout(() => {
+      resolve({
+        messageId: `simulated_fast_${Date.now()}`,
+        previewUrl: null,
+        isRealSmtp: false,
       });
+    }, 3500);
+  });
 
-      const info = await transporter.sendMail(mailOptions);
-      return {
-        messageId: info.messageId,
-        previewUrl: null,
-        isRealSmtp: true,
-      };
-    } catch (err: any) {
-      console.warn('⚠️ Custom SMTP dispatch failed:', err.message);
-    }
-  }
-
-  // Mode 4: Automatic Ethereal Live Test Transport (For instant browser preview link)
-  try {
-    const testAccount = await nodemailer.createTestAccount();
-    const testTransporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
-
-    const info = await testTransporter.sendMail(mailOptions);
-    const previewUrl = nodemailer.getTestMessageUrl(info) || null;
-
-    console.log(`📧 [ETHEREAL LIVE EMAIL] Message sent to Ethereal! Preview URL: ${previewUrl}`);
-    return {
-      messageId: info.messageId,
-      previewUrl,
-      isRealSmtp: false,
-    };
-  } catch (err) {
-    console.warn('Ethereal setup failed, falling back to simulated logger:', err);
-    return {
-      messageId: `simulated_${Date.now()}`,
-      previewUrl: null,
-      isRealSmtp: false,
-    };
-  }
+  return Promise.race([dispatchInner(), timeoutPromise]);
 }
 
 // Liquid Glass HTML Email Template Generator (Hebrew RTL)
