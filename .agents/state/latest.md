@@ -6,4 +6,5 @@
 - Removed 4 obsolete real-estate skills and legacy scoring scripts.
 - Added 6 advanced Coffee Skills: Acoustic Grind Tuner, Water Chemistry Optimizer, Smart IoT Sync, Ultrasonic Aging, NotebookLM Research, Circadian Caffeine Engine.
 - Deployed 4 Python calculation & verification scripts in `.agents/scripts/`.
-- Optimized `AGENTS.md` and state files for maximum token efficiency and instant context retrieval.
+- Added mandatory GitHub Push Authorization Rule to GEMINI.md and AGENTS.md requiring explicit user consent before pushing code.
+

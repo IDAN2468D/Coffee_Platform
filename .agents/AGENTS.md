@@ -53,3 +53,20 @@ To maximize execution speed, eliminate token waste, and maintain sub-second resp
 - **Language**: All agent outputs, explanations, walkthroughs, responses, and user interactions MUST be in **Hebrew (עברית)** with **Right-To-Left (RTL)** formatting.
 - **Direction**: Apply RTL text direction (`dir="rtl"`) to all responses and UI components where applicable.
 - **Scope**: Applies unconditionally across all current and future conversations opened by the user.
+
+---
+
+## 6. Mandatory Feature Search & Audit Skill Integration Directive (פרוטוקול חיפוש ואודיט פיצ'רים)
+- **Rule**: בעת חיפוש פיצ'רים חדשים, ביצוע Feature Audit, סקירת גאפים בארכיטקטורה, או פיתוח מפת דרכים (Roadmap), חייב הסוכן לעשות שימוש אקטיבי בסקילים המוגדרים (`feature-audit-skill` וכל סקיל דומיין רלוונטי ב-`.agents/skills/`).
+- **Workflow Steps**:
+  1. **Skill Discovery**: בדיקה בסקילים הקיימים בגרף המערכת (`.agents/skills/`) לפני הגדרת דרישות חדשות.
+  2. **Gap Analysis Execution**: הפעלת הסקיל `feature-audit-skill` לביצוע ניתוח פערים תקני בשיטת Specification-Driven Development (SDD) והצלבה מול מצבי הריצה ב-`.agents/state/`.
+  3. **Domain Alignment**: שילוב היכולות של סקילי הקפה והטכנולוגיה המפורטים בסעיף 4 (כגון `gemini-multimodal-barista`, `acoustic-grind-tuner`, `v60-brew-master`, `espresso-extraction-telemetry`, `smart-iot-coffee-sync`, `liquid-glass-ui` ועוד).
+
+---
+
+## 7. Mandatory GitHub Push Authorization Rule (אישור מפורש להעלאת פיצ'רים ל-GitHub)
+- **Rule**: חל איסור מוחלט לבצע `git push`, דחיפה או העלאת פיצ'רים וקוד ל-GitHub ללא שאלה ואישור מפורש מהמשתמש מראש.
+- **Workflow**: לפני ביצוע העלאה או `git push`, הסוכן מחויב להציג את סיכום הפיצ'רים והשינויים ולשאול בצורה מפורשת את המשתמש אם הוא מאשר את העלאתם ל-GitHub.
+
+
