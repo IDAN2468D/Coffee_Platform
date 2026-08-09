@@ -9,6 +9,8 @@
 - `ThreeDCardPayment`: 3D Credit Card payment simulator component with auto-typing Hebrew RTL digits and mouse parallax/tilt effect.
 - `CoffeeCustomizer`: Live interactive coffee & nutrition builder.
 - `WhatsAppOrderDispatcher`: Server action formatting and dispatching orders to WhatsApp.
+- `GlobalFXCoffeeTicker`: Real-time multi-currency commodity ticker & converter connected to `rapidapi_currency` with spatial audio feedback (`components/GlobalFXCoffeeTicker.tsx`).
+- `NotebookLMBrewSync`: Brew recipe & cupping note synchronization engine for Google Workspace / Docs via `notebooklm` MCP (`components/NotebookLMBrewSync.tsx`).
 
 ## Database Schemas (Mongoose)
 - `CoffeeItem`: `{ name, hebrewName, category, price, roastLevel, origin, flavorNotes, imageUrl }`

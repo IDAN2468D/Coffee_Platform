@@ -15,3 +15,9 @@
 - [x] Upgrade `SmartInventoryManager` with bean blend selection dropdown, automated consumption forecasting, and formatted WhatsApp auto-replenish
 - [x] Audit entire codebase via `feature-audit-skill` and create master roadmap artifact `feature_audit_roadmap.md`
 
+## Sprint 4: MCP Ecosystem Integrations (COMPLETED)
+- [x] Implement `GlobalFXCoffeeTicker` connected to `rapidapi_currency` MCP with live exchange rates (ILS, USD, EUR, JPY) & Web Audio spatial tones
+- [x] Implement `NotebookLMBrewSync` connected to `notebooklm` MCP for exporting V60 recipes & cupping notes to Google Workspace / Docs
+- [x] Add dedicated App Router pages (`/global-fx` & `/notebook-sync`) and update main Header navigation
+
+

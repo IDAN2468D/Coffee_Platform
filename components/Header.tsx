@@ -42,7 +42,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
 
 interface HeaderProps {
-  onOpenBarista: () => void;
+  onOpenBarista?: () => void;
   onScrollToSection?: (id: string) => void;
 }
 
@@ -280,10 +280,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
   const primaryPages = [
     { href: '/home', label: 'ראשי', icon: Coffee },
     { href: '/shop', label: 'חנות וקטלוג', icon: ShoppingBag },
+    { href: '/global-fx', label: 'בורסה & FX', icon: Globe },
+    { href: '/notebook-sync', label: 'סנכרון Workspace', icon: BookOpen },
     { href: '/ai-barista', label: 'בריסטה AI', icon: Sparkles },
     { href: '/brew-lab', label: 'מעבדת חליטה', icon: TestTube },
-    { href: '/studio', label: 'סטודיו וקלייה', icon: Sliders },
-    { href: '/corporate', label: 'עסקים ומתנות', icon: Building2 },
   ];
 
   // Categorized feature tools for the Dropdown menu
@@ -541,7 +541,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
               <button
                 onClick={() => {
                   coffeeSound.playCoffeeSteam();
-                  onOpenBarista();
+                  onOpenBarista?.();
                 }}
                 className="relative px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-black font-extrabold text-xs shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all flex items-center gap-2 group"
               >

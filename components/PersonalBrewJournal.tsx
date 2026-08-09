@@ -311,20 +311,21 @@ export function PersonalBrewJournal() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {logs.map(log => (
           <div key={log.id} className="liquid-glass-card rounded-2xl p-5 border border-stone-800/80 hover:border-amber-500/40 relative group">
-            <button
-              onClick={() => handleDelete(log.id)}
-              className="absolute top-4 left-4 text-stone-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
-              title="מחק חליטה"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-
             <div className="flex items-center justify-between gap-2 mb-3">
               <span className="text-[11px] text-stone-400 font-mono">{log.date}</span>
-              <div className="flex items-center gap-1">
-                {[...Array(log.rating)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                ))}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  {[...Array(log.rating)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <button
+                  onClick={() => handleDelete(log.id)}
+                  className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 hover:text-rose-200 transition-all active:scale-95 flex items-center gap-1 shadow-sm"
+                  title="מחק חליטה מהיומן"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
 
