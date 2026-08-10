@@ -10,8 +10,8 @@ export default function MineralBypassEngine() {
   const [espressoVolume, setEspressoVolume] = useState<number>(36); // ml shot
   const [bypassVolume, setBypassVolume] = useState<number>(45); // ml RO water
   const [magnesiumPpm, setMagnesiumPpm] = useState<number>(45); // ppm Mg2+
-  const [calciumPpm, setCalciumPpm] = useState<number font-mono>(25); // ppm Ca2+
-  const [bicarbonatePpm, setBicarbonatePpm] = useState<number font-mono>(15); // ppm HCO3-
+  const [calciumPpm, setCalciumPpm] = useState<number>(25); // ppm Ca2+
+  const [bicarbonatePpm, setBicarbonatePpm] = useState<number>(15); // ppm HCO3-
   const [addedToCart, setAddedToCart] = useState<boolean>(false);
 
   // Math metrics for bypass dilution & TDS balance
@@ -49,7 +49,7 @@ export default function MineralBypassEngine() {
               Mineral Bypass Engine
             </h1>
             <p className="text-neutral-400 max-w-xl text-sm md:text-base leading-relaxed">
-              מהילת מים טהורים (RO Bypass) והזרקת יוני מגנזיום ($Mg^{2+}$) וסידן ($Ca^{2+}$) פוסט-חליטה לאיזון בהירות החומציות.
+              מהילת מים טהורים (RO Bypass) והזרקת יוני מגנזיום (Mg²⁺) וסידן (Ca²⁺) פוסט-חליטה לאיזון בהירות החומציות.
             </p>
           </div>
 
