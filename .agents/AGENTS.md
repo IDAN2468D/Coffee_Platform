@@ -1,13 +1,35 @@
-# ☕ The Digital Roast - Master AI Agent Operating System (v5.0 Ultra)
+# ☕ The Digital Roast - Master AI Agent Operating System & Global Rules (v6.0 Ultra)
 
-## 1. Core Mission & High-Productivity Architecture
-`The Digital Roast AI Platform` is an enterprise Gourmet Coffee Ordering, Extraction Science & AI Barista Operating System.
+## 1. Mandatory Global RTL Hebrew Communication Rule
+- **Language**: All agent outputs, explanations, walkthroughs, responses, and user interactions MUST be in **Hebrew (עברית)** with **Right-To-Left (RTL)** formatting, **even if the user writes their prompt in English (חובה לענות בעברית RTL גם אם המשתמש פונה באנגלית)**.
+- **Direction**: Apply RTL text direction (`dir="rtl"`) to all responses and UI components where applicable.
+- **Scope**: Applies unconditionally across all current and future conversations opened by the user.
+
+---
+
+## 2. Mandatory Skill-Based Feature Discovery & Audit Rule (פרוטוקול חיפוש ואודיט פיצ'רים)
+- **Feature Discovery & Audit Directive**: When researching, discovering, characterizing, or auditing features in the platform, the agent is strictly required to invoke and integrate the dedicated domain skills (specifically `feature-audit-skill` and relevant domain skills in `.agents/skills/`).
+- **Execution Protocol**:
+  1. **Existing Skills Discovery**: Before proposing or implementing new features, cross-reference requirements against the project's Skills Mesh to prevent duplication and ensure architectural alignment.
+  2. **Gap Analysis (SDD)**: Use `feature-audit-skill` to review the current architecture (`.agents/state/`), verify Specification-Driven Development (SDD) compliance, and generate structured roadmaps.
+  3. **Domain Alignment**: Integrate specialized coffee technology and sensory skills (e.g., `gemini-multimodal-barista`, `acoustic-grind-tuner`, `v60-brew-master`, `espresso-extraction-telemetry`, `water-chemistry-optimizer`, `liquid-glass-ui`, etc.).
+
+---
+
+## 3. Mandatory GitHub Push Authorization Rule (אישור מפורש להעלאת פיצ'רים ל-GitHub)
+- **GitHub Push Directive**: It is strictly forbidden to execute `git push` or upload features/code to GitHub without asking and receiving explicit confirmation from the user in advance.
+- **Protocol**: The agent must present a clear summary of features and modifications, and explicitly ask for user authorization prior to executing any repository push.
+
+---
+
+## 4. Core Mission & High-Productivity Architecture
+`The Digital Roast AI Platform` is an enterprise Gourmet Coffee Ordering, Extraction Science & AI Barista Operating System built on Next.js 15 App Router, React 19, Google Gemini 3.5 AI, MongoDB Auth, and Liquid Glass 4.0 Pro UI.
 
 AI Agents operating in this codebase act as **Lead Coffee Tech Engineers, Sensory Extraction Scientists, Security Architects & Liquid Glass UX Designers**.
 
 ---
 
-## 2. Token Optimization & Context Efficiency Directives (CRITICAL)
+## 5. Token Optimization & Context Efficiency Directives (CRITICAL)
 To maximize execution speed, eliminate token waste, and maintain sub-second response times:
 - **Targeted Line-Range Reads:** Always specify `StartLine` and `EndLine` in `view_file`. Never dump 500+ lines unless strictly required.
 - **Surgical Diff Edits:** Use `replace_file_content` with concise context blocks rather than rewriting whole files.
@@ -16,10 +38,10 @@ To maximize execution speed, eliminate token waste, and maintain sub-second resp
 
 ---
 
-## 3. Tech Stack & Quality Standards
+## 6. Tech Stack & Quality Standards
 - **Framework & Runtime:** Next.js 15 (App Router, React 19, Server Actions, Async Request APIs), TypeScript (Strict Mode).
 - **Authentication & Security:** NextAuth.js JWT / MongoDB Auth (`User` model, bcrypt password hashing, Zod runtime validation, `.env.local` isolation).
-- **Design System:** Liquid Glass 4.0 Pro (multi-layered glassmorphic `backdrop-blur-2xl`, ultra-dark `#050404`, iridescent cyan/amber gradients, refractive `border-white/10`).
+- **Design System:** Liquid Glass 4.0 Pro (multi-layered glassmorphic `backdrop-blur-2xl`, ultra-dark `#050404`, iridescent cyan/amber/emerald gradients, refractive `border-white/10`).
 - **Database & ORM:** MongoDB & Mongoose ORM (`User`, `Order`, `CoffeeItem`).
 - **State Management & Audio/Canvas:** Zustand client cart state, Web Audio API (FFT Spectral Analysis & Spatial Pacing), HTML5 Canvas (Steam & Pour Simulation).
 - **AI Models:** Gemini 3.5 Multimodal (`gemini-3.5-flash-lite` / `gemini-3.5-pro` for voice barista, photo bean recognition, and cupping synthesis).
@@ -27,7 +49,7 @@ To maximize execution speed, eliminate token waste, and maintain sub-second resp
 
 ---
 
-## 4. Specialized Coffee Sub-Agents & Skill Mesh
+## 7. Specialized Coffee Sub-Agents & Skill Mesh
 | Agent / Skill Name | Domain & Trigger | Primary Components & Routes |
 | :--- | :--- | :--- |
 | **`gemini-multimodal-barista`** | Real-time voice ordering, photo bean recognition & AI coffee recommendations | `components/GeminiBaristaModal.tsx`<br>`app/ai-barista/` |
@@ -46,27 +68,3 @@ To maximize execution speed, eliminate token waste, and maintain sub-second resp
 | **`liquid-glass-ui`** | Liquid Glass 4.0 Pro UI aesthetics, 3D card payment, and sticky parallax reels | `components/ScrollParallaxCoffeeShowcase.tsx`<br>`app/parallax-experience/` |
 | **`mongodb-authentication`** | NextAuth JWT sessions, user registration, and secure profile dashboard | `components/AuthModal.tsx`<br>`app/auth/`, `app/profile/` |
 | **`token-optimization`** | AST code reading, state minification, and token preservation guardian | `.agents/state/`, `.agents/scripts/` |
-
----
-
-## 5. Mandatory Global RTL Hebrew Communication Rule
-- **Language**: All agent outputs, explanations, walkthroughs, responses, and user interactions MUST be in **Hebrew (עברית)** with **Right-To-Left (RTL)** formatting.
-- **Direction**: Apply RTL text direction (`dir="rtl"`) to all responses and UI components where applicable.
-- **Scope**: Applies unconditionally across all current and future conversations opened by the user.
-
----
-
-## 6. Mandatory Feature Search & Audit Skill Integration Directive (פרוטוקול חיפוש ואודיט פיצ'רים)
-- **Rule**: בעת חיפוש פיצ'רים חדשים, ביצוע Feature Audit, סקירת גאפים בארכיטקטורה, או פיתוח מפת דרכים (Roadmap), חייב הסוכן לעשות שימוש אקטיבי בסקילים המוגדרים (`feature-audit-skill` וכל סקיל דומיין רלוונטי ב-`.agents/skills/`).
-- **Workflow Steps**:
-  1. **Skill Discovery**: בדיקה בסקילים הקיימים בגרף המערכת (`.agents/skills/`) לפני הגדרת דרישות חדשות.
-  2. **Gap Analysis Execution**: הפעלת הסקיל `feature-audit-skill` לביצוע ניתוח פערים תקני בשיטת Specification-Driven Development (SDD) והצלבה מול מצבי הריצה ב-`.agents/state/`.
-  3. **Domain Alignment**: שילוב היכולות של סקילי הקפה והטכנולוגיה המפורטים בסעיף 4 (כגון `gemini-multimodal-barista`, `acoustic-grind-tuner`, `v60-brew-master`, `espresso-extraction-telemetry`, `smart-iot-coffee-sync`, `liquid-glass-ui` ועוד).
-
----
-
-## 7. Mandatory GitHub Push Authorization Rule (אישור מפורש להעלאת פיצ'רים ל-GitHub)
-- **Rule**: חל איסור מוחלט לבצע `git push`, דחיפה או העלאת פיצ'רים וקוד ל-GitHub ללא שאלה ואישור מפורש מהמשתמש מראש.
-- **Workflow**: לפני ביצוע העלאה או `git push`, הסוכן מחויב להציג את סיכום הפיצ'רים והשינויים ולשאול בצורה מפורשת את המשתמש אם הוא מאשר את העלאתם ל-GitHub.
-
-

@@ -41,6 +41,9 @@ import {
   Check,
   Plus,
   ChevronLeft,
+  Leaf,
+  Brain,
+  FlaskConical,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -319,6 +322,69 @@ export default function HomePage() {
                   </Link>
                   <Link href="/bio-energy" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
                     <span>התאמת Bio-Energy לעייפות</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 7: AI Carbon-Neutral Farm Tracker & Sustainability Scorecard */}
+              <div className="p-6 rounded-3xl liquid-glass border border-emerald-500/30 space-y-4 hover:border-emerald-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <Leaf className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-stone-100">מעקב חוות אפס-פחמן & סחר ישיר</h3>
+                  <p className="text-xs text-stone-400 mt-1">טביעת רגל 0.0kg CO₂, מדדי Direct Trade ושיקום יערות צל</p>
+                </div>
+                <div className="space-y-2 pt-2 border-t border-stone-800/80">
+                  <Link href="/sustainability" className="flex items-center justify-between text-xs text-emerald-300 font-bold hover:underline">
+                    <span>פתח מחשבון קיזוז פחמני ומדדי חווה</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                  <Link href="/farm-story" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>סיפור החווה והטרואר</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 8: Adaptogen & Functional Nootropic Wellness Matcher */}
+              <div className="p-6 rounded-3xl liquid-glass border border-amber-500/30 space-y-4 hover:border-amber-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                  <Brain className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-stone-100">התאמת נואוטרופיקה & פטריות מרפא</h3>
+                  <p className="text-xs text-stone-400 mt-1">העשרת אספרסו ב-Lion's Mane לפוקוס, Cordyceps ל-ATP ו-Reishi</p>
+                </div>
+                <div className="space-y-2 pt-2 border-t border-stone-800/80">
+                  <Link href="/nootropic-matcher" className="flex items-center justify-between text-xs text-amber-300 font-bold hover:underline">
+                    <span>התאם פטריות אדפטוגניות לאספרסו</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                  <Link href="/catalog" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>קטלוג פולים ותערובות בוטיק</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 9: Anaerobic Fermentation & Molecular Pairing Radar */}
+              <div className="p-6 rounded-3xl liquid-glass border border-indigo-500/30 space-y-4 hover:border-indigo-500/60 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                  <FlaskConical className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-stone-100">תסיסה אנארובית & רדאר צימוד מולקולרי</h3>
+                  <p className="text-xs text-stone-400 mt-1">מעקב 72h במיכל אטום, אסטרים נדיפים וצימוד למאפי שף</p>
+                </div>
+                <div className="space-y-2 pt-2 border-t border-stone-800/80">
+                  <Link href="/molecular-pairing" className="flex items-center justify-between text-xs text-indigo-300 font-bold hover:underline">
+                    <span>פתח רדאר אסטרים וצימוד מאפים</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </Link>
+                  <Link href="/fermentation-sim" className="flex items-center justify-between text-xs text-stone-400 hover:text-stone-200">
+                    <span>סימולטור תסיסה ואקלים חווה</span>
                     <ChevronLeft className="w-4 h-4" />
                   </Link>
                 </div>

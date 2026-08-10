@@ -1,10 +1,10 @@
 # ☕ Coffee Platform Tasks & Active Sprint
 
-## Sprint: v5.0 Ultra AI Coffee Platform Architecture
-- [x] Clean obsolete real-estate artifacts (`mortgage`, `property`, `score_lead.py`).
-- [x] Create 6 new specialty coffee skills (`acoustic-grind-tuner`, `water-chemistry-optimizer`, `smart-iot-coffee-sync`, `ultrasonic-bean-aging`, `notebooklm-coffee-research`, `circadian-caffeine-engine`).
-- [x] Upgrade existing skills & `AGENTS.md` to Master Agent OS v5.0.
-- [x] Implement Python calculation tools (`water_chemistry_calc.py`, `espresso_telemetry_calc.py`, `token_budget_inspector.py`, `verify_coffee_mesh.py`).
-- [x] Build comprehensive `COFFEE_ECOSYSTEM_MAP.md` for rapid token-efficient context discovery.
-- [ ] Connect production WhatsApp Business Webhook endpoint for automated order status notifications.
-- [ ] Implement live Bluetooth Web-BLE pairing adapter for Acaia Lunar scales in `SmartIoTSync.tsx`.
+## Sprint: v6.0 Ultra AI Coffee Platform Architecture & 10 Master Modules
+- [x] Implement `CarbonFarmTracker.tsx` (0.0kg CO2 Net Zero, Direct Trade Scorecard, tree biodiversity) at `/sustainability`.
+- [x] Implement `NootropicWellnessMatcher.tsx` (Lion's Mane, Cordyceps, Reishi, Chaga, bio-sliders & cart add) at `/nootropic-matcher`.
+- [x] Implement `MolecularPairingRadar.tsx` (72h anaerobic tank monitoring, volatile esters, pastry resonance) at `/molecular-pairing`.
+- [x] Upgrade `ColdBrewNitroCalculator.tsx` (Optical TDS refractometer 1.35%-1.45%, Brix, temperature modulator 2°C-18°C) at `/cold-brew-calculator`.
+- [x] Verify & integrate `RoastProfileRadar`, `AcousticGrindTuner`, `SmartIoTSync`, `UltrasonicBeanAging`, `ArLatteArtPrinter`, `CircadianCaffeineClock`.
+- [x] Expand Header Mega Menu and HomePage with Liquid Glass 4.0 Pro cards and RTL Hebrew navigation.
+- [x] Update Global Rules (`GEMINI.md`, `AGENTS.md`) with unconditional RTL Hebrew communication rule even when prompted in English.

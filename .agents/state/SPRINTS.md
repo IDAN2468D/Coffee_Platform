@@ -15,9 +15,12 @@
 - [x] Upgrade `SmartInventoryManager` with bean blend selection dropdown, automated consumption forecasting, and formatted WhatsApp auto-replenish
 - [x] Audit entire codebase via `feature-audit-skill` and create master roadmap artifact `feature_audit_roadmap.md`
 
-## Sprint 4: MCP Ecosystem Integrations (COMPLETED)
-- [x] Implement `GlobalFXCoffeeTicker` connected to `rapidapi_currency` MCP with live exchange rates (ILS, USD, EUR, JPY) & Web Audio spatial tones
-- [x] Implement `NotebookLMBrewSync` connected to `notebooklm` MCP for exporting V60 recipes & cupping notes to Google Workspace / Docs
-- [x] Add dedicated App Router pages (`/global-fx` & `/notebook-sync`) and update main Header navigation
+## Sprint 5: 10 New Master Features & Science Modules (COMPLETED)
+- [x] Implement `CarbonFarmTracker` (`/sustainability`, `/farm-sustainability`) with Net Zero 0.0kg CO2 tracking & Direct Trade Scorecard
+- [x] Implement `NootropicWellnessMatcher` (`/nootropic-matcher`) with Lion's Mane, Cordyceps, Reishi & cart integration
+- [x] Implement `MolecularPairingRadar` (`/molecular-pairing`) with 72h anaerobic tank monitoring & pastry pairing resonance
+- [x] Upgrade `ColdBrewNitroCalculator` (`/cold-brew-calculator`) with live optical TDS refractometer (1.35%-1.45%), Brix & temperature modulator (2°C-18°C)
+- [x] Verify & integrate `RoastProfileRadar`, `AcousticGrindTuner`, `SmartIoTSync`, `UltrasonicBeanAging`, `ArLatteArtPrinter`, and `CircadianCaffeineClock`
+- [x] Expand Header Mega Menu and HomePage with Liquid Glass 4.0 Pro cards and RTL navigation
 
 

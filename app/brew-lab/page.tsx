@@ -8,10 +8,11 @@ import EspressoExtractionTelemetry from '@/components/EspressoExtractionTelemetr
 import { ExtractionSimulator } from '@/components/ExtractionSimulator';
 import WaterChemistryProfiler from '@/components/WaterChemistryProfiler';
 import { ColdBrewNitroCalculator } from '@/components/ColdBrewNitroCalculator';
+import { MolecularPairingRadar } from '@/components/MolecularPairingRadar';
 import { GeminiBaristaModal } from '@/components/GeminiBaristaModal';
 import { CartDrawer } from '@/components/CartDrawer';
 import { ScrollToTop } from '@/components/ScrollToTop';
-import { TestTube, Flame, Activity, Clock, Snowflake } from 'lucide-react';
+import { TestTube, Flame, Activity, Clock, Snowflake, FlaskConical } from 'lucide-react';
 
 import { AuthGuard } from '@/components/AuthGuard';
 import { useHashScroll } from '@/lib/hooks/useHashScroll';
@@ -78,6 +79,11 @@ export default function BrewLabPage() {
         {/* Cold Brew Nitro Calculator */}
         <section id="cold-brew-calculator">
           <ColdBrewNitroCalculator />
+        </section>
+
+        {/* Anaerobic Fermentation & Molecular Pairing Radar */}
+        <section id="molecular-pairing">
+          <MolecularPairingRadar />
         </section>
       </main>
 

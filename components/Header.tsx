@@ -33,9 +33,12 @@ import {
   Layers,
   Search,
   LogOut,
-  Wifi,
   User,
   MousePointer,
+  Wifi,
+  Brain,
+  FlaskConical,
+  Leaf,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -322,6 +325,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
       items: [
         { id: 'catalog', page: '/catalog', label: 'תפריט גורמה', desc: 'קטלוג פולים ומוצרי קפה', icon: Coffee, tag: 'SHOP' },
+        { id: 'nootropic-matcher', page: '/nootropic-matcher', label: 'התאמת נואוטרופיקה ואדפטוגנים', desc: "Lion's Mane, Cordyceps ו-Reishi", icon: Brain, tag: 'NOOTROPIC' },
         { id: 'orders', page: '/orders', label: 'היסטוריית הזמנות & קבלות', desc: 'מעקב משלוח חי, חשבוניות והזמנה חוזרת', icon: Clock, tag: 'LIVE' },
         { id: 'aroma-scent', page: '/aroma-scent', label: 'ניתוח ארומה וטרפנים AI', desc: 'ניתוח מולקולרי ומדד VAI%', icon: Sparkles, tag: 'AI 5D' },
         { id: 'sensory-radar', page: '/sensory-radar', label: 'גלגל טעמים 5D', desc: 'ניתוח ארומה ופרופיל טעם', icon: Sparkles },
@@ -352,10 +356,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       items: [
         { id: 'smart-iot', page: '/smart-iot', label: 'סנכרון מכונה חכמה IoT', desc: 'דחיפת פרופיל לחץ 9Bar וטמפ׳ PID', icon: Wifi, tag: 'MQTT' },
         { id: 'v60', page: '/v60', label: 'V60 Master Timer', desc: 'טיימר חליטה חיה עם Bloom', icon: Clock },
+        { id: 'molecular-pairing', page: '/molecular-pairing', label: 'תסיסה אנארובית & רדאר מולקולרי', desc: 'מעקב 72h וצימוד מאפים מולקולרי', icon: FlaskConical, tag: 'ESTERS' },
         { id: 'water-chemistry', page: '/water-chemistry', label: 'מחשב כימיית מים SCA', desc: 'מינרלים, קשיות GH/KH ואיזון pH', icon: TestTube, tag: 'CHEM' },
         { id: 'extraction-telemetry', page: '/extraction-telemetry', label: 'טלמטריית TDS & EY%', desc: 'אחוז מיצוי אספרסו מדויק', icon: Activity },
         { id: 'extraction-sim', page: '/extraction-sim', label: 'סימולטור 9Bar לחץ', desc: 'סימולציית לחץ וחליטה', icon: Activity },
-        { id: 'cold-brew-calculator', page: '/cold-brew-calculator', label: 'Cold & Nitro Brew', desc: 'מחשבון חליטות קרות וניטרו', icon: Snowflake },
+        { id: 'cold-brew-calculator', page: '/cold-brew-calculator', label: 'Cold & Nitro Brew', desc: 'רפרקטומטר TDS, מודולטור טמפ׳ וניטרו', icon: Snowflake, tag: 'TDS' },
       ],
     },
     {
@@ -377,6 +382,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       color: 'border-emerald-500/40 from-emerald-500/20 to-teal-500/10 text-emerald-300',
       badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
       items: [
+        { id: 'sustainability', page: '/sustainability', label: 'מעקב חוות אפס-פחמן', desc: '0.0kg CO2 וסחר ישיר Direct Trade', icon: Leaf, tag: 'NET-ZERO' },
         { id: 'corporate-lounge', page: '/corporate-lounge', label: 'B2B משרדים וחברות', desc: 'לאונג קפה אקסקלוסיבי לחברות', icon: Building2, tag: 'B2B' },
         { id: 'gift-sommelier', page: '/gift-sommelier', label: 'אשף מתנות AI', desc: 'מארזים מותאמים אישית', icon: Gift },
         { id: 'multi-roaster-marketplace', page: '/multi-roaster-marketplace', label: 'שוק קולים עצמאיים', desc: 'פולי קפה מקולים עצמאיים בישראל', icon: Store },
