@@ -21,6 +21,14 @@
 - [x] Implement `MolecularPairingRadar` (`/molecular-pairing`) with 72h anaerobic tank monitoring & pastry pairing resonance
 - [x] Upgrade `ColdBrewNitroCalculator` (`/cold-brew-calculator`) with live optical TDS refractometer (1.35%-1.45%), Brix & temperature modulator (2°C-18°C)
 - [x] Verify & integrate `RoastProfileRadar`, `AcousticGrindTuner`, `SmartIoTSync`, `UltrasonicBeanAging`, `ArLatteArtPrinter`, and `CircadianCaffeineClock`
-- [x] Expand Header Mega Menu and HomePage with Liquid Glass 4.0 Pro cards and RTL navigation
+
+## Sprint 6: 6 New Flagship Coffee Science & Sensory Features (COMPLETED)
+- [x] Implement `RoastThermalSimulator` (`/roast-thermal-sim`) with RoR curve predictor & Web Audio First Crack synthesis
+- [x] Implement `SyphonIbrikLab` (`/syphon-ibrik-lab`) with vacuum pressure math & Ottoman Cezve sand bath thermal diffusivity
+- [x] Implement `AudioCuppingGuide` (`/audio-cupping-guide`) with Web Audio API 3D spatial soundscape & SCA 100-point rubric
+- [x] Implement `ColdDripTelemetry` (`/cold-drip-telemetry`) with Kyoto tower drop rate controller & ice melt decay curve
+- [x] Implement `TerroirClimateRadar` (`/terroir-climate-radar`) with origin elevation MASL, volcanic soil pH & Direct Trade scorecard
+- [x] Implement `MineralBypassEngine` (`/mineral-bypass-engine`) with RO water bypass dilution & ion remineralizer injector
+
 
 
