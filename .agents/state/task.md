@@ -1,10 +1,11 @@
-# ☕ Coffee Platform Tasks & Active Sprint
+# Master Task State - Sprint 7 (MCP & Skills-IL Features)
 
-## Sprint: v6.0 Ultra AI Coffee Platform Architecture & 10 Master Modules
-- [x] Implement `CarbonFarmTracker.tsx` (0.0kg CO2 Net Zero, Direct Trade Scorecard, tree biodiversity) at `/sustainability`.
-- [x] Implement `NootropicWellnessMatcher.tsx` (Lion's Mane, Cordyceps, Reishi, Chaga, bio-sliders & cart add) at `/nootropic-matcher`.
-- [x] Implement `MolecularPairingRadar.tsx` (72h anaerobic tank monitoring, volatile esters, pastry resonance) at `/molecular-pairing`.
-- [x] Upgrade `ColdBrewNitroCalculator.tsx` (Optical TDS refractometer 1.35%-1.45%, Brix, temperature modulator 2°C-18°C) at `/cold-brew-calculator`.
-- [x] Verify & integrate `RoastProfileRadar`, `AcousticGrindTuner`, `SmartIoTSync`, `UltrasonicBeanAging`, `ArLatteArtPrinter`, `CircadianCaffeineClock`.
-- [x] Expand Header Mega Menu and HomePage with Liquid Glass 4.0 Pro cards and RTL Hebrew navigation.
-- [x] Update Global Rules (`GEMINI.md`, `AGENTS.md`) with unconditional RTL Hebrew communication rule even when prompted in English.
+- [x] Feature 1: Israel Municipal Water Intelligence & SCA Remineralizer (`/israel-water-radar`)
+- [x] Feature 2: Global Specialty Green Bean FX & Commodity Ticker (`/coffee-fx-ticker`)
+- [x] Feature 3: NotebookLM Barista Cloud Sync & Cupping Hub (`/notebooklm-hub`)
+- [x] Feature 4: Gemma Multimodal Roast Defect & Dynamic SVG RoR Curve (`/gemma-roast-vision`)
+- [x] Feature 5: MongoDB Coffee Telemetry & CLV Analytics Engine (`/mongo-telemetry`)
+- [x] Feature 6: Israel Specialty Roasters & Kashrut Directory (`/israel-roasters`)
+- [x] Feature 7: Stitch Design System Studio (Liquid Glass 4.0 Customizer) (`/stitch-studio`)
+- [x] Global Navigation & Mega Menu Integration in `Header.tsx`
+- [x] Verification, Build & Architecture State Sync

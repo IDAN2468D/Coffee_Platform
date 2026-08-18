@@ -30,5 +30,11 @@
 - [x] Implement `TerroirClimateRadar` (`/terroir-climate-radar`) with origin elevation MASL, volcanic soil pH & Direct Trade scorecard
 - [x] Implement `MineralBypassEngine` (`/mineral-bypass-engine`) with RO water bypass dilution & ion remineralizer injector
 
-
-
+## Sprint 7: 7 New Flagship MCP & Skills-IL Integration Modules (COMPLETED)
+- [x] Implement `IsraelWaterIntelligence` (`/israel-water-radar`) with `datagov-israel` municipal data & SCA Remineralizer
+- [x] Implement `CoffeeCommodityFXTicker` (`/coffee-fx-ticker`) with `rapidapi_currency` live FX & landed cost calculator
+- [x] Implement `NotebookLMCloudHub` (`/notebooklm-hub`) with `notebooklm` Google Docs/Sheets/Calendar & Obsidian sync
+- [x] Implement `GemmaRoastVisionInspector` (`/gemma-roast-vision`) with `google-gemma-31b` defect vision & SVG RoR curve
+- [x] Implement `MongoRoastAnalyticsDashboard` (`/mongo-telemetry`) with `mongodb-mcp-server` CLV pipelines & auto-replenish
+- [x] Implement `IsraelRoasterDirectory` (`/israel-roasters`) with MOH license verification & Rabbinate kashrut directory
+- [x] Implement `StitchDesignThemeStudio` (`/stitch-studio`) with `StitchMCP` design token editor & 120Hz live preview

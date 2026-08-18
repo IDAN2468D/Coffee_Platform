@@ -339,6 +339,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
       items: [
         { id: 'ai-barista', page: '/ai-barista', label: 'בריסטה Gemini 3.5 AI', desc: 'הזמנה קולית, זיהוי פולים והמלצות', icon: Sparkles, tag: 'VOICE' },
+        { id: 'gemma-roast-vision', page: '/gemma-roast-vision', label: 'ניתוח פגמי קלייה Gemma Vision', desc: 'זיהוי אופטי של פגמים ועקומת RoR ב-SVG', icon: Sparkles, tag: 'GEMMA' },
         { id: 'instagram-reel', page: '/instagram-reel', label: 'קונספט אינסטגרם Reel 3D', desc: 'אדים, חלב, קרח 3D ופולים צפים', icon: Sparkles },
         { id: 'parallax-experience', page: '/parallax-experience', label: 'חוויית פרלקס & שלבי חליטה', desc: 'מסע Sticky Scroll ושלבי פיתוח 3D', icon: Layers },
         { id: 'acoustic-tuner', page: '/acoustic-tuner', label: 'מכוונן טחינה אקוסטי', desc: 'ניתוח תדרי סכינים וגלאי Channeling', icon: Activity, tag: 'FFT' },
@@ -354,6 +355,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       color: 'border-blue-500/40 from-blue-500/20 to-indigo-500/10 text-blue-300',
       badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
       items: [
+        { id: 'israel-water-radar', page: '/israel-water-radar', label: 'איכות מים בישראל & SCA', desc: 'נתוני רשות המים לפי ערים ומתכון איזון', icon: Droplets, tag: 'GOV.IL' },
+        { id: 'mongo-telemetry', page: '/mongo-telemetry', label: 'דשבורד טלמטריית קלייה MongoDB', desc: 'אגרגציית CLV וחיזוי שחיקת מלאי', icon: Activity, tag: 'MONGO' },
         { id: 'smart-iot', page: '/smart-iot', label: 'סנכרון מכונה חכמה IoT', desc: 'דחיפת פרופיל לחץ 9Bar וטמפ׳ PID', icon: Wifi, tag: 'MQTT' },
         { id: 'v60', page: '/v60', label: 'V60 Master Timer', desc: 'טיימר חליטה חיה עם Bloom', icon: Clock },
         { id: 'molecular-pairing', page: '/molecular-pairing', label: 'תסיסה אנארובית & רדאר מולקולרי', desc: 'מעקב 72h וצימוד מאפים מולקולרי', icon: FlaskConical, tag: 'ESTERS' },
@@ -368,6 +371,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       color: 'border-orange-500/40 from-orange-500/20 to-amber-500/10 text-orange-300',
       badgeBg: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
       items: [
+        { id: 'notebooklm-hub', page: '/notebooklm-hub', label: 'מרכז קאפינג NotebookLM', desc: 'דוחות SCA 100pt, סנכרון Docs & Obsidian', icon: BookOpen, tag: 'CLOUD' },
+        { id: 'stitch-studio', page: '/stitch-studio', label: 'סטודיו עיצוב StitchMCP', desc: 'כיוונון טוקנים של Liquid Glass בזמן אמת', icon: Sliders, tag: 'STITCH' },
         { id: 'roast-profile', page: '/roast-profile', label: 'רדאר קלייה RoR & SCA', desc: 'ניטור First Crack וסקאלת Agtron', icon: Flame, tag: 'RoR' },
         { id: 'custom-roast-studio', page: '/custom-roast-studio', label: 'מעבדת קלייה אישית', desc: 'עיצוב דרגות קלייה אישיות', icon: Sliders },
         { id: 'personal-brew-journal', page: '/personal-brew-journal', label: 'יומן חליטה Dial-in', desc: 'תיעוד וניטור חליטות', icon: BookOpen },
@@ -382,6 +387,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
       color: 'border-emerald-500/40 from-emerald-500/20 to-teal-500/10 text-emerald-300',
       badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
       items: [
+        { id: 'coffee-fx-ticker', page: '/coffee-fx-ticker', label: 'אינדקס קפה ירוק & שער מט״ח', desc: 'מחירי חוזים עולמיים ועלויות יבוא בש״ח', icon: Globe, tag: 'FX ILS' },
+        { id: 'israel-roasters', page: '/israel-roasters', label: 'אינדקס בתי קלייה בישראל', desc: 'רישיונות יצרן משרד הבריאות וכשרות', icon: Store, tag: 'ROASTERS' },
         { id: 'sustainability', page: '/sustainability', label: 'מעקב חוות אפס-פחמן', desc: '0.0kg CO2 וסחר ישיר Direct Trade', icon: Leaf, tag: 'NET-ZERO' },
         { id: 'corporate-lounge', page: '/corporate-lounge', label: 'B2B משרדים וחברות', desc: 'לאונג קפה אקסקלוסיבי לחברות', icon: Building2, tag: 'B2B' },
         { id: 'gift-sommelier', page: '/gift-sommelier', label: 'אשף מתנות AI', desc: 'מארזים מותאמים אישית', icon: Gift },
