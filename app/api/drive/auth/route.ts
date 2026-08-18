@@ -1,25 +1,38 @@
-﻿import { NextResponse } from 'next/server';
-import { google } from 'googleapis';
+﻿import { NextRequest, NextResponse } from "next/server";
+import { google } from "googleapis";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/drive/auth/callback';
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+    const protocol = request.headers.get("x-forwarded-proto") || (process.env.NODE_ENV === "production" ? "https" : "http");
 
-    if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: 'Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET' }, { status: 500 });
-    }
+    let baseUrl = process.env.NEXTAUTH_URL || (host ? `${protocol}://${host}` : "http://localhost:3000");
+    baseUrl = baseUrl.replace(/\/+$/, "");
 
-    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
-    const authUrl = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      prompt: 'consent',
-      scope: ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive'],
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/drive/auth/callback`;
+
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri
+    );
+
+    const scopes = [
+      "https://www.googleapis.com/auth/drive.file",
+      "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/documents",
+      "https://www.googleapis.com/auth/spreadsheets",
+    ];
+
+    const url = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      prompt: "consent",
+      scope: scopes,
     });
 
-    return NextResponse.redirect(authUrl);
+    return NextResponse.redirect(url);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Google Drive Auth Init Error:", error);
+    return NextResponse.json({ error: "Failed to initialize Google Drive auth" }, { status: 500 });
   }
 }
