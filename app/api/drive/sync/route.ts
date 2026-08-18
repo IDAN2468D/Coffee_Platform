@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       try {
         await connectToDatabase();
         for (const item of bulkResult.results) {
-          if (item.result.success && item.result.fileId) {
+          if (item.result.success && item.result.fileId && !item.result.isSimulated) {
             await Order.updateOne(
               { orderNumber: item.orderNumber },
               {
@@ -35,12 +35,13 @@ export async function POST(req: Request) {
         console.warn('MongoDB bulk update fallback in API route:', dbErr);
       }
 
+      const configured = await isDriveConfigured();
       return NextResponse.json({
         success: true,
         successCount: bulkResult.successCount,
         failedCount: bulkResult.failedCount,
         results: bulkResult.results,
-        isConfigured: isDriveConfigured(),
+        isConfigured: configured,
       });
     }
 
@@ -75,12 +76,13 @@ export async function POST(req: Request) {
       }
 
       const bulkResult = await bulkSyncReceiptsToDrive(ordersToSync);
+      const configured = await isDriveConfigured();
       return NextResponse.json({
         success: true,
         successCount: bulkResult.successCount,
         failedCount: bulkResult.failedCount,
         results: bulkResult.results,
-        isConfigured: isDriveConfigured(),
+        isConfigured: configured,
       });
     }
 
@@ -88,7 +90,7 @@ export async function POST(req: Request) {
     if (order && order.orderNumber) {
       const uploadResult = await uploadReceiptToGoogleDrive(order);
 
-      if (uploadResult.success && uploadResult.fileId) {
+      if (uploadResult.success && uploadResult.fileId && !uploadResult.isSimulated) {
         try {
           await connectToDatabase();
           await Order.updateOne(
@@ -104,10 +106,11 @@ export async function POST(req: Request) {
         }
       }
 
+      const configured = await isDriveConfigured();
       return NextResponse.json({
         success: uploadResult.success,
         data: uploadResult,
-        isConfigured: isDriveConfigured(),
+        isConfigured: configured,
       });
     }
 
@@ -125,9 +128,10 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  const configured = await isDriveConfigured();
   return NextResponse.json({
     status: 'online',
-    isConfigured: isDriveConfigured(),
+    isConfigured: configured,
     folderId: process.env.GOOGLE_DRIVE_RECEIPTS_FOLDER_ID || null,
   });
 }

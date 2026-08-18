@@ -64,6 +64,7 @@ export const OrderHistoryView: React.FC = () => {
   const { addItem, openCart } = useCartStore();
   const { user } = useAuthStore();
 
+  const [mounted, setMounted] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [reorderSuccessMsg, setReorderSuccessMsg] = useState<string>('');
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
@@ -73,6 +74,39 @@ export const OrderHistoryView: React.FC = () => {
   const [ratingOrderNum, setRatingOrderNum] = useState<string | null>(null);
   const [tempRating, setTempRating] = useState<number>(5);
   const [tempNotes, setTempNotes] = useState<string>('');
+  const [driveAuthBanner, setDriveAuthBanner] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Set mounted true on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Check for Drive OAuth callback redirect status in URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const driveAuth = params.get('driveAuth');
+      const message = params.get('message');
+
+      if (driveAuth === 'success') {
+        setDriveAuthBanner({
+          type: 'success',
+          text: 'חשבון Google Drive חובר בהצלחה! מעתה תוכל לסנכרן קבלות אמיתיות ישירות לחשבון ה-Drive שלך.',
+        });
+        coffeeSound.playPourSound();
+        // Clean URL query params without reload
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      } else if (driveAuth === 'error') {
+        setDriveAuthBanner({
+          type: 'error',
+          text: `שגיאה בחיבור Google Drive: ${message || 'לא הצלחנו לאמת את החשבון'}`,
+        });
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, []);
 
   // Initial fetch from MongoDB on mount if user is logged in
   useEffect(() => {
@@ -186,13 +220,18 @@ export const OrderHistoryView: React.FC = () => {
       if (res.success) {
         // Update local store for all synced orders
         res.results.forEach((item) => {
-          if (item.result.success && item.result.fileId && item.result.webViewLink) {
+          if (item.result.success && item.result.fileId && item.result.webViewLink && !item.result.isSimulated) {
             updateOrderDriveSync(item.orderNumber, item.result.fileId, item.result.webViewLink);
           }
         });
         setBulkSyncResultMsg(res.message);
       } else {
         setBulkSyncResultMsg(res.message || 'שגיאה בביצוע סנכרון גורף');
+        if (res.message?.includes('אינו מחובר') || res.message?.includes('Google')) {
+          if (confirm('חשבון Google Drive אינו מחובר עדיין.\nהאם תרצה להתחבר כעת כדי לסנכרן קבלות בענן?')) {
+            window.location.href = '/api/drive/auth';
+          }
+        }
       }
     } catch (err: any) {
       console.error('Bulk Drive sync error:', err);
@@ -325,6 +364,29 @@ export const OrderHistoryView: React.FC = () => {
     }
   };
 
+  if (!mounted) {
+    return (
+      <div className="space-y-8 dir-rtl text-right animate-pulse">
+        {/* Metrics skeleton */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="liquid-glass rounded-3xl p-5 border border-stone-800 bg-stone-900/50 h-28" />
+          ))}
+        </div>
+        {/* Banner skeleton */}
+        <div className="liquid-glass rounded-3xl p-6 border border-stone-800 bg-stone-900/50 h-24" />
+        {/* Controls skeleton */}
+        <div className="liquid-glass rounded-3xl p-5 border border-stone-800 bg-stone-900/50 h-16" />
+        {/* Orders list skeleton */}
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="liquid-glass rounded-3xl p-6 border border-stone-800 bg-stone-900/50 h-44" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 dir-rtl text-right">
       
@@ -413,6 +475,32 @@ export const OrderHistoryView: React.FC = () => {
 
       </div>
 
+      {/* DRIVE AUTH NOTIFICATION BANNER */}
+      {driveAuthBanner && (
+        <div
+          className={`liquid-glass rounded-2xl p-4 border flex items-center justify-between animate-fadeIn ${
+            driveAuthBanner.type === 'success'
+              ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-200'
+              : 'border-red-500/50 bg-red-950/40 text-red-200'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            {driveAuthBanner.type === 'success' ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            ) : (
+              <Cloud className="w-5 h-5 text-red-400 shrink-0" />
+            )}
+            <span className="text-xs sm:text-sm font-bold">{driveAuthBanner.text}</span>
+          </div>
+          <button
+            onClick={() => setDriveAuthBanner(null)}
+            className="text-xs px-2.5 py-1 rounded-lg bg-black/40 hover:bg-black/70 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* GOOGLE DRIVE RECEIPTS CLOUD BACKUP BANNER */}
       <div className="liquid-glass rounded-3xl p-5 sm:p-6 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/30 via-stone-950/80 to-amber-950/20 relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
@@ -426,11 +514,11 @@ export const OrderHistoryView: React.FC = () => {
                   גיבוי וסנכרון קבלות ל-Google Drive
                 </h4>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                  {orders.filter((o) => Boolean(o.driveReceiptUrl)).length} מתוך {orders.length} מסונכרנות
+                  {orders.filter((o) => Boolean(o.driveReceiptUrl && !o.driveReceiptUrl.includes('drive_mock_'))).length} מתוך {orders.length} מסונכרנות
                 </span>
               </div>
               <p className="text-xs text-stone-400 mt-1">
-                כל קבלה נשמרת אוטומטית כמסמך דיגיטלי ממוחשב ב-Google Drive עם פירוט פולים, חישוב מע״מ ואימות מסחר.
+                כל קבלה נשמרת כמסמך דיגיטלי ממוחשב ומאומת ישירות ב-Google Drive שלך.
               </p>
             </div>
           </div>

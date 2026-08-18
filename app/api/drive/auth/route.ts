@@ -1,11 +1,11 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
 export async function GET(request: NextRequest) {
   try {
     const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
     const protocol = request.headers.get("x-forwarded-proto") || (process.env.NODE_ENV === "production" ? "https" : "http");
-
+    
     let baseUrl = process.env.NEXTAUTH_URL || (host ? `${protocol}://${host}` : "http://localhost:3000");
     baseUrl = baseUrl.replace(/\/+$/, "");
 

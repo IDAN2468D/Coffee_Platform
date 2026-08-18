@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { Readable } from 'stream';
+import { cookies } from 'next/headers';
 
 export interface ReceiptItem {
   itemName: string;
@@ -35,38 +36,89 @@ export interface DriveSyncResult {
 }
 
 /**
- * Checks if Google Drive credentials are fully configured in the environment.
+ * Checks if Google Drive credentials or active user OAuth tokens are available.
  */
-export function isDriveConfigured(): boolean {
+export async function isDriveConfigured(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    if (cookieStore.get('google_drive_refresh_token')?.value || cookieStore.get('google_drive_access_token')?.value) {
+      return true;
+    }
+  } catch {
+    // Context without cookies
+  }
+
+  if (process.env.GOOGLE_REFRESH_TOKEN || process.env.GOOGLE_DRIVE_REFRESH_TOKEN) {
+    return true;
+  }
+
   const email = process.env.GOOGLE_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_PRIVATE_KEY;
   return Boolean(email && privateKey && privateKey.includes('PRIVATE KEY'));
 }
 
 /**
- * Initializes and returns a Google Drive API client using Service Account credentials.
+ * Initializes and returns a Google Drive API client using OAuth2 Cookies / Env or Service Account.
  */
-function getDriveClient() {
+export async function getDriveAuthClient() {
+  // 1. OAuth2 User Session from Cookies
+  try {
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get('google_drive_refresh_token')?.value;
+    const accessToken = cookieStore.get('google_drive_access_token')?.value;
+
+    if (refreshToken || accessToken) {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      oauth2Client.setCredentials({
+        refresh_token: refreshToken,
+        access_token: accessToken,
+      });
+
+      return google.drive({ version: 'v3', auth: oauth2Client });
+    }
+  } catch {
+    // cookies() unavailable in some execution contexts
+  }
+
+  // 2. OAuth2 Server Environment Refresh Token
+  const envRefreshToken = process.env.GOOGLE_REFRESH_TOKEN || process.env.GOOGLE_DRIVE_REFRESH_TOKEN;
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && envRefreshToken) {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: envRefreshToken,
+    });
+
+    return google.drive({ version: 'v3', auth: oauth2Client });
+  }
+
+  // 3. Service Account Credentials
   const email = process.env.GOOGLE_CLIENT_EMAIL;
   const rawKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (!email || !rawKey) {
-    throw new Error('Google Drive API credentials (GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY) are missing.');
+  if (email && rawKey && rawKey.includes('PRIVATE KEY')) {
+    const privateKey = rawKey.replace(/\\n/g, '\n');
+    const auth = new google.auth.JWT({
+      email,
+      key: privateKey,
+      scopes: [
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive',
+      ],
+    });
+    return google.drive({ version: 'v3', auth });
   }
 
-  // Handle newlines in private key string whether passed as \n or real newlines
-  const privateKey = rawKey.replace(/\\n/g, '\n');
-
-  const auth = new google.auth.JWT({
-    email,
-    key: privateKey,
-    scopes: [
-      'https://www.googleapis.com/auth/drive.file',
-      'https://www.googleapis.com/auth/drive',
-    ],
-  });
-
-  return google.drive({ version: 'v3', auth });
+  return null;
 }
 
 /**
@@ -149,36 +201,43 @@ export function generateReceiptHtml(order: OrderReceiptData): string {
       margin-bottom: 6px;
       font-family: monospace;
     }
-    .badge {
-      display: inline-block;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid #10b981;
-      color: #34d399;
-      font-size: 11px;
-      font-weight: bold;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      margin-top: 8px;
+    .brand-sub {
+      font-size: 12px;
+      color: #a1a1aa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    .meta-grid {
+    .order-badge {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 6px 14px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #d97706;
+      border-radius: 999px;
+      color: #fbbf24;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .info-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      background: #1c1917;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+      background: rgba(255, 255, 255, 0.03);
       padding: 16px;
       border-radius: 12px;
-      border: 1px solid #292524;
-      margin-bottom: 24px;
-      font-size: 12px;
+      border: 1px solid #27272a;
     }
-    .meta-item span {
-      display: block;
-      color: #a8a29e;
-      font-size: 11px;
-    }
-    .meta-item strong {
-      color: #fafaf9;
+    .info-item {
       font-size: 13px;
+    }
+    .info-label {
+      color: #71717a;
+      margin-bottom: 4px;
+    }
+    .info-val {
+      font-weight: bold;
+      color: #e4e4e7;
     }
     table {
       width: 100%;
@@ -187,41 +246,39 @@ export function generateReceiptHtml(order: OrderReceiptData): string {
     }
     th {
       background: #1c1917;
-      color: #d6d3d1;
       padding: 10px;
       font-size: 12px;
-      border-bottom: 1px solid #44403c;
+      color: #d4d4d8;
+      border-bottom: 1px solid #3f3f46;
     }
-    .summary-box {
-      background: #1c1917;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #44403c;
-      margin-bottom: 24px;
+    .totals-box {
+      border-top: 2px dashed #78350f;
+      padding-top: 16px;
+      margin-top: 16px;
     }
-    .summary-line {
+    .total-row {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 8px;
       font-size: 13px;
-      color: #d6d3d1;
-      margin-bottom: 6px;
+      color: #a1a1aa;
     }
-    .summary-total {
-      display: flex;
-      justify-content: space-between;
+    .total-row.grand {
       font-size: 18px;
-      font-weight: bold;
+      font-weight: 900;
       color: #fbbf24;
-      border-top: 1px dashed #78350f;
-      padding-top: 10px;
-      margin-top: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #3f3f46;
     }
     .footer {
       text-align: center;
-      border-top: 1px solid #292524;
-      padding-top: 16px;
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid #27272a;
       font-size: 11px;
-      color: #78716c;
+      color: #71717a;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -229,42 +286,33 @@ export function generateReceiptHtml(order: OrderReceiptData): string {
   <div class="receipt-container">
     <div class="header">
       <div class="brand-title">☕ THE DIGITAL ROAST</div>
-      <div style="font-size: 12px; color: #a8a29e;">חברת הקפה הגורמה והקלייה הספציאליטית בע"מ • ח.פ. 519824601</div>
-      <div style="font-size: 11px; color: #78716c; margin-top: 4px;">שדרות רוטשילד 45, תל אביב • טלפון: 03-6821900 • service@digitalroast.co.il</div>
-      <div class="badge">✓ מסמך ממוחשב - מקור חתום דיגיטלית</div>
+      <div class="brand-sub">Gourmet Coffee Lab & Micro-Roastery</div>
+      <div class="order-badge">קבלה ממוחשבת #${order.orderNumber}</div>
     </div>
 
-    <div class="meta-grid">
-      <div class="meta-item">
-        <span>מספר הזמנה / חשבונית:</span>
-        <strong style="color: #fbbf24; font-family: monospace;">#${order.orderNumber}</strong>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">שם הלקוח:</div>
+        <div class="info-val">${order.fullName}</div>
       </div>
-      <div class="meta-item">
-        <span>תאריך הפקה:</span>
-        <strong>${formattedDate}</strong>
+      <div class="info-item">
+        <div class="info-label">תאריך ושעה:</div>
+        <div class="info-val">${formattedDate}</div>
       </div>
-      <div class="meta-item">
-        <span>שם הלקוח:</span>
-        <strong>${order.fullName}</strong>
+      <div class="info-item">
+        <div class="info-label">טלפון:</div>
+        <div class="info-val">${order.phone}</div>
       </div>
-      <div class="meta-item">
-        <span>טלפון ליצירת קשר:</span>
-        <strong style="font-family: monospace;">${order.phone}</strong>
-      </div>
-      <div class="meta-item" style="grid-column: span 2;">
-        <span>כתובת משלוח:</span>
-        <strong>${order.deliveryAddress}</strong>
-      </div>
-      <div class="meta-item" style="grid-column: span 2;">
-        <span>אמצעי תשלום:</span>
-        <strong>${order.paymentMethod || 'כרטיס אשראי מאובטח'}</strong>
+      <div class="info-item">
+        <div class="info-label">כתובת למשלוח:</div>
+        <div class="info-val">${order.deliveryAddress}</div>
       </div>
     </div>
 
     <table>
       <thead>
         <tr>
-          <th style="text-align: right;">תיאור פריט</th>
+          <th style="text-align: right;">פריט והתאמה אישית</th>
           <th style="text-align: center;">כמות</th>
           <th style="text-align: center;">מחיר יח'</th>
           <th style="text-align: left;">סה"כ</th>
@@ -275,28 +323,24 @@ export function generateReceiptHtml(order: OrderReceiptData): string {
       </tbody>
     </table>
 
-    <div class="summary-box">
-      <div class="summary-line">
-        <span>סכום ביניים לפני מע״מ:</span>
+    <div class="totals-box">
+      <div class="total-row">
+        <span>סכום לפני מע"מ:</span>
         <span style="font-family: monospace;">₪${subtotal.toFixed(2)}</span>
       </div>
-      <div class="summary-line">
-        <span>מע״מ (18%):</span>
+      <div class="total-row">
+        <span>מע"מ (18%):</span>
         <span style="font-family: monospace;">₪${vatAmount.toFixed(2)}</span>
       </div>
-      <div class="summary-line">
-        <span>דמי משלוח אקספרס:</span>
-        <span style="color: #34d399; font-weight: bold;">חינם (הטבת VIP)</span>
-      </div>
-      <div class="summary-total">
-        <span>סה״כ לתשלום כולל מע״מ:</span>
+      <div class="total-row grand">
+        <span>סה"כ לתשלום כולל מע"מ:</span>
         <span style="font-family: monospace;">₪${order.totalPrice.toFixed(2)}</span>
       </div>
     </div>
 
     <div class="footer">
-      <div style="font-family: monospace; margin-bottom: 4px;">AUTH-HASH: ${order.orderNumber}-SECURE-ROAST-DRIVE</div>
-      <div>תודה שבחרת ב-The Digital Roast • קפה ספציאליטי ברמה הגבוהה ביותר ☕</div>
+      <div>מסמך ממוחשב זה הינו קבלה / חשבונית מס דיגיטלית חוקית מבית The Digital Roast.</div>
+      <div>נשמר וסונכרן אוטומטית בענן Google Drive • תודה שבחרת בקפה הגורמה שלנו! ☕</div>
     </div>
   </div>
 </body>
@@ -304,38 +348,37 @@ export function generateReceiptHtml(order: OrderReceiptData): string {
   `.trim();
 }
 
+import { generateReceiptPdfBuffer } from './receiptPdfService';
+
 /**
- * Uploads a single order receipt to Google Drive.
- * Automatically falls back to a sandbox simulated link if credentials are not configured.
+ * Uploads a single order receipt to Google Drive as an official PDF document.
  */
 export async function uploadReceiptToGoogleDrive(order: OrderReceiptData): Promise<DriveSyncResult> {
   const syncedAt = new Date().toISOString();
-  const fileName = `Receipt_${order.orderNumber}_${order.fullName.replace(/\s+/g, '_')}.html`;
+  const safeFullName = (order.fullName || 'Customer').replace(/\s+/g, '_');
+  const fileName = `Receipt_${order.orderNumber}_${safeFullName}.pdf`;
 
-  // If live credentials are not set, return simulated Drive sync result
-  if (!isDriveConfigured()) {
-    const mockFileId = `drive_mock_${order.orderNumber}_${Date.now().toString(36)}`;
-    const mockLink = `https://drive.google.com/file/d/${mockFileId}/view?usp=sharing`;
+  const drive = await getDriveAuthClient();
 
+  // If live credentials are not set, return clear not-connected result
+  if (!drive) {
     return {
-      success: true,
-      fileId: mockFileId,
-      webViewLink: mockLink,
-      webContentLink: mockLink,
-      fileName,
+      success: false,
+      error: 'חשבון Google Drive אינו מחובר. יש להתחבר לחשבון Google כדי לשמור קבלות בענן.',
       syncedAt,
-      isSimulated: true,
+      isSimulated: false,
     };
   }
 
   try {
-    const drive = getDriveClient();
     const folderId = process.env.GOOGLE_DRIVE_RECEIPTS_FOLDER_ID;
-    const htmlContent = generateReceiptHtml(order);
+    
+    // Generate high-resolution PDF document with luxury styling
+    const pdfBytes = await generateReceiptPdfBuffer(order);
 
     const fileMetadata: any = {
       name: fileName,
-      mimeType: 'text/html',
+      mimeType: 'application/pdf',
     };
 
     if (folderId) {
@@ -343,8 +386,8 @@ export async function uploadReceiptToGoogleDrive(order: OrderReceiptData): Promi
     }
 
     const media = {
-      mimeType: 'text/html',
-      body: Readable.from([htmlContent]),
+      mimeType: 'application/pdf',
+      body: Readable.from(Buffer.from(pdfBytes)),
     };
 
     const response = await drive.files.create({
@@ -371,17 +414,17 @@ export async function uploadReceiptToGoogleDrive(order: OrderReceiptData): Promi
     return {
       success: true,
       fileId: response.data.id || undefined,
-      webViewLink: response.data.webViewLink || `https://drive.google.com/file/d/${response.data.id}/view`,
+      webViewLink: response.data.webViewLink || (response.data.id ? `https://drive.google.com/file/d/${response.data.id}/view` : undefined),
       webContentLink: response.data.webContentLink || undefined,
       fileName: response.data.name || fileName,
       syncedAt,
       isSimulated: false,
     };
   } catch (error: any) {
-    console.error('Google Drive Upload Error:', error);
+    console.error('Google Drive PDF Upload Error:', error);
     return {
       success: false,
-      error: error.message || 'שגיאה בהעלאת הקובץ ל-Google Drive',
+      error: error.message || 'שגיאה בהעלאת קובץ ה-PDF ל-Google Drive',
       syncedAt,
     };
   }

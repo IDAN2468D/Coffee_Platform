@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { cookies } from "next/headers";
 
@@ -8,18 +8,15 @@ export async function GET(request: NextRequest) {
     const code = searchParams.get("code");
     const error = searchParams.get("error");
 
-    // זיהוי חכם של כתובת האתר האמיתית (תמיכה מלאה ב-Render ובפיתוח מקומי)
     const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
     const protocol = request.headers.get("x-forwarded-proto") || (process.env.NODE_ENV === "production" ? "https" : "http");
-
-    // עדיפות עליונה ל-NEXTAUTH_URL שהגדרת ב-Render
+    
     let baseUrl = process.env.NEXTAUTH_URL;
     if (!baseUrl) {
       baseUrl = host ? `${protocol}://${host}` : "http://localhost:3000";
     }
-    baseUrl = baseUrl.replace(/\/+$/, ""); // הסרת סלאש מיותר בסוף
+    baseUrl = baseUrl.replace(/\/+$/, "");
 
-    // במקרה של שגיאה או ביטול מצד המשתמש
     if (error || !code) {
       return NextResponse.redirect(`${baseUrl}/order-history?driveAuth=error&message=${encodeURIComponent(error || "Missing code")}`);
     }
@@ -32,13 +29,11 @@ export async function GET(request: NextRequest) {
       redirectUri
     );
 
-    // קבלת הטוקנים מ-Google
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    // שמירת ה-Tokens ב-Cookies בצורה מאובטחת
     const cookieStore = await cookies();
-
+    
     if (tokens.refresh_token) {
       cookieStore.set("google_drive_refresh_token", tokens.refresh_token, {
         httpOnly: true,
@@ -59,14 +54,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // הפניה נכונה לכתובת הפרודקשן של האתר!
     return NextResponse.redirect(`${baseUrl}/order-history?driveAuth=success`);
   } catch (err: any) {
     console.error("Google Drive OAuth Callback Error:", err);
-
     let baseUrl = process.env.NEXTAUTH_URL || "https://coffee-platform-o2nt.onrender.com";
     baseUrl = baseUrl.replace(/\/+$/, "");
-
-    return NextResponse.redirect(`${baseUrl}/order-history?driveAuth=error&message=${encodeURIComponent(err.message || "Failed to exchange token")}`);
+    return NextResponse.redirect(`${baseUrl}/order-history?driveAuth=error&message=${encodeURIComponent(err.message || "Failed token exchange")}`);
   }
 }

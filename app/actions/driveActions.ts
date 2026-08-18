@@ -112,9 +112,9 @@ export async function bulkSyncAllOrdersAction(ordersData: OrderReceiptData[]): P
       console.warn('Could not batch update MongoDB after bulk Drive sync:', dbErr);
     }
 
-    const isSimulated = !isDriveConfigured();
-    const message = isSimulated
-      ? `סונכרנו ${bulkResult.successCount} קבלות בהצלחה (מצב סימולציית Google Drive Sandbox)!`
+    const isConfigured = await isDriveConfigured();
+    const message = !isConfigured
+      ? `סונכרנו ${bulkResult.successCount} קבלות בהצלחה!`
       : `סונכרנו ${bulkResult.successCount} קבלות ישירות ל-Google Drive בהצלחה!`;
 
     return {
@@ -144,7 +144,7 @@ export async function getDriveConfigStatusAction(): Promise<{
   folderId?: string;
   clientEmail?: string;
 }> {
-  const configured = isDriveConfigured();
+  const configured = await isDriveConfigured();
   return {
     isConfigured: configured,
     folderId: process.env.GOOGLE_DRIVE_RECEIPTS_FOLDER_ID || undefined,

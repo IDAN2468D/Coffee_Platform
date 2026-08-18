@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Cloud,
   CheckCircle2,
@@ -8,6 +8,7 @@ import {
   Loader2,
   FileCheck,
   Sparkles,
+  LogIn,
 } from 'lucide-react';
 import { UserOrderRecord, useOrderStore } from '@/lib/store/useOrderStore';
 import { syncOrderToGoogleDriveAction } from '@/app/actions/driveActions';
@@ -19,21 +20,34 @@ interface GoogleDriveSyncButtonProps {
   onSyncComplete?: (driveUrl: string) => void;
 }
 
+const isRealDriveUrl = (url: string | null | undefined): boolean => {
+  if (!url) return false;
+  if (url.includes('drive_mock_')) return false;
+  return url.startsWith('https://drive.google.com/') || url.startsWith('http');
+};
+
 export const GoogleDriveSyncButton: React.FC<GoogleDriveSyncButtonProps> = ({
   order,
   variant = 'button',
   onSyncComplete,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(Boolean(order.driveReceiptUrl));
-  const [currentUrl, setCurrentUrl] = useState<string | null>(order.driveReceiptUrl || null);
+  const [currentUrl, setCurrentUrl] = useState<string | null>(
+    isRealDriveUrl(order.driveReceiptUrl) ? order.driveReceiptUrl! : null
+  );
+  const [needsAuth, setNeedsAuth] = useState(false);
   const { updateOrderDriveSync } = useOrderStore();
+
+  useEffect(() => {
+    setCurrentUrl(isRealDriveUrl(order.driveReceiptUrl) ? order.driveReceiptUrl! : null);
+  }, [order.driveReceiptUrl]);
 
   const handleSync = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (loading) return;
 
     setLoading(true);
+    setNeedsAuth(false);
     coffeeSound.playBaristaClick();
 
     try {
@@ -59,15 +73,22 @@ export const GoogleDriveSyncButton: React.FC<GoogleDriveSyncButtonProps> = ({
 
       const result = await syncOrderToGoogleDriveAction(receiptData);
 
-      if (result.success && result.webViewLink) {
-        setSuccess(true);
+      if (result.success && result.webViewLink && !result.isSimulated) {
         setCurrentUrl(result.webViewLink);
         updateOrderDriveSync(order.orderNumber, result.fileId || '', result.webViewLink);
         if (onSyncComplete) {
           onSyncComplete(result.webViewLink);
         }
       } else {
-        alert(result.error || 'שגיאה בסנכרון הקבלה ל-Google Drive');
+        // If not authenticated, prompt to connect
+        setNeedsAuth(true);
+        if (result.error && result.error.includes('אינו מחובר')) {
+          if (confirm('חשבון Google Drive אינו מחובר עדיין.\nהאם תרצה להתחבר כעת כדי לשמור קבלות בענן האישי שלך?')) {
+            window.location.href = '/api/drive/auth';
+          }
+        } else {
+          alert(result.error || 'שגיאה בסנכרון הקבלה ל-Google Drive');
+        }
       }
     } catch (err: any) {
       console.error('Drive sync failed:', err);
@@ -77,7 +98,7 @@ export const GoogleDriveSyncButton: React.FC<GoogleDriveSyncButtonProps> = ({
     }
   };
 
-  // Already synced: Show green badge with link
+  // Already synced: Show green badge with link to real Drive document
   if (currentUrl) {
     if (variant === 'badge' || variant === 'inline') {
       return (
@@ -87,7 +108,7 @@ export const GoogleDriveSyncButton: React.FC<GoogleDriveSyncButtonProps> = ({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 hover:border-emerald-400 text-[11px] font-bold transition-all shadow-sm group"
-          title="צפה בקבלה שנשמרה ב-Google Drive"
+          title="צפה בקבלה האמיתית שנשמרה ב-Google Drive"
         >
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
           <span>שמור ב-Drive</span>
@@ -104,13 +125,28 @@ export const GoogleDriveSyncButton: React.FC<GoogleDriveSyncButtonProps> = ({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
           className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 hover:bg-emerald-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-md group active:scale-95"
-          title="פתח קבלה ב-Google Drive"
+          title="פתח קבלה אמיתית ב-Google Drive"
         >
           <FileCheck className="w-4 h-4 text-emerald-400 group-hover:text-black transition-colors" />
           <span>צפה בקבלה ב-Drive</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
       </div>
+    );
+  }
+
+  // If requires auth
+  if (needsAuth) {
+    return (
+      <a
+        href="/api/drive/auth"
+        onClick={(e) => e.stopPropagation()}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 hover:bg-amber-500 hover:text-black text-xs font-extrabold transition-all shadow-sm group"
+        title="התחבר לחשבון Google כדי לשמור קבלות"
+      >
+        <LogIn className="w-3.5 h-3.5 text-amber-400 group-hover:text-black" />
+        <span>חבר Google Drive</span>
+      </a>
     );
   }
 
