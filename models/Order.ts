@@ -20,6 +20,9 @@ export interface IOrder extends Document {
   status: 'PENDING' | 'BREWING' | 'OUT_FOR_DELIVERY' | 'COMPLETED' | 'CANCELLED';
   whatsappSent: boolean;
   emailSent: boolean;
+  driveReceiptId?: string;
+  driveReceiptUrl?: string;
+  driveSyncedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,6 +52,9 @@ const OrderSchema = new Schema<IOrder>(
     },
     whatsappSent: { type: Boolean, default: false },
     emailSent: { type: Boolean, default: false },
+    driveReceiptId: { type: String, required: false },
+    driveReceiptUrl: { type: String, required: false },
+    driveSyncedAt: { type: Date, required: false },
   },
   { timestamps: true }
 );

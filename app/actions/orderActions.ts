@@ -4,6 +4,7 @@ import { orderSchema, OrderInput } from '@/lib/validations/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Order } from '@/models/Order';
 import { sendOrderConfirmationEmail } from '@/lib/email/emailService';
+import { uploadReceiptToGoogleDrive } from '@/lib/googleDriveService';
 
 export async function createStandardOrder(data: OrderInput) {
   try {
@@ -16,6 +17,7 @@ export async function createStandardOrder(data: OrderInput) {
     );
 
     const orderNumber = 'DR-' + Math.floor(100000 + Math.random() * 900000);
+    const createdAtIso = new Date().toISOString();
     let emailSent = false;
     let previewUrl: string | null = null;
 
@@ -43,6 +45,35 @@ export async function createStandardOrder(data: OrderInput) {
       }
     }
 
+    // Auto-generate and sync receipt to Google Drive
+    let driveReceiptId: string | undefined;
+    let driveReceiptUrl: string | undefined;
+    try {
+      const driveRes = await uploadReceiptToGoogleDrive({
+        orderNumber,
+        fullName: validated.fullName,
+        email: validated.email,
+        phone: validated.phone,
+        deliveryAddress: validated.deliveryAddress,
+        items: validated.items.map((i) => ({
+          itemName: i.itemName,
+          quantity: i.quantity,
+          pricePerUnit: i.pricePerUnit,
+          shots: i.shots,
+          milkType: i.milkType,
+        })),
+        totalPrice,
+        createdAt: createdAtIso,
+        paymentMethod: 'כרטיס אשראי מאובטח',
+      });
+      if (driveRes.success) {
+        driveReceiptId = driveRes.fileId;
+        driveReceiptUrl = driveRes.webViewLink;
+      }
+    } catch (driveErr) {
+      console.warn('Google Drive auto-sync on order create fallback:', driveErr);
+    }
+
     // Save to database (with fallback for dev without live MongoDB URI)
     try {
       await connectToDatabase();
@@ -57,12 +88,13 @@ export async function createStandardOrder(data: OrderInput) {
         status: 'PENDING',
         whatsappSent: false,
         emailSent,
+        driveReceiptId,
+        driveReceiptUrl,
+        driveSyncedAt: driveReceiptId ? new Date() : undefined,
       });
     } catch (dbErr) {
       console.warn('MongoDB order save fallback:', dbErr);
     }
-
-    const createdAtIso = new Date().toISOString();
 
     return {
       success: true,
@@ -72,6 +104,8 @@ export async function createStandardOrder(data: OrderInput) {
       email: validated.email || '',
       emailSent,
       previewUrl,
+      driveReceiptId,
+      driveReceiptUrl,
       deliveryAddress: validated.deliveryAddress,
       itemCount: validated.items.length,
       items: validated.items,
@@ -121,6 +155,9 @@ export async function getUserOrdersAction(userEmail?: string, userPhone?: string
       createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
       whatsappSent: !!o.whatsappSent,
       emailSent: !!o.emailSent,
+      driveReceiptId: o.driveReceiptId || undefined,
+      driveReceiptUrl: o.driveReceiptUrl || undefined,
+      driveSyncedAt: o.driveSyncedAt ? new Date(o.driveSyncedAt).toISOString() : undefined,
     }));
 
     return {

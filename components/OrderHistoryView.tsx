@@ -31,6 +31,8 @@ import {
   ShieldCheck,
   Check,
   Copy,
+  Cloud,
+  Loader2,
 } from 'lucide-react';
 import { useOrderStore, UserOrderRecord, OrderItemDetail } from '@/lib/store/useOrderStore';
 import { useCartStore } from '@/lib/store/useCartStore';
@@ -39,6 +41,8 @@ import { coffeeSound } from '@/lib/audio/coffeeSounds';
 import { TiltGlassCard } from '@/components/TiltGlassCard';
 import { OrderInvoiceModal } from '@/components/OrderInvoiceModal';
 import { getUserOrdersAction } from '@/app/actions/orderActions';
+import { GoogleDriveSyncButton } from '@/components/GoogleDriveSyncButton';
+import { bulkSyncAllOrdersAction } from '@/app/actions/driveActions';
 
 export const OrderHistoryView: React.FC = () => {
   const {
@@ -48,6 +52,7 @@ export const OrderHistoryView: React.FC = () => {
     selectedOrderForInvoice,
     addOrder,
     setOrders,
+    updateOrderDriveSync,
     rateOrder,
     setActiveFilter,
     setSearchQuery,
@@ -63,6 +68,8 @@ export const OrderHistoryView: React.FC = () => {
   const [reorderSuccessMsg, setReorderSuccessMsg] = useState<string>('');
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isBulkSyncing, setIsBulkSyncing] = useState(false);
+  const [bulkSyncResultMsg, setBulkSyncResultMsg] = useState<string | null>(null);
   const [ratingOrderNum, setRatingOrderNum] = useState<string | null>(null);
   const [tempRating, setTempRating] = useState<number>(5);
   const [tempNotes, setTempNotes] = useState<string>('');
@@ -87,6 +94,8 @@ export const OrderHistoryView: React.FC = () => {
                 status: o.status,
                 createdAt: o.createdAt,
                 paymentMethod: 'כרטיס אשראי מאובטח',
+                driveReceiptId: o.driveReceiptId,
+                driveReceiptUrl: o.driveReceiptUrl,
                 trackingStep:
                   o.status === 'COMPLETED'
                     ? 4
@@ -124,6 +133,8 @@ export const OrderHistoryView: React.FC = () => {
             status: o.status,
             createdAt: o.createdAt,
             paymentMethod: 'כרטיס אשראי מאובטח',
+            driveReceiptId: o.driveReceiptId,
+            driveReceiptUrl: o.driveReceiptUrl,
             trackingStep:
               o.status === 'COMPLETED'
                 ? 4
@@ -139,6 +150,55 @@ export const OrderHistoryView: React.FC = () => {
       // ignore
     } finally {
       setTimeout(() => setIsRefreshing(false), 600);
+    }
+  };
+
+  // Bulk sync all orders to Google Drive
+  const handleBulkSyncAll = async () => {
+    if (isBulkSyncing || orders.length === 0) return;
+    coffeeSound.playBaristaClick();
+    setIsBulkSyncing(true);
+    setBulkSyncResultMsg(null);
+
+    try {
+      const ordersPayload = orders.map((o) => ({
+        orderNumber: o.orderNumber,
+        fullName: o.fullName,
+        email: o.email,
+        phone: o.phone,
+        deliveryAddress: o.deliveryAddress,
+        items: o.items.map((i) => ({
+          itemName: i.itemName,
+          quantity: i.quantity,
+          pricePerUnit: i.pricePerUnit,
+          shots: i.shots,
+          milkType: i.milkType,
+          origin: i.origin,
+        })),
+        totalPrice: o.totalPrice,
+        createdAt: o.createdAt,
+        paymentMethod: o.paymentMethod,
+        status: o.status,
+      }));
+
+      const res = await bulkSyncAllOrdersAction(ordersPayload);
+
+      if (res.success) {
+        // Update local store for all synced orders
+        res.results.forEach((item) => {
+          if (item.result.success && item.result.fileId && item.result.webViewLink) {
+            updateOrderDriveSync(item.orderNumber, item.result.fileId, item.result.webViewLink);
+          }
+        });
+        setBulkSyncResultMsg(res.message);
+      } else {
+        setBulkSyncResultMsg(res.message || 'שגיאה בביצוע סנכרון גורף');
+      }
+    } catch (err: any) {
+      console.error('Bulk Drive sync error:', err);
+      setBulkSyncResultMsg('אירעה שגיאה בביצוע הסנכרון ל-Google Drive');
+    } finally {
+      setIsBulkSyncing(false);
     }
   };
 
@@ -353,6 +413,61 @@ export const OrderHistoryView: React.FC = () => {
 
       </div>
 
+      {/* GOOGLE DRIVE RECEIPTS CLOUD BACKUP BANNER */}
+      <div className="liquid-glass rounded-3xl p-5 sm:p-6 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/30 via-stone-950/80 to-amber-950/20 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/10">
+              <Cloud className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="text-base font-black text-stone-100">
+                  גיבוי וסנכרון קבלות ל-Google Drive
+                </h4>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                  {orders.filter((o) => Boolean(o.driveReceiptUrl)).length} מתוך {orders.length} מסונכרנות
+                </span>
+              </div>
+              <p className="text-xs text-stone-400 mt-1">
+                כל קבלה נשמרת אוטומטית כמסמך דיגיטלי ממוחשב ב-Google Drive עם פירוט פולים, חישוב מע״מ ואימות מסחר.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleBulkSyncAll}
+              disabled={isBulkSyncing || orders.length === 0}
+              className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-extrabold text-xs transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95 disabled:opacity-60 shrink-0"
+            >
+              {isBulkSyncing ? (
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+              ) : (
+                <Cloud className="w-4 h-4 text-emerald-200" />
+              )}
+              <span>{isBulkSyncing ? 'מבצע סנכרון גורף...' : 'סנכרן את כל הקבלות (Bulk Sync)'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bulk Sync Feedback Banner */}
+        {bulkSyncResultMsg && (
+          <div className="mt-4 p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs font-bold flex items-center justify-between animate-fadeIn">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>{bulkSyncResultMsg}</span>
+            </div>
+            <button
+              onClick={() => setBulkSyncResultMsg(null)}
+              className="text-stone-400 hover:text-stone-100 text-xs px-2"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* FILTER TABS & SEARCH BAR CONTROLS */}
       <div className="liquid-glass rounded-3xl p-4 sm:p-5 border border-amber-500/30 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -495,6 +610,7 @@ export const OrderHistoryView: React.FC = () => {
                           )}
                         </button>
                         {getStatusBadge(order.status)}
+                        <GoogleDriveSyncButton order={order} variant="badge" />
                       </div>
                       <div className="flex items-center gap-2 text-xs text-stone-400 mt-1">
                         <Calendar className="w-3.5 h-3.5 text-amber-400" />

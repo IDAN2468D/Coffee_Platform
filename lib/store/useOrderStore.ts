@@ -28,6 +28,9 @@ export interface UserOrderRecord {
   reviewNotes?: string;
   trackingStep?: number; // 1: Received, 2: Brewing, 3: In Transit, 4: Delivered
   estimatedDelivery?: string;
+  driveReceiptId?: string;
+  driveReceiptUrl?: string;
+  driveSyncedAt?: string;
 }
 
 interface OrderStore {
@@ -37,6 +40,7 @@ interface OrderStore {
   selectedOrderForInvoice: UserOrderRecord | null;
   addOrder: (order: UserOrderRecord) => void;
   setOrders: (orders: UserOrderRecord[]) => void;
+  updateOrderDriveSync: (orderNumber: string, driveReceiptId: string, driveReceiptUrl: string) => void;
   rateOrder: (orderNumber: string, rating: number, reviewNotes?: string) => void;
   setActiveFilter: (filter: string) => void;
   setSearchQuery: (query: string) => void;
@@ -163,6 +167,29 @@ export const useOrderStore = create<OrderStore>()(
         }),
 
       setOrders: (orders) => set({ orders }),
+
+      updateOrderDriveSync: (orderNumber, driveReceiptId, driveReceiptUrl) =>
+        set((state) => ({
+          orders: state.orders.map((o) =>
+            o.orderNumber === orderNumber
+              ? {
+                  ...o,
+                  driveReceiptId,
+                  driveReceiptUrl,
+                  driveSyncedAt: new Date().toISOString(),
+                }
+              : o
+          ),
+          selectedOrderForInvoice:
+            state.selectedOrderForInvoice?.orderNumber === orderNumber
+              ? {
+                  ...state.selectedOrderForInvoice,
+                  driveReceiptId,
+                  driveReceiptUrl,
+                  driveSyncedAt: new Date().toISOString(),
+                }
+              : state.selectedOrderForInvoice,
+        })),
 
       rateOrder: (orderNumber, rating, reviewNotes) =>
         set((state) => ({

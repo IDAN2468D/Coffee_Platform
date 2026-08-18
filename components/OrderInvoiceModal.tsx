@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { UserOrderRecord } from '@/lib/store/useOrderStore';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
+import { GoogleDriveSyncButton } from '@/components/GoogleDriveSyncButton';
 
 interface OrderInvoiceModalProps {
   order: UserOrderRecord | null;
@@ -60,12 +61,14 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
           </div>
 
           <div className="flex items-center gap-2">
+            <GoogleDriveSyncButton order={order} variant="button" />
+
             <button
               onClick={handlePrint}
               className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 hover:bg-amber-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95"
             >
               <Printer className="w-4 h-4" />
-              <span>הדפס / שמור PDF</span>
+              <span>הדפס / PDF</span>
             </button>
 
             <button
