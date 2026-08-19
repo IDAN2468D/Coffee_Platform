@@ -111,7 +111,7 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
       { id: 'ultrasonic-aging', page: '/ultrasonic-aging', label: 'תא יישון אולטרסוני & ואקום', desc: 'הפחתת חומציות טאנית ב-45% ואיטום', icon: Zap, tag: 'AGING', category: 'ai_barista' },
       { id: 'ar-latte-art', page: '/ar-latte-art', label: 'מדפסת 3D ללאטה ארט AR', desc: 'פיסול קצף מוגבה ווקטוריזטור קקאו', icon: Sparkles, tag: 'AR', category: 'ai_barista' },
       { id: 'circadian-clock', page: '/circadian-clock', label: 'שעון קפאין סירקדיאני', desc: 'סנכרון רמות קורטיזול ומניעת התרסקות', icon: Clock, tag: 'BIO', category: 'ai_barista' },
-      { id: 'bio-energy', page: '/bio-energy', label: 'תאימות אנרגיה Bio-Match', desc: 'התאמת קפה לרמת עייפות ושעות פעילות', icon: Flame, category: 'ai_barista' },
+      { id: 'animations', page: '/animations', label: 'סטודיו אנימציות & פיזיקה 3D', desc: 'סימולציית קרמה, גלי חום, 3D Cup ופיצוץ קלייה', icon: Sparkles, tag: '3D FX', category: 'ai_barista' },
       { id: 'whatsapp-voice', page: '/whatsapp-voice', label: 'הזמנה ב-WhatsApp Voice', desc: 'הודעות קוליות להזמנה ואוטומציית CRM', icon: MessageSquare, tag: 'VOICE', category: 'ai_barista' },
     ],
   },

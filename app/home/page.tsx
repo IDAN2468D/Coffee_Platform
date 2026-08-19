@@ -16,6 +16,11 @@ const AuthModal = dynamic(() => import('@/components/AuthModal').then(mod => mod
 const StickyParallaxCoffee = dynamic(() => import('@/components/StickyParallaxCoffee').then(mod => mod.StickyParallaxCoffee), { ssr: false });
 const ScrollParallaxCoffeeShowcase = dynamic(() => import('@/components/ScrollParallaxCoffeeShowcase').then(mod => mod.ScrollParallaxCoffeeShowcase), { ssr: false });
 const ParallaxBeanCanvas = dynamic(() => import('@/components/ParallaxBeanCanvas').then(mod => mod.ParallaxBeanCanvas), { ssr: false });
+const CremaFluidAnimation = dynamic(() => import('@/components/CremaFluidAnimation').then(mod => mod.CremaFluidAnimation), { ssr: false });
+const AromaHeatwaveCup3D = dynamic(() => import('@/components/AromaHeatwaveCup3D').then(mod => mod.AromaHeatwaveCup3D), { ssr: false });
+const GlassBorderBeam = dynamic(() => import('@/components/GlassBorderBeam').then(mod => mod.GlassBorderBeam), { ssr: false });
+const RoastCrackBurst = dynamic(() => import('@/components/RoastCrackBurst').then(mod => mod.RoastCrackBurst), { ssr: false });
+
 
 import {
   Sparkles,
@@ -392,13 +397,59 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* 4. STICKY PARALLAX COFFEE CREATION JOURNEY */}
+          {/* 4. DYNAMIC LIQUID GLASS 4.0 ANIMATIONS & EXTRACTION PHYSICS SHOWCASE */}
+          <section className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
+                  <span>אנימציות Liquid Glass 4.0 Pro Live</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-stone-100 tracking-tight">
+                  פיזיקת נוזלים & כוס זכוכית 3D אינטראקטיבית
+                </h2>
+                <p className="text-stone-400 text-xs sm:text-sm">
+                  הזז את העכבר או לחץ לחוויית סימולציית זרימת קרמה עשירה וגלי חום תרמיים
+                </p>
+              </div>
+
+              <Link
+                href="/animations"
+                className="px-5 py-2.5 rounded-2xl bg-stone-900/90 border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500 hover:text-black transition-all flex items-center gap-2 shadow-lg shadow-amber-500/10"
+              >
+                <span>פתח סטודיו אנימציות מלא</span>
+                <ChevronLeft className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Crema Fluid Dynamics Canvas Box */}
+              <div className="lg:col-span-7 h-[420px]">
+                <CremaFluidAnimation
+                  className="w-full h-full"
+                  showControls={true}
+                  preset="classic"
+                />
+              </div>
+
+              {/* 3D Aroma Heatwave Cup Box */}
+              <div className="lg:col-span-5 h-[420px]">
+                <AromaHeatwaveCup3D
+                  className="w-full h-full"
+                  temperature={93.5}
+                  roastNotes={['יסמין', 'שוקולד מריר', 'הדרים', 'דבש בר', 'קרמל']}
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* 5. STICKY PARALLAX COFFEE CREATION JOURNEY */}
           <StickyParallaxCoffee />
 
-          {/* 5. INSTAGRAM REEL 1-TO-1 WARM PARALLAX SHOWCASE */}
+          {/* 6. INSTAGRAM REEL 1-TO-1 WARM PARALLAX SHOWCASE */}
           <ScrollParallaxCoffeeShowcase />
 
-          {/* 6. FEATURED SINGLE-ORIGIN COFFEE BEANS */}
+          {/* 7. FEATURED SINGLE-ORIGIN COFFEE BEANS */}
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -411,48 +462,61 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featuredBeans.map((item) => {
+              {featuredBeans.map((item, idx) => {
                 const isAdded = addedIds[item.id];
                 return (
-                  <div key={item.id} className="p-5 rounded-3xl liquid-glass border border-stone-800 space-y-4 hover:border-amber-500/40 transition-all">
-                    <div className="h-44 rounded-2xl overflow-hidden relative">
-                      <img src={item.imageUrl} alt={item.hebrewName} className="w-full h-full object-cover" />
-                      <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-stone-950/80 backdrop-blur-md text-[11px] font-bold text-amber-400 border border-amber-500/30">
-                        {item.price} ₪
+                  <GlassBorderBeam
+                    key={item.id}
+                    colorFrom={idx === 0 ? '#f59e0b' : idx === 1 ? '#06b6d4' : '#10b981'}
+                    colorTo={idx === 0 ? '#fbbf24' : idx === 1 ? '#38bdf8' : '#34d399'}
+                    duration={7 + idx * 2}
+                    className="h-full"
+                  >
+                    <RoastCrackBurst ambientEmbers={false} intensity={1.5} triggerOnClick={true}>
+                      <div className="p-5 rounded-3xl liquid-glass border border-stone-800/80 space-y-4 hover:border-amber-500/40 transition-all h-full flex flex-col justify-between">
+                        <div>
+                          <div className="h-44 rounded-2xl overflow-hidden relative">
+                            <img src={item.imageUrl} alt={item.hebrewName} className="w-full h-full object-cover" />
+                            <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-stone-950/80 backdrop-blur-md text-[11px] font-bold text-amber-400 border border-amber-500/30">
+                              {item.price} ₪
+                            </div>
+                          </div>
+                          <div className="space-y-1 mt-3">
+                            <h3 className="text-base font-bold text-stone-100">{item.hebrewName}</h3>
+                            <p className="text-xs text-stone-400">{item.origin}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {item.notes.map((n) => (
+                              <span key={n} className="px-2 py-0.5 rounded-md bg-stone-950 text-[10px] text-amber-300 font-semibold border border-stone-800">
+                                {n}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleQuickAdd(item)}
+                          className={`w-full py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${
+                            isAdded
+                              ? 'bg-emerald-500 text-black'
+                              : 'bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 hover:brightness-110 shadow-md shadow-amber-500/20'
+                          }`}
+                        >
+                          {isAdded ? (
+                            <>
+                              <Check className="w-4 h-4" />
+                              <span>נוסף לעגלה!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-4 h-4" />
+                              <span>הוסף לעגלת הקניות</span>
+                            </>
+                          )}
+                        </button>
                       </div>
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-base font-bold text-stone-100">{item.hebrewName}</h3>
-                      <p className="text-xs text-stone-400">{item.origin}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {item.notes.map((n) => (
-                        <span key={n} className="px-2 py-0.5 rounded-md bg-stone-950 text-[10px] text-amber-300 font-semibold border border-stone-800">
-                          {n}
-                        </span>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => handleQuickAdd(item)}
-                      className={`w-full py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${
-                        isAdded
-                          ? 'bg-emerald-500 text-black'
-                          : 'bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 hover:brightness-110 shadow-md shadow-amber-500/20'
-                      }`}
-                    >
-                      {isAdded ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span>נוסף לעגלה!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4" />
-                          <span>הוסף לעגלת הקניות</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                    </RoastCrackBurst>
+                  </GlassBorderBeam>
                 );
               })}
             </div>

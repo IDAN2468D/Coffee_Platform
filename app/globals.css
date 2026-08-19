@@ -138,3 +138,46 @@ body {
   height: 0;
 }
 
+/* Liquid Glass 4.0 Pro Advanced Animation Classes */
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes liquid-ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes gold-sparkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.9) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(180deg);
+  }
+}
+
+.liquid-ripple {
+  animation: liquid-ripple 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+.gold-sparkle {
+  animation: gold-sparkle 3s ease-in-out infinite;
+}
+
+.glass-aurora {
+  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.15), rgba(6, 182, 212, 0.08) 45%, transparent 70%);
+  filter: blur(40px);
+}
+
+

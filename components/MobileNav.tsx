@@ -14,8 +14,17 @@ export const MobileNav: React.FC = () => {
   const { toggleCart, getItemCount } = useCartStore();
   const itemCount = getItemCount();
 
-  // Hide on dedicated auth routes to prevent distraction
-  if (pathname === '/auth' || pathname === '/login' || pathname === '/register') {
+  // Hide on dedicated auth routes and login/register screens to prevent distraction
+  if (
+    !pathname ||
+    pathname === '/auth' ||
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    (pathname === '/' && !isAuthenticated)
+  ) {
     return null;
   }
 
