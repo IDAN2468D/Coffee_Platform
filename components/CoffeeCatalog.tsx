@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Coffee, Flame, Plus, Check, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
+import { useHorizontalScroll } from '@/lib/hooks/useHorizontalScroll';
 
 export interface CatalogItem {
   id: string;
@@ -180,38 +181,7 @@ export const CoffeeCatalog: React.FC = () => {
   const [selectedMilk, setSelectedMilk] = useState<Record<string, string>>({});
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
 
-  const categoryRef = React.useRef<HTMLDivElement>(null);
-  const [isMouseDown, setIsMouseDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [isDragMoved, setIsDragMoved] = useState(false);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!categoryRef.current) return;
-    setIsMouseDown(true);
-    setIsDragMoved(false);
-    setStartX(e.pageX - categoryRef.current.offsetLeft);
-    setScrollLeft(categoryRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsMouseDown(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsMouseDown(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isMouseDown || !categoryRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - categoryRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    if (Math.abs(x - startX) > 4) {
-      setIsDragMoved(true);
-    }
-    categoryRef.current.scrollLeft = scrollLeft - walk;
-  };
+  const categoryRef = useHorizontalScroll<HTMLDivElement>();
 
   const { addItem } = useCartStore();
 
@@ -255,20 +225,12 @@ export const CoffeeCatalog: React.FC = () => {
         {/* Category Bar */}
         <div
           ref={categoryRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          className={`flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-4 mb-10 no-scrollbar scrollbar-none select-none ${
-            isMouseDown ? 'cursor-grabbing' : 'cursor-grab'
-          }`}
+          className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-4 mb-10 no-scrollbar scrollbar-none select-none cursor-grab active:cursor-grabbing"
         >
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => {
-                if (!isDragMoved) setSelectedCategory(cat.id);
-              }}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 selectedCategory === cat.id
                   ? 'bg-amber-500 text-stone-950 shadow-lg shadow-amber-500/20'

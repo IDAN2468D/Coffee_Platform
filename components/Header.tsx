@@ -47,6 +47,7 @@ import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { AuthModal } from '@/components/AuthModal';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
+import { useHorizontalScroll } from '@/lib/hooks/useHorizontalScroll';
 
 interface HeaderProps {
   onOpenBarista?: () => void;
@@ -211,6 +212,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const categoryScrollRef = useHorizontalScroll<HTMLDivElement>();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { toggleCart, getItemCount } = useCartStore();
@@ -376,7 +378,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
 
         {/* 4. Horizontal Category Filter Chips Slider */}
         <div className="px-4 py-1.5 shrink-0">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div ref={categoryScrollRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing">
             <button
               onClick={() => {
                 coffeeSound.playBaristaClick();
@@ -606,6 +608,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [megaSearchQuery, setMegaSearchQuery] = useState('');
   const [activeMegaCategory, setActiveMegaCategory] = useState<string>('all');
+  const megaCategoryScrollRef = useHorizontalScroll<HTMLDivElement>();
 
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -827,7 +830,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                   </div>
 
                   {/* Category Filter Chips Bar */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+                  <div ref={megaCategoryScrollRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing">
                     <button
                       onClick={() => setActiveMegaCategory('all')}
                       className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${

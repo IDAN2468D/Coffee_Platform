@@ -17,6 +17,7 @@ import {
   Check,
 } from 'lucide-react';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
+import { useHorizontalScroll } from '@/lib/hooks/useHorizontalScroll';
 
 interface RoasterItem {
   id: string;
@@ -131,6 +132,7 @@ export const IsraelRoasterDirectory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('ALL');
   const [selectedRoastStyle, setSelectedRoastStyle] = useState<string>('ALL');
+  const districtScrollRef = useHorizontalScroll<HTMLDivElement>();
 
   const filteredRoasters = useMemo(() => {
     return ISRAEL_ROASTERS.filter((item) => {
@@ -190,7 +192,7 @@ export const IsraelRoasterDirectory: React.FC = () => {
         </div>
 
         {/* District Filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto text-xs">
+        <div ref={districtScrollRef} className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto text-xs pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing">
           <span className="text-stone-400 text-xs font-mono ml-2 shrink-0">מחוז:</span>
           {[
             { id: 'ALL', label: 'הכל' },
