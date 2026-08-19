@@ -14,6 +14,9 @@ import {
   CreditCard,
   MapPin,
   Sparkles,
+  Cloud,
+  FileCheck,
+  Layers,
 } from 'lucide-react';
 import { UserOrderRecord } from '@/lib/store/useOrderStore';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
@@ -40,6 +43,7 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
   const vatRate = 0.18;
   const subtotal = order.totalPrice / (1 + vatRate);
   const vatAmount = order.totalPrice - subtotal;
+  const invoiceNum = order.orderNumber.startsWith('DR-') ? order.orderNumber : `DR-${order.orderNumber}`;
 
   const formattedDate = new Date(order.createdAt).toLocaleDateString('he-IL', {
     year: 'numeric',
@@ -50,14 +54,25 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-fadeIn dir-rtl text-right">
-      <div className="relative w-full max-w-2xl bg-[#0e0c0b] border border-amber-500/40 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden my-auto max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-xl overflow-y-auto animate-fadeIn dir-rtl text-right">
+      <div className="relative w-full max-w-2xl bg-gradient-to-b from-[#16120e] via-[#0e0c0b] to-[#090807] border border-amber-500/50 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.95)] overflow-hidden my-auto max-h-[92vh] flex flex-col">
         
+        {/* Top Liquid Glass Gold Accent Bar */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 print:hidden" />
+
         {/* Modal Header Controls (Hidden on Print) */}
-        <div className="print:hidden p-4 border-b border-stone-800 bg-stone-950/80 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2 text-amber-400">
-            <Sparkles className="w-5 h-5 animate-pulse" />
-            <h3 className="font-extrabold text-base text-stone-100">חשבונית מס / קבלה דיגיטלית</h3>
+        <div className="print:hidden p-4 sm:p-5 border-b border-amber-500/20 bg-stone-950/80 backdrop-blur-md flex items-center justify-between shrink-0 gap-3">
+          <div className="flex items-center gap-2.5 text-amber-400">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-sm sm:text-base text-stone-100 flex items-center gap-1.5">
+                <span>חשבונית מס / קבלה דיגיטלית</span>
+                <span className="text-xs text-amber-400/80 font-mono">#{invoiceNum}</span>
+              </h3>
+              <p className="text-[11px] text-stone-400">מסונכרן ומאובטח לענן Google Drive</p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -65,10 +80,11 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
 
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 hover:bg-amber-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+              className="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500 border border-amber-500/40 hover:border-amber-400 text-amber-300 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
+              title="הדפס או שמור כ-PDF"
             >
-              <Printer className="w-4 h-4" />
-              <span>הדפס / PDF</span>
+              <Printer className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">הדפס / PDF</span>
             </button>
 
             <button
@@ -76,7 +92,7 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
                 coffeeSound.playBaristaClick();
                 onClose();
               }}
-              className="p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-400 hover:text-stone-100 hover:border-stone-700 transition-all"
+              className="p-2 rounded-xl bg-stone-900/80 border border-stone-800 text-stone-400 hover:text-stone-100 hover:border-amber-500/40 transition-all cursor-pointer"
               title="סגור חלון"
             >
               <X className="w-4 h-4" />
@@ -92,10 +108,10 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
           {/* Company Branding & Receipt Title */}
           <div className="text-center border-b border-dashed border-amber-500/30 print:border-black pb-5 space-y-2">
             <div className="inline-flex items-center justify-center gap-2 text-amber-400 print:text-black">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/20 print:bg-black/10 border border-amber-500/40 print:border-black flex items-center justify-center font-black">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/30 to-amber-700/20 print:bg-black/10 border border-amber-500/40 print:border-black flex items-center justify-center font-black shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                 <Coffee className="w-5 h-5 text-amber-400 print:text-black" />
               </div>
-              <span className="text-xl sm:text-2xl font-black tracking-wider uppercase font-mono">
+              <span className="text-xl sm:text-2xl font-black tracking-wider uppercase font-mono bg-gradient-to-r from-amber-200 via-amber-400 to-amber-300 bg-clip-text text-transparent print:text-black">
                 THE DIGITAL ROAST
               </span>
             </div>
@@ -103,62 +119,68 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
               חברת הקפה הגורמה והקלייה הספציאליטית בע"מ • ח.פ. 519824601
             </p>
             <p className="text-[11px] text-stone-500 print:text-stone-600 font-mono">
-              שדרות רוטשילד 45, תל אביב • טלפון: 03-6821900 • service@digitalroast.co.il
+              שדרות רוטשילד 45, תל אביב • טלפון: 03-6821900 • support@digitalroast.co.il
             </p>
-            <div className="pt-2">
-              <span className="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 print:border-black print:text-black text-xs font-black">
-                ✓ מסמך ממוחשב - מקור חתום דיגיטלית
+            <div className="pt-2 flex items-center justify-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 print:border-black print:text-black text-xs font-black">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>מסמך ממוחשב - מקור חתום דיגיטלית</span>
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 print:border-black print:text-black text-xs font-bold font-mono">
+                <Cloud className="w-3.5 h-3.5" />
+                <span>Google Drive Cloud Verified</span>
               </span>
             </div>
           </div>
 
           {/* Invoice Meta Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs bg-stone-900/50 print:bg-stone-100 p-4 rounded-2xl border border-stone-800 print:border-stone-300">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 text-xs bg-stone-900/60 print:bg-stone-100 p-4 rounded-2xl border border-amber-500/20 print:border-stone-300">
             <div>
-              <span className="text-stone-400 print:text-stone-600 block text-[10px]">מספר חשבונית / הזמנה:</span>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px] font-medium">מספר חשבונית / הזמנה:</span>
               <span className="font-mono font-black text-amber-300 print:text-black text-sm">
-                #{order.orderNumber}
+                #{invoiceNum}
               </span>
             </div>
             <div>
-              <span className="text-stone-400 print:text-stone-600 block text-[10px]">תאריך ושעת הפקה:</span>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px] font-medium">תאריך ושעת הפקה:</span>
               <span className="font-bold text-stone-200 print:text-black">
                 {formattedDate}
               </span>
             </div>
             <div>
-              <span className="text-stone-400 print:text-stone-600 block text-[10px]">אמצעי תשלום:</span>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px] font-medium">אמצעי תשלום:</span>
               <span className="font-bold text-stone-200 print:text-black flex items-center gap-1">
                 <CreditCard className="w-3.5 h-3.5 text-amber-400 print:text-black" />
-                <span>{order.paymentMethod || 'אשראי מאובטח'}</span>
+                <span>{order.paymentMethod || 'אשראי מאובטח (SSL)'}</span>
               </span>
             </div>
             <div>
-              <span className="text-stone-400 print:text-stone-600 block text-[10px]">שם המזמין:</span>
-              <span className="font-bold text-stone-200 print:text-black">{order.fullName}</span>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px] font-medium">שם המזמין:</span>
+              <span className="font-bold text-stone-200 print:text-black">{order.fullName || 'לקוח The Digital Roast'}</span>
             </div>
             <div>
-              <span className="text-stone-400 print:text-stone-600 block text-[10px]">טלפון ליצירת קשר:</span>
-              <span className="font-mono font-bold text-stone-200 print:text-black">{order.phone}</span>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px] font-medium">טלפון ליצירת קשר:</span>
+              <span className="font-mono font-bold text-stone-200 print:text-black">{order.phone || '050-0000000'}</span>
             </div>
             <div>
-              <span className="text-stone-400 print:text-stone-600 block text-[10px]">כתובת יעד למשלוח:</span>
+              <span className="text-stone-400 print:text-stone-600 block text-[10px] font-medium">כתובת יעד למשלוח:</span>
               <span className="font-bold text-stone-200 print:text-black truncate block" title={order.deliveryAddress}>
-                {order.deliveryAddress}
+                {order.deliveryAddress || 'איסוף עצמי מסניף רוטשילד'}
               </span>
             </div>
           </div>
 
           {/* Itemized Table */}
           <div className="space-y-2">
-            <h4 className="text-xs font-black text-amber-400 print:text-black uppercase tracking-wider">
-              פירוט פריטי הקפה והשירות
+            <h4 className="text-xs font-black text-amber-400 print:text-black uppercase tracking-wider flex items-center gap-1.5">
+              <Coffee className="w-3.5 h-3.5" />
+              <span>פירוט פריטי הקפה והתאמות בראיסטה</span>
             </h4>
-            <div className="rounded-2xl border border-stone-800 print:border-stone-400 overflow-hidden">
+            <div className="rounded-2xl border border-stone-800 print:border-stone-400 overflow-hidden shadow-inner">
               <table className="w-full text-xs text-right">
-                <thead className="bg-stone-900 print:bg-stone-200 text-stone-400 print:text-black text-[11px] font-bold border-b border-stone-800 print:border-stone-400">
+                <thead className="bg-amber-500/10 print:bg-stone-200 text-amber-300 print:text-black text-[11px] font-bold border-b border-amber-500/20 print:border-stone-400">
                   <tr>
-                    <th className="p-3">תיאור פריט</th>
+                    <th className="p-3">תיאור פריט והתאמות</th>
                     <th className="p-3 text-center">כמות</th>
                     <th className="p-3 text-center">מחיר יח׳</th>
                     <th className="p-3 text-left">סה״כ</th>
@@ -166,12 +188,12 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
                 </thead>
                 <tbody className="divide-y divide-stone-800/60 print:divide-stone-300">
                   {order.items.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-stone-900/30 print:hover:bg-transparent">
+                    <tr key={idx} className="hover:bg-amber-500/5 transition-colors print:hover:bg-transparent">
                       <td className="p-3">
                         <div className="font-black text-stone-100 print:text-black">{item.itemName}</div>
                         {(item.shots || item.milkType || item.origin) && (
-                          <div className="text-[10px] text-stone-400 print:text-stone-600 font-light mt-0.5">
-                            {item.shots ? `${item.shots} שוטים` : ''}
+                          <div className="text-[10px] text-amber-400/90 print:text-stone-600 font-medium mt-0.5">
+                            ✦ {item.shots ? `${item.shots} שוטים אספרסו` : ''}
                             {item.shots && item.milkType ? ' • ' : ''}
                             {item.milkType ? item.milkType : ''}
                             {item.origin ? ` • מקור: ${item.origin}` : ''}
@@ -191,9 +213,11 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
           </div>
 
           {/* Calculation Summary Block */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-stone-950 print:bg-stone-50 p-4 rounded-2xl border border-stone-800 print:border-stone-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-stone-950/80 print:bg-stone-50 p-4 rounded-2xl border border-amber-500/30 print:border-stone-300">
             <div className="flex items-center gap-3 text-stone-400 print:text-stone-600 text-xs">
-              <ShieldCheck className="w-5 h-5 text-emerald-400 print:text-black" />
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 print:text-black" />
+              </div>
               <div>
                 <span className="font-bold text-stone-200 print:text-black block">עסקת מסחר מאובטחת SSL 256-bit</span>
                 <span className="text-[10px]">קבלה זו מהווה אישור תשלום סופי ומאושר לרשויות המס</span>
@@ -206,16 +230,16 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
                 <span className="font-mono">₪{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-stone-400 print:text-stone-600">
-                <span>מע״מ לפי 18%:</span>
+                <span>מע״מ כחוק (18%):</span>
                 <span className="font-mono">₪{vatAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-stone-400 print:text-stone-600">
-                <span>דמי משלוח אקספרס:</span>
-                <span className="font-bold text-emerald-400 print:text-black">חינם (הטבת VIP)</span>
+                <span>דמי משלוח וטיפול VIP:</span>
+                <span className="font-bold text-emerald-400 print:text-black">חינם (הטבת Roast Club)</span>
               </div>
-              <div className="border-t border-dashed border-stone-700 print:border-black pt-2 flex justify-between text-base font-black text-amber-400 print:text-black">
+              <div className="border-t border-dashed border-amber-500/40 print:border-black pt-2 flex justify-between text-base font-black text-amber-400 print:text-black">
                 <span>סה״כ שולם כולל מע״מ:</span>
-                <span className="font-mono text-lg">₪{order.totalPrice.toFixed(2)}</span>
+                <span className="font-mono text-lg text-amber-300 print:text-black">₪{order.totalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -223,11 +247,11 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
           {/* Barcode & Verification QR Section */}
           <div className="border-t border-stone-800 print:border-black pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
             <div className="space-y-1">
-              <div className="font-mono text-[10px] tracking-widest text-stone-500 print:text-stone-600 uppercase">
+              <div className="font-mono text-[10px] tracking-widest text-amber-400/70 print:text-stone-600 uppercase font-bold">
                 DIGITAL ROAST AUTHENTICATION VERIFIED
               </div>
               {/* Simulated Thermal Barcode */}
-              <div className="flex items-center justify-center sm:justify-start gap-0.5 h-8 opacity-80 print:opacity-100">
+              <div className="flex items-center justify-center sm:justify-start gap-0.5 h-8 opacity-90 print:opacity-100">
                 {[2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 3, 1, 4, 2, 1, 2, 3].map((w, i) => (
                   <div
                     key={i}
@@ -237,14 +261,14 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
                 ))}
               </div>
               <div className="font-mono text-[9px] text-stone-500 print:text-stone-600">
-                AUTH-HASH: {order.orderNumber}-2026-COFFEE-SECURE
+                AUTH-HASH: DRIVE-CLOUD-{invoiceNum}-2026-COFFEE-SECURE
               </div>
             </div>
 
             {/* QR Verification Block */}
-            <div className="flex items-center gap-3 bg-stone-900/60 print:bg-transparent p-2.5 rounded-2xl border border-stone-800 print:border-none">
+            <div className="flex items-center gap-3 bg-stone-900/80 print:bg-transparent p-2.5 rounded-2xl border border-amber-500/20 print:border-none">
               <div className="bg-white p-1.5 rounded-xl">
-                <svg className="w-12 h-12" viewBox="0 0 100 100" fill="none">
+                <svg className="w-11 h-11" viewBox="0 0 100 100" fill="none">
                   <rect width="100" height="100" fill="white" />
                   <path d="M10 10h30v30H10zM60 10h30v30H60zM10 60h30v30H10z" fill="black" />
                   <path d="M18 18h14v14H18zM68 18h14v14H68zM18 68h14v14H18z" fill="white" />
@@ -254,13 +278,13 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
               </div>
               <div className="text-right text-[10px] text-stone-400 print:text-stone-600 font-medium">
                 <span className="block font-bold text-stone-200 print:text-black">סריקה לאימות מקור</span>
-                <span>אישור רשמי ודיגיטלי</span>
+                <span>אישור רשמי ודיגיטלי בענן</span>
               </div>
             </div>
           </div>
 
           <div className="text-center text-[10px] text-stone-500 print:text-stone-600 pt-2 font-mono">
-            תודה שבחרת ב-THE DIGITAL ROAST • שתיית קפה מענגת! ☕
+            תודה שבחרת ב-THE DIGITAL ROAST • חווית קפה ספציאליטי יוצאת דופן! ☕
           </div>
         </div>
 
