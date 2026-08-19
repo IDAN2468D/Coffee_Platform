@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Sparkles, Sliders, RefreshCw, Flame, Droplets, Zap, Eye } from 'lucide-react';
+import { Sparkles, Sliders, RefreshCw, Flame, Droplets, Zap, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CremaFluidAnimationProps {
   interactive?: boolean;
@@ -44,6 +44,7 @@ export function CremaFluidAnimation({
   const [swirlIntensity, setSwirlIntensity] = useState<number>(1.2);
   const [activePreset, setActivePreset] = useState<string>(preset);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [isControlsExpanded, setIsControlsExpanded] = useState<boolean>(true);
 
   // Mouse interaction state
   const mouseRef = useRef<{ x: number; y: number; px: number; py: number; isDown: boolean; vx: number; vy: number }>({
@@ -98,17 +99,57 @@ export function CremaFluidAnimation({
     }
     if (activePreset === 'ristretto') {
       // Dark, intense, tiger stripes
-      return ['#b45309', '#78350f', '#451a03', '#d97706', '#fbbf24', '#fef08a'];
+      return ['#451a03', '#78350f', '#92400e', '#b45309', '#d97706', '#f59e0b'];
     }
     if (activePreset === 'geisha') {
-      // Golden, silky, lighter amber
-      return ['#fbbf24', '#f59e0b', '#d97706', '#fef08a', '#fde047', '#fffbeb'];
+      // Light, floral golden crema
+      return ['#fef3c7', '#fde68a', '#fcd34d', '#fbbf24', '#f59e0b', '#d97706'];
     }
     // Classic Golden Crema
-    return ['#d97706', '#b45309', '#78350f', '#f59e0b', '#fbbf24', '#fef3c7'];
+    return ['#78350f', '#92400e', '#b45309', '#d97706', '#f59e0b', '#fde68a'];
   }, [temperature, activePreset]);
 
-  // Canvas & Physics Loop
+  // Initialize and spawn particles
+  const spawnParticle = useCallback((width: number, height: number, forceCenter = false): Particle => {
+    const colors = getCremaColors();
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const types: ('bubble' | 'crema' | 'oil' | 'ember')[] = ['crema', 'crema', 'bubble', 'oil'];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    let x: number, y: number;
+    if (forceCenter) {
+      const radius = Math.random() * (Math.min(width, height) * 0.35);
+      const angle = Math.random() * Math.PI * 2;
+      x = centerX + Math.cos(angle) * radius;
+      y = centerY + Math.sin(angle) * radius;
+    } else {
+      x = Math.random() * width;
+      y = Math.random() * height;
+    }
+
+    const angle = Math.atan2(y - centerY, x - centerX);
+    const speed = (0.3 + Math.random() * 0.8) * swirlIntensity;
+
+    return {
+      x,
+      y,
+      vx: Math.cos(angle + Math.PI / 2) * speed + (Math.random() - 0.5) * 0.3,
+      vy: Math.sin(angle + Math.PI / 2) * speed + (Math.random() - 0.5) * 0.3,
+      size: type === 'bubble' ? 1.5 + Math.random() * 3.5 : 2.5 + Math.random() * (cremaThickness * 1.5),
+      color,
+      alpha: 0,
+      maxAlpha: 0.3 + Math.random() * 0.6,
+      life: 0,
+      maxLife: 150 + Math.random() * 200,
+      type,
+      swirlAngle: angle,
+    };
+  }, [getCremaColors, swirlIntensity, cremaThickness]);
+
+  // Canvas render & physics loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -123,209 +164,134 @@ export function CremaFluidAnimation({
       width = canvas.width = canvas.parentElement.clientWidth;
       height = canvas.height = canvas.parentElement.clientHeight;
     };
+
     window.addEventListener('resize', handleResize);
 
-    const colors = getCremaColors();
-    const particleCount = Math.min(180, Math.floor((width * height) / 2500));
+    // Initial Particle pool
+    const targetParticleCount = Math.floor((width * height) / 3200);
+    particlesRef.current = Array.from({ length: targetParticleCount }, () => spawnParticle(width, height, true));
 
-    // Initialize particles
-    const initParticles = () => {
-      const parts: Particle[] = [];
-      for (let i = 0; i < particleCount; i++) {
-        const types: ('bubble' | 'crema' | 'oil' | 'ember')[] = ['crema', 'crema', 'bubble', 'oil'];
-        if (temperature > 90) types.push('ember');
-        const type = types[Math.floor(Math.random() * types.length)];
-        const maxLife = 120 + Math.random() * 200;
-
-        parts.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: (Math.random() - 0.5) * 1.5,
-          size: type === 'bubble' ? 1.5 + Math.random() * 3.5 : type === 'oil' ? 6 + Math.random() * 12 : 3 + Math.random() * 8,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          alpha: Math.random() * 0.7 + 0.2,
-          maxAlpha: Math.random() * 0.7 + 0.3,
-          life: Math.random() * maxLife,
-          maxLife,
-          type,
-          swirlAngle: Math.random() * Math.PI * 2,
-        });
-      }
-      particlesRef.current = parts;
-    };
-
-    initParticles();
-
-    let frame = 0;
+    let time = 0;
 
     const render = () => {
-      frame++;
-      ctx.clearRect(0, 0, width, height);
+      time += 0.015;
+      ctx.fillStyle = '#0a0807';
+      ctx.fillRect(0, 0, width, height);
 
       const centerX = width / 2;
       const centerY = height / 2;
 
-      // Base rich liquid gradient
-      const bgGrad = ctx.createRadialGradient(
-        centerX + Math.sin(frame * 0.01) * 30,
-        centerY + Math.cos(frame * 0.01) * 20,
-        10,
-        centerX,
-        centerY,
-        Math.max(width, height) * 0.75
-      );
-
-      if (temperature < 15) {
-        bgGrad.addColorStop(0, 'rgba(15, 23, 42, 0.95)');
-        bgGrad.addColorStop(0.5, 'rgba(30, 27, 75, 0.85)');
-        bgGrad.addColorStop(1, 'rgba(5, 4, 4, 0.98)');
-      } else {
-        bgGrad.addColorStop(0, 'rgba(41, 18, 5, 0.92)');
-        bgGrad.addColorStop(0.4, 'rgba(28, 13, 4, 0.95)');
-        bgGrad.addColorStop(1, 'rgba(5, 4, 4, 0.98)');
-      }
-
-      ctx.fillStyle = bgGrad;
+      // 1. Draw Deep Espresso Base Radial Gradient
+      const baseGrad = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, Math.max(width, height) * 0.65);
+      baseGrad.addColorStop(0, '#1c130e');
+      baseGrad.addColorStop(0.5, '#120c09');
+      baseGrad.addColorStop(1, '#050404');
+      ctx.fillStyle = baseGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Draw Crema Viscosity Streamlines / Tiger Stripe Rings
+      // 2. Draw Vortex Crema Waves
       ctx.save();
       for (let ring = 1; ring <= 4; ring++) {
-        const radius = (Math.min(width, height) * 0.18 * ring) / 1.5;
-        const ringOffset = frame * 0.008 * (ring % 2 === 0 ? 1 : -1) * swirlIntensity;
-
+        const ringRadius = (ring * Math.min(width, height) * 0.12) + Math.sin(time * 2 + ring) * 8;
         ctx.beginPath();
-        for (let a = 0; a <= Math.PI * 2; a += 0.1) {
-          const wave = Math.sin(a * (ring + 2) + ringOffset) * (8 * (viscosity / 3));
-          const r = radius + wave;
-          const rx = centerX + Math.cos(a) * r;
-          const ry = centerY + Math.sin(a) * (r * 0.85); // Isometric squash
-
-          if (a === 0) ctx.moveTo(rx, ry);
-          else ctx.lineTo(rx, ry);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = ring % 2 === 0 ? 'rgba(245, 158, 11, 0.12)' : 'rgba(217, 119, 6, 0.08)';
-        ctx.lineWidth = 2.5 + (cremaThickness / 2);
+        ctx.arc(centerX, centerY, Math.max(10, ringRadius), 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(245, 158, 11, ${0.04 + ring * 0.02})`;
+        ctx.lineWidth = cremaThickness * 2;
         ctx.stroke();
       }
       ctx.restore();
 
-      // Mouse velocity decaying
-      mouseRef.current.vx *= 0.92;
-      mouseRef.current.vy *= 0.92;
+      // 3. Mouse Swirl & Force Fields
+      const mouse = mouseRef.current;
+      const mouseActive = mouse.x > 0 && mouse.y > 0;
 
-      // Update & Draw Particles (Crema, Bubbles, Oils, Embers)
-      const parts = particlesRef.current;
-      for (let i = 0; i < parts.length; i++) {
-        const p = parts[i];
+      // 4. Update & Render Particles
+      const particles = particlesRef.current;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         p.life++;
-        if (p.life > p.maxLife) {
-          p.life = 0;
-          p.x = Math.random() * width;
-          p.y = Math.random() * height;
+
+        // Fade in / Fade out
+        if (p.life < 30) {
+          p.alpha = (p.life / 30) * p.maxAlpha;
+        } else if (p.life > p.maxLife - 40) {
+          p.alpha = ((p.maxLife - p.life) / 40) * p.maxAlpha;
         }
 
-        // Swirl physics towards center + mouse influence
+        // Swirl Physics
         const dx = p.x - centerX;
         const dy = p.y - centerY;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const angle = Math.atan2(dy, dx);
+        const currentAngle = Math.atan2(dy, dx);
 
-        // Viscosity damping
-        const speed = (2.2 / (viscosity * 0.6)) * swirlIntensity;
-        p.swirlAngle += 0.015 * speed;
+        // Angular rotation velocity based on viscosity (lower viscosity = faster rotation)
+        const angularVelocity = (0.012 / (viscosity * 0.6)) * swirlIntensity;
+        const newAngle = currentAngle + angularVelocity;
+        const pull = 0.15; // Centripetal pull towards vortex center
 
-        // Centripetal + tangential velocity
-        p.vx += Math.cos(p.swirlAngle + Math.PI / 2) * 0.08 * speed - (dx / dist) * 0.02;
-        p.vy += Math.sin(p.swirlAngle + Math.PI / 2) * 0.08 * speed - (dy / dist) * 0.02;
+        p.x = centerX + Math.cos(newAngle) * (dist - pull) + p.vx;
+        p.y = centerY + Math.sin(newAngle) * (dist - pull) + p.vy;
 
-        // Interaction with mouse cursor
-        if (interactive) {
-          const mdx = p.x - mouseRef.current.x;
-          const mdy = p.y - mouseRef.current.y;
-          const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-          if (mdist < 140) {
-            const force = (1 - mdist / 140) * (mouseRef.current.isDown ? 3.5 : 1.8);
-            p.vx += (mdx / mdist) * force + mouseRef.current.vx * 0.15;
-            p.vy += (mdy / mdist) * force + mouseRef.current.vy * 0.15;
+        // Interactive Mouse Force
+        if (mouseActive) {
+          const mdx = p.x - mouse.x;
+          const mdy = p.y - mouse.y;
+          const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+
+          if (mDist < 120) {
+            const force = (120 - mDist) / 120;
+            if (mouse.isDown) {
+              // Attraction pull on click
+              p.x -= (mdx / mDist) * force * 5;
+              p.y -= (mdy / mDist) * force * 5;
+            } else {
+              // Mouse movement vortex turbulence
+              p.vx += mouse.vx * 0.05 * force;
+              p.vy += mouse.vy * 0.05 * force;
+            }
           }
         }
 
-        // Apply friction
-        p.vx *= 0.94;
-        p.vy *= 0.94;
+        // Drag friction based on viscosity
+        p.vx *= 0.94 - (viscosity * 0.01);
+        p.vy *= 0.94 - (viscosity * 0.01);
 
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Wrap around bounds
-        if (p.x < -20) p.x = width + 20;
-        if (p.x > width + 20) p.x = -20;
-        if (p.y < -20) p.y = height + 20;
-        if (p.y > height + 20) p.y = -20;
-
-        // Calculate opacity fade in/out
-        const lifeRatio = p.life / p.maxLife;
-        const currentAlpha = Math.sin(lifeRatio * Math.PI) * p.maxAlpha;
-
-        // Render particle by type
+        // Render Particle
         ctx.save();
-        ctx.globalAlpha = currentAlpha;
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.alpha));
 
         if (p.type === 'bubble') {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(254, 243, 199, 0.8)';
+          ctx.fillStyle = p.color;
           ctx.fill();
-          ctx.strokeStyle = 'rgba(245, 158, 11, 0.9)';
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
 
-          // Micro highlight on bubble
+          // Bubble highlight
           ctx.beginPath();
           ctx.arc(p.x - p.size * 0.3, p.y - p.size * 0.3, p.size * 0.3, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-          ctx.fill();
-        } else if (p.type === 'ember') {
-          // Fiery gold glowing ember
-          ctx.shadowColor = '#f59e0b';
-          ctx.shadowBlur = 12;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 0.6, 0, Math.PI * 2);
-          ctx.fillStyle = '#fef08a';
-          ctx.fill();
-        } else if (p.type === 'oil') {
-          // Glossy Crema Emulsion patch
-          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-          grad.addColorStop(0, p.color);
-          grad.addColorStop(0.7, 'rgba(217, 119, 6, 0.2)');
-          grad.addColorStop(1, 'transparent');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.ellipse(p.x, p.y, p.size * 1.4, p.size * 0.9, p.swirlAngle, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
           ctx.fill();
         } else {
-          // Golden crema filament
-          ctx.fillStyle = p.color;
+          // Crema droplets with soft blur glow
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+          grad.addColorStop(0, p.color);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
         }
-
         ctx.restore();
+
+        // Respawn dead particles
+        if (p.life >= p.maxLife || p.x < -50 || p.x > width + 50 || p.y < -50 || p.y > height + 50) {
+          particles[i] = spawnParticle(width, height, Math.random() > 0.3);
+        }
       }
 
-      // Specular golden refraction sheen on top
-      ctx.save();
-      const sheenGrad = ctx.createLinearGradient(0, 0, width, height);
-      sheenGrad.addColorStop(0, 'rgba(255, 255, 255, 0.04)');
-      sheenGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.08)');
-      sheenGrad.addColorStop(1, 'rgba(255, 255, 255, 0.02)');
-      ctx.fillStyle = sheenGrad;
-      ctx.fillRect(0, 0, width, height);
-      ctx.restore();
+      // Reset mouse velocities
+      mouse.vx *= 0.5;
+      mouse.vy *= 0.5;
 
       animFrameRef.current = requestAnimationFrame(render);
     };
@@ -333,12 +299,12 @@ export function CremaFluidAnimation({
     render();
 
     return () => {
-      window.removeEventListener('resize', handleResize);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      window.removeEventListener('resize', handleResize);
     };
-  }, [viscosity, cremaThickness, temperature, swirlIntensity, getCremaColors, interactive, activePreset]);
+  }, [viscosity, cremaThickness, temperature, swirlIntensity, spawnParticle]);
 
-  // Mouse & Touch listeners
+  // Mouse & Touch Handlers
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -394,62 +360,72 @@ export function CremaFluidAnimation({
       {/* HTML5 Dynamic Fluid Canvas */}
       <canvas ref={canvasRef} className="w-full h-full block cursor-crosshair" />
 
-      {/* Top Controls Header Bar - Unified, Responsive Liquid Glass */}
-      <div className="absolute top-3 inset-x-3 sm:top-4 sm:inset-x-4 z-20 flex flex-wrap items-center justify-between gap-2.5 p-2 sm:p-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/30 shadow-xl pointer-events-auto">
-        {/* Preset Selector Buttons */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+      {/* TOP HEADER DOCK - 100% Non-Overlapping Segmented Bar */}
+      <div className="absolute top-3 inset-x-3 sm:top-4 sm:inset-x-4 z-20 flex flex-wrap items-center justify-between gap-2.5 p-2 sm:p-2.5 rounded-2xl bg-stone-950/90 backdrop-blur-2xl border border-amber-500/30 shadow-2xl pointer-events-auto">
+        {/* Preset Selector Segmented Controls */}
+        <div className="grid grid-cols-4 gap-1 p-1 bg-stone-900/90 rounded-xl border border-white/10 shrink-0">
           {(['classic', 'ristretto', 'geisha', 'nitro'] as const).map((p) => (
             <button
               key={p}
+              type="button"
               onClick={() => applyPreset(p)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+              className={`px-2.5 py-1 text-[11px] sm:text-xs font-black rounded-lg transition-all text-center whitespace-nowrap ${
                 activePreset === p
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 font-black shadow-md shadow-amber-500/30 scale-105'
-                  : 'bg-stone-900/90 text-stone-300 hover:text-amber-300 hover:bg-stone-800 border border-white/5'
+                  ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/30 scale-105'
+                  : 'text-stone-300 hover:text-amber-300 hover:bg-stone-800/80'
               }`}
             >
-              {p === 'classic' && '☕ קלאסי'}
-              {p === 'ristretto' && '⚡ ריסטרטו אינטנסיבי'}
-              {p === 'geisha' && '🌸 גיישה פלוראלית'}
-              {p === 'nitro' && '🌊 נייטרו סילק'}
+              {p === 'classic' && 'קלאסי'}
+              {p === 'ristretto' && 'ריסטרטו'}
+              {p === 'geisha' && 'גיישה'}
+              {p === 'nitro' && 'נייטרו'}
             </button>
           ))}
         </div>
 
-        {/* Live Badges */}
+        {/* Live Badges & Sliders Toggle */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900/90 border border-amber-500/40 text-amber-300 text-xs font-mono shadow-sm">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-900/90 border border-amber-500/30 text-amber-300 text-[11px] font-mono shadow-sm">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span>CREMA DYNAMICS 60FPS</span>
+            <span>60FPS • {viscosity.toFixed(1)} cP</span>
           </div>
-          <div className="px-3 py-1.5 rounded-xl bg-stone-900/90 border border-white/10 text-stone-300 text-xs font-mono">
-            <span>צמיגות: {viscosity.toFixed(1)} cP</span>
-          </div>
+
+          {showControls && (
+            <button
+              type="button"
+              onClick={() => setIsControlsExpanded(!isControlsExpanded)}
+              className="p-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 border border-white/10 text-stone-300 hover:text-amber-300 text-xs transition-colors flex items-center gap-1"
+              title={isControlsExpanded ? 'צמצם לוח כיול' : 'הרחב לוח כיול'}
+            >
+              <Sliders className="w-3.5 h-3.5 text-amber-400" />
+              {isControlsExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Interactive Controls Overlay Panel */}
-      {showControls && (
+      {/* BOTTOM CALIBRATION HUD DOCK */}
+      {showControls && isControlsExpanded && (
         <div
-          className={`absolute bottom-4 left-4 right-4 z-20 p-4 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/25 transition-all duration-300 ${
-            isHovered ? 'opacity-100 translate-y-0' : 'opacity-90 sm:opacity-75 sm:hover:opacity-100'
+          className={`absolute bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 z-20 p-3 sm:p-4 rounded-2xl bg-stone-950/90 backdrop-blur-2xl border border-amber-500/25 shadow-2xl transition-all duration-300 ${
+            isHovered ? 'opacity-100' : 'opacity-90 sm:opacity-80 sm:hover:opacity-100'
           }`}
         >
-          <div className="flex items-center justify-between mb-3 text-xs">
-            <div className="flex items-center gap-2 text-amber-400 font-bold">
-              <Sliders className="w-4 h-4" />
+          <div className="flex items-center justify-between mb-2 text-xs">
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+              <Sliders className="w-3.5 h-3.5" />
               <span>כיול פיזיקלי של זרימת הקרמה (Live Telemetry)</span>
             </div>
-            <div className="text-stone-400 text-[11px] hidden sm:block">
+            <div className="text-stone-400 text-[10px] hidden sm:block">
               הזז את העכבר או לחץ וגרור לשליטה במערבולות הנוזל
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
             {/* Viscosity Slider */}
-            <div className="bg-stone-900/60 p-2.5 rounded-xl border border-white/5">
-              <div className="flex justify-between text-stone-300 mb-1">
-                <span>צמיגות אספרסו:</span>
+            <div className="bg-stone-900/80 p-2 rounded-xl border border-white/5">
+              <div className="flex justify-between text-stone-300 mb-1 text-[11px]">
+                <span>צמיגות:</span>
                 <span className="font-mono text-amber-400 font-bold">{viscosity.toFixed(1)} cP</span>
               </div>
               <input
@@ -464,9 +440,9 @@ export function CremaFluidAnimation({
             </div>
 
             {/* Crema Thickness Slider */}
-            <div className="bg-stone-900/60 p-2.5 rounded-xl border border-white/5">
-              <div className="flex justify-between text-stone-300 mb-1">
-                <span>עובי שכבת קרמה:</span>
+            <div className="bg-stone-900/80 p-2 rounded-xl border border-white/5">
+              <div className="flex justify-between text-stone-300 mb-1 text-[11px]">
+                <span>שכבת קרמה:</span>
                 <span className="font-mono text-amber-400 font-bold">{cremaThickness.toFixed(1)} מ״מ</span>
               </div>
               <input
@@ -481,9 +457,9 @@ export function CremaFluidAnimation({
             </div>
 
             {/* Extraction Temperature */}
-            <div className="bg-stone-900/60 p-2.5 rounded-xl border border-white/5">
-              <div className="flex justify-between text-stone-300 mb-1">
-                <span>טמפרטורת חליטה:</span>
+            <div className="bg-stone-900/80 p-2 rounded-xl border border-white/5">
+              <div className="flex justify-between text-stone-300 mb-1 text-[11px]">
+                <span>טמפרטורה:</span>
                 <span className="font-mono text-amber-400 font-bold">{temperature.toFixed(1)}°C</span>
               </div>
               <input
@@ -498,8 +474,8 @@ export function CremaFluidAnimation({
             </div>
 
             {/* Swirl Velocity */}
-            <div className="bg-stone-900/60 p-2.5 rounded-xl border border-white/5">
-              <div className="flex justify-between text-stone-300 mb-1">
+            <div className="bg-stone-900/80 p-2 rounded-xl border border-white/5">
+              <div className="flex justify-between text-stone-300 mb-1 text-[11px]">
                 <span>עוצמת מערבולת:</span>
                 <span className="font-mono text-amber-400 font-bold">{swirlIntensity.toFixed(1)}x</span>
               </div>

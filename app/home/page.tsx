@@ -425,7 +425,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Crema Fluid Dynamics Canvas Box */}
-              <div className="lg:col-span-7 h-[420px]">
+              <div className="lg:col-span-7 h-[460px] sm:h-[500px]">
                 <CremaFluidAnimation
                   className="w-full h-full"
                   showControls={true}
@@ -434,7 +434,7 @@ export default function HomePage() {
               </div>
 
               {/* 3D Aroma Heatwave Cup Box */}
-              <div className="lg:col-span-5 h-[420px]">
+              <div className="lg:col-span-5 h-[460px] sm:h-[500px]">
                 <AromaHeatwaveCup3D
                   className="w-full h-full"
                   temperature={93.5}
