@@ -1,4 +1,3 @@
-
 import { PDFDocument, rgb, PDFFont } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { OrderReceiptData } from './googleDriveService';
@@ -21,24 +20,106 @@ async function getRubikFontBytes(): Promise<ArrayBuffer> {
 }
 
 /**
- * Reverses Hebrew characters for proper RTL display in PDF LTR text rendering.
+ * Robust Bidirectional (BiDi) text formatter for Hebrew RTL in PDF-lib.
+ * Handles mixed Hebrew, Latin words, numbers, percentages, dates, phones,
+ * and mirrors parentheses and brackets correctly.
  */
 export function formatBidiText(str: string): string {
   if (!str) return '';
+
+  // If no Hebrew characters, return as is (pure English, numbers, or symbols)
   if (!/[\u0590-\u05FF]/.test(str)) {
     return str;
   }
 
-  // Split into words, reverse Hebrew words and rearrange for RTL presentation
-  const words = str.split(' ');
-  const processed = words.map((w) => {
-    if (/[\u0590-\u05FF]/.test(w)) {
-      return w.split('').reverse().join('');
+  const mirrorChar = (c: string): string => {
+    switch (c) {
+      case '(': return ')';
+      case ')': return '(';
+      case '[': return ']';
+      case ']': return '[';
+      case '{': return '}';
+      case '}': return '{';
+      case '<': return '>';
+      case '>': return '<';
+      default: return c;
     }
-    return w;
-  });
+  };
 
-  return processed.reverse().join(' ');
+  const isHebrewChar = (c: string) => /[\u0590-\u05FF]/.test(c);
+  const isLatinOrDigit = (c: string) => /[A-Za-z0-9]/.test(c);
+
+  const tokens: { type: 'RTL' | 'LTR' | 'NEUTRAL'; text: string }[] = [];
+  let currentType: 'RTL' | 'LTR' | 'NEUTRAL' | null = null;
+  let currentBuffer = '';
+
+  const flush = () => {
+    if (currentBuffer.length > 0 && currentType) {
+      tokens.push({ type: currentType, text: currentBuffer });
+      currentBuffer = '';
+    }
+  };
+
+  let i = 0;
+  while (i < str.length) {
+    const char = str[i];
+
+    if (isHebrewChar(char)) {
+      if (currentType !== 'RTL') {
+        flush();
+        currentType = 'RTL';
+      }
+      currentBuffer += char;
+      i++;
+    } else if (
+      isLatinOrDigit(char) ||
+      (currentType === 'LTR' &&
+        (char === ' ' || char === '-' || char === '.' || char === ':' || char === '/' || char === '#' || char === '@' || char === '%' || char === '+' || char === '_') &&
+        i + 1 < str.length &&
+        (isLatinOrDigit(str[i + 1]) || str[i + 1] === ' '))
+    ) {
+      // Check if space transition to Hebrew
+      if (char === ' ' && i + 1 < str.length && isHebrewChar(str[i + 1])) {
+        flush();
+        tokens.push({ type: 'NEUTRAL', text: ' ' });
+        currentType = null;
+        i++;
+        continue;
+      }
+      if (currentType !== 'LTR') {
+        flush();
+        currentType = 'LTR';
+      }
+      currentBuffer += char;
+      i++;
+    } else {
+      if (currentType !== 'NEUTRAL') {
+        flush();
+        currentType = 'NEUTRAL';
+      }
+      currentBuffer += char;
+      i++;
+    }
+  }
+  flush();
+
+  // Reverse tokens order for RTL presentation
+  const result: string[] = [];
+  for (let idx = tokens.length - 1; idx >= 0; idx--) {
+    const token = tokens[idx];
+    if (token.type === 'RTL') {
+      // Reverse Hebrew characters so they draw correctly in LTR font rendering
+      result.push(token.text.split('').reverse().join(''));
+    } else if (token.type === 'LTR') {
+      // Keep English words and numbers in their exact LTR reading order
+      result.push(token.text);
+    } else {
+      // Neutrals: mirror brackets/parentheses and reverse sequence
+      result.push(token.text.split('').map(mirrorChar).reverse().join(''));
+    }
+  }
+
+  return result.join('');
 }
 
 /**
@@ -455,7 +536,7 @@ export async function generateReceiptPdfBuffer(order: OrderReceiptData): Promise
 
   // Free VIP Delivery
   totY -= 16;
-  const lblShip = formatBidiText('דמי משלוח וטיפול VIP:');
+  const lblShip = formatBidiText('דמי משלוח וטיפול: VIP חינם');
   page.drawText(lblShip, {
     x: totalsColLabelX - font.widthOfTextAtSize(lblShip, 8.5),
     y: totY,
@@ -463,7 +544,7 @@ export async function generateReceiptPdfBuffer(order: OrderReceiptData): Promise
     font,
     color: textMuted,
   });
-  const lblFree = formatBidiText('חינם (הטבת מועדון)');
+  const lblFree = formatBidiText('(הטבת מועדון)');
   page.drawText(lblFree, {
     x: totalsColValX,
     y: totY,
