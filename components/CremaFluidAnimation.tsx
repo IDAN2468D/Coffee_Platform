@@ -394,35 +394,38 @@ export function CremaFluidAnimation({
       {/* HTML5 Dynamic Fluid Canvas */}
       <canvas ref={canvasRef} className="w-full h-full block cursor-crosshair" />
 
-      {/* Floating Ambient Info & Live Telemetry Badge */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-none">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/80 backdrop-blur-md border border-amber-500/30 text-amber-300 text-xs font-mono shadow-lg">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>CREMA DYNAMICS 60FPS</span>
+      {/* Top Controls Header Bar - Unified, Responsive Liquid Glass */}
+      <div className="absolute top-3 inset-x-3 sm:top-4 sm:inset-x-4 z-20 flex flex-wrap items-center justify-between gap-2.5 p-2 sm:p-2.5 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-amber-500/30 shadow-xl pointer-events-auto">
+        {/* Preset Selector Buttons */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {(['classic', 'ristretto', 'geisha', 'nitro'] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => applyPreset(p)}
+              className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                activePreset === p
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 font-black shadow-md shadow-amber-500/30 scale-105'
+                  : 'bg-stone-900/90 text-stone-300 hover:text-amber-300 hover:bg-stone-800 border border-white/5'
+              }`}
+            >
+              {p === 'classic' && '☕ קלאסי'}
+              {p === 'ristretto' && '⚡ ריסטרטו אינטנסיבי'}
+              {p === 'geisha' && '🌸 גיישה פלוראלית'}
+              {p === 'nitro' && '🌊 נייטרו סילק'}
+            </button>
+          ))}
         </div>
-        <div className="px-3 py-1.5 rounded-full bg-stone-900/80 backdrop-blur-md border border-white/10 text-stone-300 text-xs font-mono">
-          <span>צמיגות: {viscosity.toFixed(1)} cP</span>
-        </div>
-      </div>
 
-      {/* Preset Selector Tags */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5">
-        {(['classic', 'ristretto', 'geisha', 'nitro'] as const).map((p) => (
-          <button
-            key={p}
-            onClick={() => applyPreset(p)}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all backdrop-blur-md ${
-              activePreset === p
-                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/30 scale-105'
-                : 'bg-stone-900/70 text-stone-300 hover:bg-stone-800/80 border border-white/10'
-            }`}
-          >
-            {p === 'classic' && 'קלאסי'}
-            {p === 'ristretto' && 'ריסטרטו אינטנסיבי'}
-            {p === 'geisha' && 'גיישה פלוראלית'}
-            {p === 'nitro' && 'נייטרו סילק'}
-          </button>
-        ))}
+        {/* Live Badges */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900/90 border border-amber-500/40 text-amber-300 text-xs font-mono shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span>CREMA DYNAMICS 60FPS</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-xl bg-stone-900/90 border border-white/10 text-stone-300 text-xs font-mono">
+            <span>צמיגות: {viscosity.toFixed(1)} cP</span>
+          </div>
+        </div>
       </div>
 
       {/* Interactive Controls Overlay Panel */}
