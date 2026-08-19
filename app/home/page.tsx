@@ -10,16 +10,17 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useCartStore } from '@/lib/store/useCartStore';
 
-const GeminiBaristaModal = dynamic(() => import('@/components/GeminiBaristaModal').then(mod => mod.GeminiBaristaModal), { ssr: false });
-const CartDrawer = dynamic(() => import('@/components/CartDrawer').then(mod => mod.CartDrawer), { ssr: false });
-const AuthModal = dynamic(() => import('@/components/AuthModal').then(mod => mod.AuthModal), { ssr: false });
-const StickyParallaxCoffee = dynamic(() => import('@/components/StickyParallaxCoffee').then(mod => mod.StickyParallaxCoffee), { ssr: false });
-const ScrollParallaxCoffeeShowcase = dynamic(() => import('@/components/ScrollParallaxCoffeeShowcase').then(mod => mod.ScrollParallaxCoffeeShowcase), { ssr: false });
-const ParallaxBeanCanvas = dynamic(() => import('@/components/ParallaxBeanCanvas').then(mod => mod.ParallaxBeanCanvas), { ssr: false });
-const CremaFluidAnimation = dynamic(() => import('@/components/CremaFluidAnimation').then(mod => mod.CremaFluidAnimation), { ssr: false });
-const AromaHeatwaveCup3D = dynamic(() => import('@/components/AromaHeatwaveCup3D').then(mod => mod.AromaHeatwaveCup3D), { ssr: false });
-const GlassBorderBeam = dynamic(() => import('@/components/GlassBorderBeam').then(mod => mod.GlassBorderBeam), { ssr: false });
-const RoastCrackBurst = dynamic(() => import('@/components/RoastCrackBurst').then(mod => mod.RoastCrackBurst), { ssr: false });
+import { GeminiBaristaModal } from '@/components/GeminiBaristaModal';
+import { CartDrawer } from '@/components/CartDrawer';
+import { AuthModal } from '@/components/AuthModal';
+import { StickyParallaxCoffee } from '@/components/StickyParallaxCoffee';
+import { ScrollParallaxCoffeeShowcase } from '@/components/ScrollParallaxCoffeeShowcase';
+import { ParallaxBeanCanvas } from '@/components/ParallaxBeanCanvas';
+import { CremaFluidAnimation } from '@/components/CremaFluidAnimation';
+import { AromaHeatwaveCup3D } from '@/components/AromaHeatwaveCup3D';
+import { GlassBorderBeam } from '@/components/GlassBorderBeam';
+import { RoastCrackBurst } from '@/components/RoastCrackBurst';
+
 
 
 import {

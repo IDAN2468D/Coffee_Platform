@@ -1,18 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
-  compress: true,
-  poweredByHeader: false,
+  reactStrictMode: true,
   experimental: {
     reactCompiler: true,
-    optimizePackageImports: [
-      'lucide-react',
-      'zustand',
-      'clsx',
-      'tailwind-merge',
-      'zod',
-      '@google/generative-ai',
-    ],
   },
   images: {
     remotePatterns: [

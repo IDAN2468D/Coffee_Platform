@@ -419,7 +419,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
         </div>
 
         {/* 5. Scrollable Main Content (Primary Pages + Filtered Tools) */}
-        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-4 [scrollbar-width:thin]">
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-4 [scrollbar-width:thin] [scrollbar-color:#d97706_#100c0c] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#100c0c] [&::-webkit-scrollbar-thumb]:bg-amber-500/40 [&::-webkit-scrollbar-thumb]:rounded-full">
           {/* Primary Quick Links */}
           {selectedCategory === 'all' && !searchQuery && (
             <div className="space-y-2">
@@ -443,10 +443,10 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                       className={`p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-2 ${
                         isActive
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-sm'
-                          : 'bg-stone-900/80 border-stone-800/80 text-stone-300 hover:text-amber-300 hover:bg-stone-800/50'
+                          : 'bg-[#15100f] border-stone-800 text-stone-300 hover:text-amber-300 hover:bg-[#1e1715] hover:border-amber-500/40'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg shrink-0 ${isActive ? 'bg-amber-500 text-stone-950' : 'bg-stone-800 text-amber-400'}`}>
+                      <div className={`p-1.5 rounded-lg shrink-0 ${isActive ? 'bg-amber-500 text-stone-950' : 'bg-[#1e1715] text-amber-400'}`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <span className="truncate">{page.label}</span>
@@ -478,7 +478,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
             </div>
 
             {filteredTools.length === 0 ? (
-              <div className="p-6 rounded-2xl bg-stone-900/50 border border-stone-800 text-center space-y-2">
+              <div className="p-6 rounded-2xl bg-[#120d0c] border border-stone-800 text-center space-y-2">
                 <Coffee className="w-8 h-8 text-stone-600 mx-auto" />
                 <p className="text-xs text-stone-400 font-bold">לא נמצאו כלים התואמים לחיפוש</p>
                 <button
@@ -506,11 +506,11 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                       }}
                       className={`w-full p-2.5 rounded-xl border text-right transition-all flex items-center gap-3 group ${
                         isActive
-                          ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
-                          : 'bg-stone-900/70 border-stone-800/80 hover:border-amber-500/40 hover:bg-amber-500/10 text-stone-300'
+                          ? 'bg-amber-500/20 border-amber-500/60 text-amber-300'
+                          : 'bg-[#15100f] border-stone-800 hover:border-amber-500/70 hover:bg-[#1e1715] text-stone-300'
                       }`}
                     >
-                      <div className="p-2 rounded-lg bg-stone-950 border border-stone-800 text-amber-400 group-hover:border-amber-500/50 group-hover:scale-105 transition-all shrink-0">
+                      <div className="p-2 rounded-lg bg-[#1e1715] border border-stone-700/80 text-amber-400 group-hover:scale-105 transition-transform shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
 
@@ -524,7 +524,7 @@ const MobileMenuDrawer: React.FC<MobileMenuDrawerProps> = ({
                       </div>
 
                       {item.tag && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-stone-950 text-amber-400 font-mono border border-stone-800 shrink-0">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-[#241a18] text-amber-300 font-mono border border-amber-500/20 shrink-0">
                           {item.tag}
                         </span>
                       )}
@@ -791,137 +791,167 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
 
               {/* MEGA MENU FLOATING DROPDOWN PANEL */}
               {isMegaMenuOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[92vw] max-w-[960px] p-6 xl:p-7 rounded-3xl bg-[#0b0808]/98 backdrop-blur-3xl border-2 border-amber-500/50 shadow-[0_25px_80px_rgba(0,0,0,0.95)] animate-fadeIn z-50 dir-rtl text-right space-y-4">
-                  
-                  {/* Top Bar: Search + Quick Category Tabs */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-800/90">
-                    <div className="flex items-center gap-2.5 text-amber-400">
-                      <Sparkles className="w-5 h-5 animate-spin-slow text-amber-400" />
-                      <div>
-                        <h4 className="text-sm font-black tracking-wider text-stone-100">
-                          מרכז האקו-סיסטם והכלים ({ALL_FEATURES.length} מודולים פעילים)
-                        </h4>
-                        <p className="text-[11px] text-stone-400">
-                          בחר קטגוריה או חפש כלי ישירות
-                        </p>
+                <>
+                  {/* Solid Backdrop Overlay */}
+                  <div
+                    className="fixed inset-0 bg-black/80 z-40 animate-fadeIn cursor-pointer"
+                    onClick={() => setIsMegaMenuOpen(false)}
+                    aria-label="סגור תפריט"
+                  />
+
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[95vw] max-w-[1020px] p-5 sm:p-7 rounded-3xl bg-[#0a0706] border-2 border-amber-500/80 shadow-[0_30px_100px_rgba(0,0,0,1)] ring-1 ring-amber-500/30 animate-fadeIn z-50 dir-rtl text-right space-y-4">
+                    
+                    {/* Top Bar: Title + Quick Search + Close Button */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-stone-800">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-stone-950 font-black shadow-lg shadow-amber-500/30 shrink-0">
+                          <Coffee className="w-5 h-5 text-stone-950" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm sm:text-base font-black text-stone-100 tracking-wide">
+                              מרכז האקו-סיסטם והכלים
+                            </h4>
+                            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono font-bold text-[10px]">
+                              {ALL_FEATURES.length} מודולים פעילים
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-stone-400 mt-0.5">
+                            כל כלי המעבדה, ה-AI, חיישני החליטה והקלייה במקום אחד
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* Quick Search Input */}
+                        <div className="relative w-full sm:w-72">
+                          <input
+                            ref={searchInputRef}
+                            type="text"
+                            placeholder="חיפוש מהיר בין כל הכלים..."
+                            value={megaSearchQuery}
+                            onChange={(e) => setMegaSearchQuery(e.target.value)}
+                            className="w-full pl-8 pr-9 py-2.5 rounded-xl bg-[#140f0e] border border-stone-700/80 text-stone-100 placeholder-stone-400 text-xs focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
+                          />
+                          <Search className="w-4 h-4 text-stone-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          {megaSearchQuery && (
+                            <button
+                              onClick={() => setMegaSearchQuery('')}
+                              className="p-1 rounded text-stone-400 hover:text-stone-200 absolute left-2 top-1/2 -translate-y-1/2"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Close Modal Button */}
+                        <button
+                          onClick={() => setIsMegaMenuOpen(false)}
+                          className="p-2 rounded-xl bg-[#140f0e] border border-stone-700/80 text-stone-400 hover:text-amber-400 hover:border-amber-500/50 transition-all shrink-0"
+                          title="סגור תפריט"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
 
-                    {/* Quick Search */}
-                    <div className="relative w-full sm:w-72">
-                      <input
-                        ref={searchInputRef}
-                        type="text"
-                        placeholder="חיפוש מהיר בין כל הכלים..."
-                        value={megaSearchQuery}
-                        onChange={(e) => setMegaSearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-9 py-2.5 rounded-xl bg-stone-900/95 border border-stone-700/90 text-stone-100 placeholder-stone-400 text-xs focus:outline-none focus:border-amber-400 shadow-inner"
-                      />
-                      <Search className="w-4 h-4 text-stone-400 absolute right-3 top-1/2 -translate-y-1/2" />
-                      {megaSearchQuery && (
-                        <button
-                          onClick={() => setMegaSearchQuery('')}
-                          className="p-1 rounded text-stone-400 hover:text-stone-200 absolute left-2 top-1/2 -translate-y-1/2"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
+                    {/* Category Filter Chips Bar */}
+                    <div
+                      ref={megaCategoryScrollRef}
+                      className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing"
+                    >
+                      <button
+                        onClick={() => setActiveMegaCategory('all')}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
+                          activeMegaCategory === 'all'
+                            ? 'bg-amber-500 text-stone-950 font-black shadow-lg shadow-amber-500/25 scale-105'
+                            : 'bg-[#15100f] text-stone-300 border border-stone-800 hover:text-amber-300 hover:border-amber-500/40'
+                        }`}
+                      >
+                        <span>הכל ({ALL_FEATURES.length})</span>
+                      </button>
+
+                      {FEATURE_CATEGORIES.map((cat) => {
+                        const Icon = cat.icon;
+                        const isSelected = activeMegaCategory === cat.id;
+                        return (
+                          <button
+                            key={cat.id}
+                            onClick={() => setActiveMegaCategory(cat.id)}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
+                              isSelected
+                                ? 'bg-amber-500 text-stone-950 font-black shadow-lg shadow-amber-500/25 scale-105'
+                                : 'bg-[#15100f] text-stone-300 border border-stone-800 hover:text-amber-300 hover:border-amber-500/40'
+                            }`}
+                          >
+                            <Icon className="w-3.5 h-3.5" />
+                            <span>{cat.shortTitle}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Scrollable Tool Cards Grid */}
+                    <div className="max-h-[56vh] overflow-y-auto pr-1 pl-1 [scrollbar-width:thin] [scrollbar-color:#d97706_#100c0c] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#100c0c] [&::-webkit-scrollbar-thumb]:bg-amber-500/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-amber-500/70 space-y-3">
+                      {filteredMegaItems.length === 0 ? (
+                        <div className="p-8 text-center rounded-2xl bg-[#120d0c] border border-stone-800">
+                          <p className="text-xs text-stone-300 font-bold">לא נמצאו כלים התואמים לחיפוש הנוכחי</p>
+                          <button
+                            onClick={() => {
+                              setMegaSearchQuery('');
+                              setActiveMegaCategory('all');
+                            }}
+                            className="mt-2 text-xs text-amber-400 underline font-bold"
+                          >
+                            נקה חיפוש וסינון
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                          {filteredMegaItems.map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <button
+                                key={item.id}
+                                onClick={() => handleFeatureClick(item.page, item.id)}
+                                className="p-3.5 rounded-2xl bg-[#140f0e] border border-stone-800 hover:border-amber-500/70 hover:bg-[#1f1715] hover:shadow-[0_6px_20px_rgba(245,158,11,0.15)] hover:-translate-y-0.5 text-right transition-all duration-200 flex items-start gap-3 group"
+                              >
+                                <div className="p-2.5 rounded-xl bg-[#1d1614] border border-stone-700/80 text-amber-400 group-hover:scale-110 group-hover:border-amber-500 group-hover:text-amber-300 transition-all shrink-0 mt-0.5 shadow-sm">
+                                  <Icon className="w-4 h-4" />
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <span className="text-xs font-bold text-stone-100 group-hover:text-amber-300 truncate transition-colors">
+                                      {item.label}
+                                    </span>
+                                    {item.tag && (
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-[#251b18] text-amber-300 font-mono font-bold border border-amber-500/25 shrink-0">
+                                        {item.tag}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-[11px] text-stone-400 group-hover:text-stone-300 line-clamp-2 mt-1 leading-snug font-normal transition-colors">
+                                    {item.desc}
+                                  </p>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
                       )}
                     </div>
+
+                    {/* Mega Menu Footer */}
+                    <div className="pt-2.5 border-t border-stone-800 flex items-center justify-between text-[11px] text-stone-400">
+                      <span className="flex items-center gap-1.5">
+                        <Zap className="w-3.5 h-3.5 text-amber-400" />
+                        <span>קיצור דרך מקלדת: <kbd className="px-1.5 py-0.5 rounded bg-stone-900 border border-stone-800 text-[10px] font-mono text-stone-300">Ctrl + K</kbd></span>
+                      </span>
+                      <span className="text-amber-400 font-bold">The Digital Roast Ecosystem</span>
+                    </div>
                   </div>
-
-                  {/* Category Filter Chips Bar */}
-                  <div ref={megaCategoryScrollRef} className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing">
-                    <button
-                      onClick={() => setActiveMegaCategory('all')}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                        activeMegaCategory === 'all'
-                          ? 'bg-amber-500 text-stone-950 font-black shadow-md shadow-amber-500/20'
-                          : 'bg-stone-900 text-stone-400 border border-stone-800 hover:text-amber-300'
-                      }`}
-                    >
-                      <span>הכל ({ALL_FEATURES.length})</span>
-                    </button>
-
-                    {FEATURE_CATEGORIES.map((cat) => {
-                      const Icon = cat.icon;
-                      const isSelected = activeMegaCategory === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => setActiveMegaCategory(cat.id)}
-                          className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                            isSelected
-                              ? 'bg-amber-500 text-stone-950 font-black shadow-md shadow-amber-500/20'
-                              : 'bg-stone-900 text-stone-400 border border-stone-800 hover:text-amber-300'
-                          }`}
-                        >
-                          <Icon className="w-3.5 h-3.5" />
-                          <span>{cat.shortTitle}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Scrollable Tool Cards Grid */}
-                  <div className="max-h-[58vh] overflow-y-auto pr-1 [scrollbar-width:thin] space-y-3">
-                    {filteredMegaItems.length === 0 ? (
-                      <div className="p-8 text-center rounded-2xl bg-stone-900/50 border border-stone-800">
-                        <p className="text-xs text-stone-400 font-bold">לא נמצאו כלים התואמים לחיפוש הנוכחי</p>
-                        <button
-                          onClick={() => {
-                            setMegaSearchQuery('');
-                            setActiveMegaCategory('all');
-                          }}
-                          className="mt-2 text-xs text-amber-400 underline font-bold"
-                        >
-                          נקה סינון
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                        {filteredMegaItems.map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <button
-                              key={item.id}
-                              onClick={() => handleFeatureClick(item.page, item.id)}
-                              className="p-3 rounded-2xl bg-[#141010] border border-stone-800/90 hover:border-amber-500/50 hover:bg-amber-500/10 text-right transition-all flex items-start gap-3 group"
-                            >
-                              <div className="p-2 rounded-xl bg-stone-950 border border-stone-800 text-amber-400 group-hover:scale-110 group-hover:border-amber-500/50 transition-all shrink-0 mt-0.5">
-                                <Icon className="w-4 h-4" />
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-bold text-stone-100 group-hover:text-amber-300 truncate">
-                                    {item.label}
-                                  </span>
-                                  {item.tag && (
-                                    <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-stone-950 text-amber-400 font-mono border border-stone-800 shrink-0">
-                                      {item.tag}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-[10px] text-stone-400 line-clamp-2 mt-0.5 font-light leading-snug">
-                                  {item.desc}
-                                </p>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Mega Menu Footer */}
-                  <div className="pt-2 border-t border-stone-800/80 flex items-center justify-between text-[11px] text-stone-400">
-                    <span className="flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-amber-400" />
-                      <span>קיצור דרך מקלדת: <kbd className="px-1.5 py-0.5 rounded bg-stone-900 border border-stone-800 text-[10px] font-mono text-stone-300">Ctrl + K</kbd></span>
-                    </span>
-                    <span className="text-amber-400/90 font-bold">The Digital Roast Ecosystem</span>
-                  </div>
-                </div>
+                </>
               )}
             </div>
           </nav>
