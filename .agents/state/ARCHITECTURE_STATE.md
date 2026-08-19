@@ -3,7 +3,7 @@
 ## Active Modules & Component Mapping (71 App Routes, 75 Components)
 - **Israel & Municipal Science:** `IsraelWaterIntelligence` (`app/israel-water-radar/`), `IsraelRoasterDirectory` (`app/israel-roasters/`).
 - **Commodity & Global FX:** `CoffeeCommodityFXTicker` (`app/coffee-fx-ticker/`), `GlobalFXCoffeeTicker` (`app/fx-ticker/`).
-- **Research, Cloud & PKM:** `NotebookLMCloudHub` (`app/notebooklm-hub/`), `NotebookLMBrewSync` (`app/notebook-sync/`).
+- **Research, Cloud & PKM:** `GoogleCalendarCoffeeHub` (`app/calendar-hub/`), `NotebookLMCloudHub` (`app/notebooklm-hub/`), `NotebookLMBrewSync` (`app/notebook-sync/`).
 - **Optical & Vision AI:** `GemmaRoastVisionInspector` (`app/gemma-roast-vision/`), `OpticalRoastAnalyzer` (`app/optical-roast-analyzer/`), `GeminiBaristaModal` (`app/ai-barista/`).
 - **Database & CLV Analytics:** `MongoRoastAnalyticsDashboard` (`app/mongo-telemetry/`).
 - **Design Studio & Token Engine:** `StitchDesignThemeStudio` (`app/stitch-studio/`).

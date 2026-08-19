@@ -42,6 +42,7 @@ import {
   Check,
   ChevronLeft,
   Compass,
+  Calendar,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -156,6 +157,7 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
       { id: 'latte-art-trainer', page: '/latte-art-trainer', label: 'מאמן לאטה ארט ויזואלי', desc: 'אימון ויזואלי במזיגות ודוגמאות', icon: Droplets, category: 'studio_roast' },
       { id: 'gamification', page: '/gamification', label: 'מועדון Roast Club VIP', desc: 'אתגרים, משימות יומיות ודרגות בריסטה', icon: Award, tag: 'QUESTS', category: 'studio_roast' },
       { id: 'live-cupping-room', page: '/live-cupping-room', label: 'Cupping Room שיתופי חי', desc: 'חדר טעימות שיתופי וירטואלי בזמן אמת', icon: Star, tag: 'LIVE', category: 'studio_roast' },
+      { id: 'calendar-hub', page: '/calendar-hub', label: 'יומן קפה Google Calendar', desc: 'תזמון סדנאות, שעון צירקדי ודיגזינג פולים', icon: Calendar, tag: 'GCAL', category: 'studio_roast' },
       { id: 'barista-academy', page: '/barista-academy', label: 'אקדמיית הבריסטה AI', desc: 'מבחני הסמכה, מסלולי למידה ותגי מומחה', icon: Award, tag: 'ACADEMY', category: 'studio_roast' },
     ],
   },

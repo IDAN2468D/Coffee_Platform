@@ -38,3 +38,10 @@
 - [x] Implement `MongoRoastAnalyticsDashboard` (`/mongo-telemetry`) with `mongodb-mcp-server` CLV pipelines & auto-replenish
 - [x] Implement `IsraelRoasterDirectory` (`/israel-roasters`) with MOH license verification & Rabbinate kashrut directory
 - [x] Implement `StitchDesignThemeStudio` (`/stitch-studio`) with `StitchMCP` design token editor & 120Hz live preview
+
+## Sprint 8: Google Calendar AI & Coffee Scheduling Hub (COMPLETED)
+- [x] Implement `GoogleCalendarCoffeeHub` (`/calendar-hub`, `/google-calendar-hub`) with Google Calendar API, Google Meet video auto-generation, and .ics universal export
+- [x] Integrate Circadian Caffeine biological sync (Morning dip, midday focus, 14:00 cutoff)
+- [x] Integrate Roast Degassing & Peak Extraction flavor alerts (Days 7–21 post-roast)
+- [x] Integrate live SCA Cupping Masterclasses booking and subscription replenishment reminders
+
