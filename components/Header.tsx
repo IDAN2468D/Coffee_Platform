@@ -43,9 +43,11 @@ import {
   ChevronLeft,
   Compass,
   Calendar,
+  Mic,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { useVoiceAssistantStore } from '@/lib/store/useVoiceAssistantStore';
 import { AuthModal } from '@/components/AuthModal';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
 import { useHorizontalScroll } from '@/lib/hooks/useHorizontalScroll';
@@ -980,6 +982,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBarista, onScrollToSection
                   <span className="w-0.5 bg-amber-400 rounded-full animate-[pulse_0.75s_ease-in-out_infinite] h-4"></span>
                 </div>
               )}
+            </button>
+
+            {/* Global Voice Search & Navigation Trigger */}
+            <button
+              onClick={() => {
+                coffeeSound.playBaristaClick();
+                useVoiceAssistantStore.getState().openSearchModal();
+              }}
+              className="h-11 w-11 sm:h-12 sm:w-12 lg:h-13 lg:w-13 rounded-2xl bg-stone-900/90 hover:bg-amber-500/20 border-2 border-stone-800 hover:border-amber-500/50 text-amber-400 hover:text-amber-300 flex items-center justify-center transition-all active:scale-95 shrink-0 shadow-lg"
+              title="חיפוש קולי וניווט מהיר (Ctrl+K / Alt+V)"
+            >
+              <Mic className="w-5 h-5 sm:w-5.5 sm:h-5.5 animate-pulse" />
             </button>
 
             {/* AI Barista Hero Button */}

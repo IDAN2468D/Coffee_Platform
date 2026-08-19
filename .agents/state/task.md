@@ -1,11 +1,8 @@
-# Active Task: Google Calendar AI & Coffee Scheduling Hub (v8.0 SDD)
+# Active Task: Global Voice Navigation Co-Pilot & Smart Voice Search
 
-- [x] Create `lib/schemas/calendarSchema.ts` (Zod event & sync schemas)
-- [x] Create `lib/googleCalendarService.ts` (Google Calendar API, Direct URLs, .ics universal generator)
-- [x] Create `app/actions/calendarActions.ts` (Server actions with strict Zod validation)
-- [x] Create `components/GoogleCalendarCoffeeHub.tsx` (Liquid Glass 4.0 Pro Scheduling Dashboard)
-- [x] Create `app/calendar-hub/page.tsx` & `app/google-calendar-hub/page.tsx`
-- [x] Update `components/Header.tsx` with navigation link
-- [x] Create `.agents/skills/google-calendar-scheduler/SKILL.md`
-- [x] Update `.agents/state/ARCHITECTURE_STATE.md` & `SPRINTS.md`
-- [x] Verify TypeScript type safety & compilation
+- [x] Create `lib/voice/voiceNavigationMatcher.ts` (NLP Command & Synonym Matcher)
+- [x] Create `lib/store/useVoiceAssistantStore.ts` (Zustand Global Voice Store)
+- [x] Create `components/GlobalVoiceNavigator.tsx` (Floating HUD with Voice TTS Confirmation)
+- [x] Create `components/VoiceSearchModal.tsx` (Voice Search Dialog)
+- [x] Integrate into `components/Header.tsx` & `app/layout.tsx`
+- [x] Verify TypeScript type safety (`npx tsc --noEmit` passed with 0 errors)
