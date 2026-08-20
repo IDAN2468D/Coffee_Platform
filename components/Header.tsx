@@ -44,6 +44,7 @@ import {
   Compass,
   Calendar,
   Mic,
+  Receipt as ReceiptIcon,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -90,6 +91,7 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
     badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
     items: [
       { id: 'catalog', page: '/catalog', label: 'תפריט פולים וגורמה', desc: 'קטלוג פולים, תערובות מיוחדות וציוד', icon: Coffee, tag: 'CATALOG', category: 'shop_taste' },
+      { id: 'thermal-receipt', page: '/thermal-receipt', label: 'מדפסת קבלות תרמית & קונפטי', desc: 'אנימציית הדפסת קבלה תרמית בזמן אמת עם פיזיקת פליטה', icon: ReceiptIcon, tag: 'NEW FX', category: 'shop_taste' },
       { id: 'nootropic-matcher', page: '/nootropic-matcher', label: 'נואוטרופיקה ואדפטוגנים', desc: "Lion's Mane, Cordyceps ו-Reishi", icon: Brain, tag: 'NOOTROPIC', category: 'shop_taste' },
       { id: 'orders', page: '/orders', label: 'הזמנות ומעקב משלוח חי', desc: 'מעקב משלוח חי, קבלות דיגיטליות והזמנה חוזרת', icon: Clock, tag: 'LIVE', category: 'shop_taste' },
       { id: 'aroma-scent', page: '/aroma-scent', label: 'ניתוח ארומה וטרפנים AI', desc: 'ניתוח מולקולרי ומדד VAI% רב-ממדי', icon: Sparkles, tag: 'AI 5D', category: 'shop_taste' },

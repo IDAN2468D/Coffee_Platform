@@ -16,6 +16,8 @@ import {
   Check,
   ExternalLink,
   History,
+  Receipt as ReceiptIcon,
+  Sparkles,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -23,6 +25,7 @@ import { useOrderStore } from '@/lib/store/useOrderStore';
 import { createStandardOrder, sendOrderEmailAction } from '@/app/actions/orderActions';
 import { orderSchema } from '@/lib/validations/auth';
 import { ThreeDCardPayment } from './ThreeDCardPayment';
+import { ThermalReceiptModal } from './ThermalReceiptModal';
 
 export const CartDrawer: React.FC = () => {
   const { items, isOpen, closeCart, updateQuantity, removeItem, getTotalPrice, clearCart } =
@@ -37,6 +40,7 @@ export const CartDrawer: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [completedOrder, setCompletedOrder] = useState<any>(null);
   const [showPaymentSim, setShowPaymentSim] = useState(false);
+  const [showThermalReceipt, setShowThermalReceipt] = useState(false);
 
   // Custom email resend state
   const [resendEmail, setResendEmail] = useState('');
@@ -63,19 +67,21 @@ export const CartDrawer: React.FC = () => {
     e.preventDefault();
     setErrorMsg('');
 
+    const formattedItems = items.map((item) => ({
+      coffeeItemId: item.coffeeItemId || item.id || 'custom-coffee',
+      itemName: item.hebrewName || item.name || 'פריט קפה גורמה',
+      quantity: item.quantity || 1,
+      pricePerUnit: item.price || 0,
+      shots: item.shots ?? 1,
+      milkType: item.milkType || 'חלב רגיל',
+    }));
+
     const validation = orderSchema.safeParse({
-      fullName,
-      email,
-      phone,
-      deliveryAddress: address,
-      items: items.map((item) => ({
-        coffeeItemId: item.coffeeItemId,
-        itemName: item.hebrewName,
-        quantity: item.quantity,
-        pricePerUnit: item.price,
-        shots: item.shots,
-        milkType: item.milkType,
-      })),
+      fullName: fullName.trim(),
+      email: email ? email.trim() : '',
+      phone: phone.trim(),
+      deliveryAddress: address.trim(),
+      items: formattedItems,
     });
 
     if (!validation.success) {
@@ -88,19 +94,20 @@ export const CartDrawer: React.FC = () => {
 
   const executeStandardCheckout = async () => {
     setLoading(true);
+    setErrorMsg('');
     try {
       const orderPayload = {
-        fullName,
-        email,
-        phone,
-        deliveryAddress: address,
+        fullName: fullName.trim(),
+        email: email ? email.trim() : '',
+        phone: phone.trim(),
+        deliveryAddress: address.trim(),
         items: items.map((item) => ({
-          coffeeItemId: item.coffeeItemId,
-          itemName: item.hebrewName,
-          quantity: item.quantity,
-          pricePerUnit: item.price,
-          shots: item.shots,
-          milkType: item.milkType,
+          coffeeItemId: item.coffeeItemId || item.id || 'custom-coffee',
+          itemName: item.hebrewName || item.name || 'פריט קפה גורמה',
+          quantity: item.quantity || 1,
+          pricePerUnit: item.price || 0,
+          shots: item.shots ?? 1,
+          milkType: item.milkType || 'חלב רגיל',
         })),
       };
 
@@ -130,12 +137,12 @@ export const CartDrawer: React.FC = () => {
           phone: result.phone || phone || '',
           deliveryAddress: result.deliveryAddress || address || 'משלוח אקספרס',
           items: (result.items || []).map((i: any) => ({
-            coffeeItemId: i.coffeeItemId,
-            itemName: i.itemName,
-            quantity: i.quantity,
-            pricePerUnit: i.pricePerUnit,
-            shots: i.shots,
-            milkType: i.milkType,
+            coffeeItemId: i.coffeeItemId || 'custom-item',
+            itemName: i.itemName || 'פריט קפה',
+            quantity: i.quantity || 1,
+            pricePerUnit: i.pricePerUnit || 0,
+            shots: i.shots || 1,
+            milkType: i.milkType || 'חלב רגיל',
           })),
           totalPrice: result.totalPrice || 0,
           status: 'PENDING',
@@ -149,7 +156,8 @@ export const CartDrawer: React.FC = () => {
         setErrorMsg(result.error || 'שגיאה בביצוע ההזמנה');
       }
     } catch (err: any) {
-      setErrorMsg('אירעה שגיאה בעיבוד ההזמנה במערכת');
+      console.error('Order checkout error:', err);
+      setErrorMsg(err?.message || 'אירעה שגיאה בעיבוד ההזמנה במערכת');
     } finally {
       setLoading(false);
       setShowPaymentSim(false);
@@ -304,6 +312,15 @@ export const CartDrawer: React.FC = () => {
                   <p className="text-[11px] text-rose-400 font-bold">{resendErrorMsg}</p>
                 )}
               </div>
+
+              {/* Animated Thermal Receipt Launch Button */}
+              <button
+                onClick={() => setShowThermalReceipt(true)}
+                className="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/10 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <ReceiptIcon className="w-4 h-4 text-amber-400" />
+                <span>צפה בקבלה תרמית מונפשת (Thermal Receipt) ☕</span>
+              </button>
 
               <div className="w-full grid grid-cols-2 gap-2">
                 <Link
@@ -489,6 +506,31 @@ export const CartDrawer: React.FC = () => {
           address={address}
           onPaymentComplete={executeStandardCheckout}
           onCancel={() => setShowPaymentSim(false)}
+        />
+      )}
+
+      {/* Live Animated Thermal Receipt Modal */}
+      {completedOrder && (
+        <ThermalReceiptModal
+          isOpen={showThermalReceipt}
+          onClose={() => setShowThermalReceipt(false)}
+          receiptData={{
+            orderNumber: completedOrder.orderNumber,
+            customerName: completedOrder.fullName,
+            customerPhone: phone || '054-0000000',
+            items: completedOrder.items?.map((it: any) => ({
+              name: it.name,
+              detail: it.roastLevel ? `קלייה: ${it.roastLevel} • ${it.grindType || 'פולים שלמים'}` : undefined,
+              quantity: it.quantity || 1,
+              price: it.price || 0,
+            })) || [
+              { name: 'הזמנת קפה גורמה The Digital Roast', quantity: 1, price: completedOrder.totalPrice },
+            ],
+            subtotal: completedOrder.totalPrice,
+            totalAmount: completedOrder.totalPrice,
+            paymentMethod: 'כרטיס אשראי / Digital Roast Pay',
+            cardLastDigits: '9012',
+          }}
         />
       )}
     </div>

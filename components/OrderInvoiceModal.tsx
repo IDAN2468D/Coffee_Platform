@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   X,
   Printer,
@@ -17,10 +17,12 @@ import {
   Cloud,
   FileCheck,
   Layers,
+  Receipt as ReceiptIcon,
 } from 'lucide-react';
 import { UserOrderRecord } from '@/lib/store/useOrderStore';
 import { coffeeSound } from '@/lib/audio/coffeeSounds';
 import { GoogleDriveSyncButton } from '@/components/GoogleDriveSyncButton';
+import { ThermalReceiptAnimation } from '@/components/ThermalReceiptAnimation';
 
 interface OrderInvoiceModalProps {
   order: UserOrderRecord | null;
@@ -30,6 +32,7 @@ interface OrderInvoiceModalProps {
 
 export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isOpen, onClose }) => {
   const printRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<'invoice' | 'thermal'>('invoice');
 
   if (!isOpen || !order) return null;
 
@@ -75,6 +78,31 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
             </div>
           </div>
 
+          {/* Tab Switcher */}
+          <div className="flex items-center bg-stone-900/90 p-1 rounded-xl border border-stone-800">
+            <button
+              onClick={() => setActiveTab('invoice')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                activeTab === 'invoice'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              חשבונית מס
+            </button>
+            <button
+              onClick={() => setActiveTab('thermal')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                activeTab === 'thermal'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <ReceiptIcon className="w-3 h-3 text-amber-400" />
+              <span>הדפסה תרמית ☕</span>
+            </button>
+          </div>
+
           <div className="flex items-center gap-2">
             <GoogleDriveSyncButton order={order} variant="button" />
 
@@ -100,11 +128,36 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
           </div>
         </div>
 
-        {/* Printable Thermal Receipt & Tax Invoice Body */}
-        <div
-          ref={printRef}
-          className="p-6 sm:p-8 overflow-y-auto space-y-6 text-stone-200 print:text-black print:bg-white print:p-8 print:m-0"
-        >
+        {/* Content Body: Thermal Animation or Standard Tax Invoice */}
+        {activeTab === 'thermal' ? (
+          <div className="p-6 overflow-y-auto flex justify-center">
+            <ThermalReceiptAnimation
+              receiptData={{
+                orderNumber: order.orderNumber,
+                customerName: order.fullName || 'לקוח VIP',
+                customerPhone: order.phone || '054-0000000',
+                items: order.items.map((it) => ({
+                  name: it.itemName,
+                  detail: `${it.shots || 1} שוטים • ${it.milkType || 'חלב רגיל'}`,
+                  quantity: it.quantity || 1,
+                  price: it.pricePerUnit || 0,
+                })),
+                subtotal: order.totalPrice,
+                totalAmount: order.totalPrice,
+                paymentMethod: 'כרטיס אשראי / Digital Roast Pay',
+                cardLastDigits: '9012',
+              }}
+              autoPlay={true}
+              showControls={true}
+              title=""
+              subtitle=""
+            />
+          </div>
+        ) : (
+          <div
+            ref={printRef}
+            className="p-6 sm:p-8 overflow-y-auto space-y-6 text-stone-200 print:text-black print:bg-white print:p-8 print:m-0"
+          >
           {/* Company Branding & Receipt Title */}
           <div className="text-center border-b border-dashed border-amber-500/30 print:border-black pb-5 space-y-2">
             <div className="inline-flex items-center justify-center gap-2 text-amber-400 print:text-black">
@@ -287,6 +340,7 @@ export const OrderInvoiceModal: React.FC<OrderInvoiceModalProps> = ({ order, isO
             תודה שבחרת ב-THE DIGITAL ROAST • חווית קפה ספציאליטי יוצאת דופן! ☕
           </div>
         </div>
+        )}
 
       </div>
     </div>

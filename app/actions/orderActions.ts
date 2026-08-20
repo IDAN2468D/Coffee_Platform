@@ -21,27 +21,31 @@ export async function createStandardOrder(data: OrderInput) {
     let emailSent = false;
     let previewUrl: string | null = null;
 
-    // Send confirmation email if email is provided
+    // Send confirmation email if email is provided (fail-safe)
     if (validated.email) {
-      const emailResult = await sendOrderConfirmationEmail({
-        orderNumber,
-        fullName: validated.fullName,
-        email: validated.email,
-        phone: validated.phone,
-        deliveryAddress: validated.deliveryAddress,
-        items: validated.items.map((i) => ({
-          itemName: i.itemName,
-          quantity: i.quantity,
-          pricePerUnit: i.pricePerUnit,
-          shots: i.shots,
-          milkType: i.milkType,
-        })),
-        totalPrice,
-      });
+      try {
+        const emailResult = await sendOrderConfirmationEmail({
+          orderNumber,
+          fullName: validated.fullName,
+          email: validated.email,
+          phone: validated.phone,
+          deliveryAddress: validated.deliveryAddress,
+          items: validated.items.map((i) => ({
+            itemName: i.itemName,
+            quantity: i.quantity,
+            pricePerUnit: i.pricePerUnit,
+            shots: i.shots,
+            milkType: i.milkType,
+          })),
+          totalPrice,
+        });
 
-      emailSent = emailResult.success;
-      if (emailResult.previewUrl) {
-        previewUrl = emailResult.previewUrl;
+        emailSent = emailResult.success;
+        if (emailResult.previewUrl) {
+          previewUrl = emailResult.previewUrl;
+        }
+      } catch (emailErr) {
+        console.warn('Order confirmation email sending fallback:', emailErr);
       }
     }
 
@@ -114,9 +118,15 @@ export async function createStandardOrder(data: OrderInput) {
       status: 'PENDING',
     };
   } catch (error: any) {
+    const errorMsg =
+      error?.errors && Array.isArray(error.errors) && error.errors[0]?.message
+        ? error.errors[0].message
+        : error.message || 'שגיאה ביצירת ההזמנה במערכת';
+
+    console.error('createStandardOrder error:', error);
     return {
       success: false,
-      error: error.message || 'שגיאה ביצירת ההזמנה במערכת',
+      error: errorMsg,
     };
   }
 }

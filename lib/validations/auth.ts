@@ -67,21 +67,27 @@ export const loginSchema = z.object({
 
 // 5. Order Schema
 export const orderSchema = z.object({
-  fullName: z.string().min(2, 'שם מלא נדרש'),
-  email: z.string().email('כתובת אימייל לא תקינה').optional().or(z.literal('')),
+  fullName: z.string().min(2, 'שם מלא נדרש (לפחות 2 תווים)'),
+  email: z
+    .string()
+    .transform((val) => (val ? val.trim() : ''))
+    .pipe(z.string().email('כתובת אימייל לא תקינה').optional().or(z.literal(''))),
   phone: z
     .string()
-    .regex(/^0\d{1,2}[-]?\d{7}$/, 'מספר טלפון תקין נדרש (לדוגמה 050-1234567)'),
-  deliveryAddress: z.string().min(5, 'כתובת משלוח מלאה נדרשת (לפחות 5 תווים)'),
+    .transform((val) => val.replace(/[\s.-]/g, ''))
+    .refine((val) => /^(\+?972|0)[2-9]\d{7,8}$/.test(val) || /^0\d{8,9}$/.test(val), {
+      message: 'מספר טלפון תקין נדרש (לדוגמה 050-1234567)',
+    }),
+  deliveryAddress: z.string().min(2, 'כתובת משלוח מלאה נדרשת'),
   items: z
     .array(
       z.object({
-        coffeeItemId: z.string(),
-        itemName: z.string(),
-        quantity: z.number().min(1),
-        pricePerUnit: z.number(),
-        shots: z.number().default(1),
-        milkType: z.string().default('חלב רגיל'),
+        coffeeItemId: z.string().optional().default('custom-item'),
+        itemName: z.string().min(1, 'שם פריט נדרש'),
+        quantity: z.number().min(1).default(1),
+        pricePerUnit: z.number().default(0),
+        shots: z.number().optional().default(1),
+        milkType: z.string().optional().default('חלב רגיל'),
       })
     )
     .min(1, 'סל הקניות ריק'),
