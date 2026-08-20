@@ -603,21 +603,24 @@ export async function uploadReceiptToGoogleDrive(order: OrderReceiptData): Promi
 }
 
 /**
- * Bulk syncs an array of orders to Google Drive.
+ * Bulk syncs an array of orders to Google Drive in parallel.
  */
 export async function bulkSyncReceiptsToDrive(orders: OrderReceiptData[]): Promise<{
   successCount: number;
   failedCount: number;
   results: Array<{ orderNumber: string; result: DriveSyncResult }>;
 }> {
-  const results: Array<{ orderNumber: string; result: DriveSyncResult }> = [];
+  const syncPromises = orders.map(async (order) => {
+    const result = await uploadReceiptToGoogleDrive(order);
+    return { orderNumber: order.orderNumber, result };
+  });
+
+  const results = await Promise.all(syncPromises);
   let successCount = 0;
   let failedCount = 0;
 
-  for (const order of orders) {
-    const result = await uploadReceiptToGoogleDrive(order);
-    results.push({ orderNumber: order.orderNumber, result });
-    if (result.success) {
+  for (const item of results) {
+    if (item.result.success) {
       successCount++;
     } else {
       failedCount++;

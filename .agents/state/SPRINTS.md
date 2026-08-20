@@ -1,4 +1,4 @@
-# Coffee Platform Sprints & Roadmap
+# Coffee Platform Sprints & Roadmap (v8.0 Ultra)
 
 ## Sprint 1: Coffee Platform Pivot & Liquid Glass 4.0 UI (COMPLETED)
 - [x] Create Coffee Ordering Landing Page with Midnight Espresso, Honey Oak Cortado & V60
@@ -45,3 +45,15 @@
 - [x] Integrate Roast Degassing & Peak Extraction flavor alerts (Days 7–21 post-roast)
 - [x] Integrate live SCA Cupping Masterclasses booking and subscription replenishment reminders
 
+## Sprint 11: Thermal Receipt Payment Animation & Interactive Tear-Off (COMPLETED)
+- [x] Implement `components/PrinterChassis.tsx`, `components/Receipt.tsx`, `components/ThermalReceiptAnimation.tsx`, and `components/ThermalReceiptModal.tsx`
+- [x] Create live interactive showcase at `app/thermal-receipt/page.tsx`
+- [x] Global integration in `components/Header.tsx`, `components/CartDrawer.tsx`, and `components/OrderInvoiceModal.tsx`
+
+## Sprint 12: Next-Gen Coffee Tech & Sensory Frontier (READY FOR IMPLEMENTATION)
+- [ ] Implement `CryoMilkSynthesizer` (`/milk-science`) - Freeze-distilled milk thermodynamics & ultrasonic microfoam
+- [ ] Implement `EspressoPressureFlowStudio` (`/pressure-profiling`) - Adaptive pressure profiling & Decent/JSON export
+- [ ] Implement `RoastVolatilesRadar` (`/volatiles-radar`) - Roast volatiles GC-MS spectrometry & peak flavor window
+- [ ] Implement `LiveCoCuppingRoom` (`/live-cupping-room`) - Real-time collaborative SCA 100-point cupping mesh
+- [ ] Implement `MicroLotPassport` (`/terroir-passport`) - Micro-lot direct trade transparent economics & QR passport
+- [ ] Implement `CustomBlendCrafter` (`/blend-crafter`) - AI boutique blend crafter & personalized boutique label

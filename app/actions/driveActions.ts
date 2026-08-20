@@ -91,6 +91,24 @@ export async function bulkSyncAllOrdersAction(ordersData: OrderReceiptData[]): P
       };
     }
 
+    const isConfigured = await isDriveConfigured();
+    if (!isConfigured) {
+      return {
+        success: false,
+        successCount: 0,
+        failedCount: ordersData.length,
+        message: 'חשבון Google Drive אינו מחובר עדיין. יש להתחבר לחשבון Google כדי לשמור קבלות בענן.',
+        results: ordersData.map((o) => ({
+          orderNumber: o.orderNumber,
+          result: {
+            success: false,
+            error: 'חשבון Google Drive אינו מחובר',
+            syncedAt: new Date().toISOString(),
+          },
+        })),
+      };
+    }
+
     const bulkResult = await bulkSyncReceiptsToDrive(ordersData);
 
     // Update MongoDB records in bulk if DB is accessible
@@ -112,10 +130,7 @@ export async function bulkSyncAllOrdersAction(ordersData: OrderReceiptData[]): P
       console.warn('Could not batch update MongoDB after bulk Drive sync:', dbErr);
     }
 
-    const isConfigured = await isDriveConfigured();
-    const message = !isConfigured
-      ? `סונכרנו ${bulkResult.successCount} קבלות בהצלחה!`
-      : `סונכרנו ${bulkResult.successCount} קבלות ישירות ל-Google Drive בהצלחה!`;
+    const message = `סונכרנו ${bulkResult.successCount} מתוך ${ordersData.length} קבלות ישירות ל-Google Drive בהצלחה!`;
 
     return {
       success: bulkResult.successCount > 0,
