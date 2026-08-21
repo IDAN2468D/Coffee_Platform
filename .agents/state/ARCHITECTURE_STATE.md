@@ -1,17 +1,17 @@
-# ☕ Coffee Platform Architecture State (v8.0 Ultra)
+﻿# ☕ Coffee Platform Architecture State (v8.0 Ultra)
 
-## Active Modules & Component Mapping (87 App Routes, 82 Components)
-- **Israel & Municipal Science:** `IsraelWaterIntelligence` (`app/israel-water-radar/`), `IsraelRoasterDirectory` (`app/israel-roasters/`).
-- **Commodity & Global FX:** `CoffeeCommodityFXTicker` (`app/coffee-fx-ticker/`), `GlobalFXCoffeeTicker` (`app/fx-ticker/`).
+## Active Modules & Component Mapping (95 App Routes, 90 Components)
+- **Skills-IL & AI Mesh Hub:** `SkillsILInteractiveHub` (`app/skills-hub/`), `GeminiBaristaModal` (`app/ai-barista/`), `GlobalVoiceNavigator` (`components/GlobalVoiceNavigator.tsx`).
+- **Israel & Municipal Science:** `IsraelWaterCalibrator` (`app/israel-water/`), `IsraelWaterIntelligence` (`app/israel-water-radar/`), `IsraelRoasterDirectory` (`app/israel-roasters/`).
+- **Commodity, Direct Trade & DNA Passport:** `MicroLotPassport` (`app/terroir-passport/`), `DirectTradeTransparencyCalculator` (`app/direct-trade/`), `CoffeeCommodityFXTicker` (`app/coffee-fx-ticker/`), `GlobalFXCoffeeTicker` (`app/fx-ticker/`).
+- **Research, PKM & Lab Sync:** `BaristaResearchLabHub` (`app/barista-lab/`), `GoogleCalendarCoffeeHub` (`app/calendar-hub/`), `NotebookLMCloudHub` (`app/notebooklm-hub/`), `NotebookLMBrewSync` (`app/notebook-sync/`).
 - **Receipt & Checkout Micro-Interactions:** `ThermalReceiptAnimation` (`app/thermal-receipt/`), `OrderInvoiceModal` (`components/OrderInvoiceModal.tsx`), `GoogleDriveReceiptSync` (`components/OrderHistoryView.tsx`).
-- **Research, Cloud & PKM:** `GoogleCalendarCoffeeHub` (`app/calendar-hub/`), `NotebookLMCloudHub` (`app/notebooklm-hub/`), `NotebookLMBrewSync` (`app/notebook-sync/`).
-- **Optical & Vision AI:** `GemmaRoastVisionInspector` (`app/gemma-roast-vision/`), `OpticalRoastAnalyzer` (`app/optical-roast-analyzer/`), `GeminiBaristaModal` (`app/ai-barista/`).
-- **Database & CLV Analytics:** `MongoRoastAnalyticsDashboard` (`app/mongo-telemetry/`).
+- **Optical & Vision AI:** `GemmaRoastVisionInspector` (`app/gemma-roast-vision/`), `OpticalRoastAnalyzer` (`app/optical-roast-analyzer/`).
 - **Design Studio & Token Engine:** `StitchDesignThemeStudio` (`app/stitch-studio/`).
-- **Thermal & Roast Science:** `RoastThermalSimulator` (`app/roast-thermal-sim/`), `RoastProfileRadar` (`app/roast-profile/`), `RoastVolatilesRadar` (`app/volatiles-radar/`).
-- **Fermentation, Terroir & Farm:** `TerroirClimateRadar` (`app/terroir-climate-radar/`), `CarbonFarmTracker` (`app/sustainability/`), `MolecularPairingRadar` (`app/molecular-pairing/`), `FermentationSimulator` (`app/fermentation-sim/`), `FarmToCupStoryteller` (`app/farm-story/`), `MicroLotPassport` (`app/terroir-passport/`).
+- **Thermal, Volatiles & Roast Science:** `RoastVolatilesRadar` (`app/volatiles-radar/`), `RoastThermalSimulator` (`app/roast-thermal-sim/`), `RoastProfileRadar` (`app/roast-profile/`).
+- **Fermentation, Terroir & Custom Blend:** `CustomBlendCrafter` (`app/blend-crafter/`), `TerroirClimateRadar` (`app/terroir-climate-radar/`), `CarbonFarmTracker` (`app/sustainability/`), `MolecularPairingRadar` (`app/molecular-pairing/`), `FermentationSimulator` (`app/fermentation-sim/`), `FarmToCupStoryteller` (`app/farm-story/`).
 - **3D Physics & Extraction:** `SyphonIbrikLab` (`app/syphon-ibrik-lab/`), `ColdDripTelemetry` (`app/cold-drip-telemetry/`), `PuckPrepSimulator` (`app/puck-prep-sim/`), `V60BrewMaster` (`app/v60/`), `ColdBrewNitroCalculator` (`app/cold-brew-calculator/`), `EspressoExtractionTelemetry` (`app/extraction-telemetry/`), `ExtractionSimulator` (`app/extraction-sim/`), `PressureFlowProfiler` (`app/pressure-profiler/`).
-- **Sensory, Water, Milk & Audio Science:** `CryoMilkSynthesizer` (`app/milk-science/`), `AudioCuppingGuide` (`app/audio-cupping-guide/`), `LiveCoCuppingRoom` (`app/live-cupping-room/`), `MineralBypassEngine` (`app/mineral-bypass-engine/`), `NootropicWellnessMatcher` (`app/nootropic-matcher/`), `WaterChemistryProfiler` (`app/water-chemistry/`), `UltrasonicBeanAging` (`app/ultrasonic-aging/`), `SensoryRadarWheel` (`app/sensory-radar/`), `AromaScentProfiler` (`app/aroma-scent/`), `BioEnergyMatcher` (`app/bio-energy/`), `CustomBlendCrafter` (`app/blend-crafter/`).
+- **Sensory, Water, Cryo-Milk & Audio Science:** `CryoMilkSynthesizer` (`app/milk-science/`), `AudioCuppingGuide` (`app/audio-cupping-guide/`), `LiveCoCuppingRoom` (`app/live-cupping-room/`), `MineralBypassEngine` (`app/mineral-bypass-engine/`), `NootropicWellnessMatcher` (`app/nootropic-matcher/`), `WaterChemistryProfiler` (`app/water-chemistry/`), `UltrasonicBeanAging` (`app/ultrasonic-aging/`), `SensoryRadarWheel` (`app/sensory-radar/`), `AromaScentProfiler` (`app/aroma-scent/`), `BioEnergyMatcher` (`app/bio-energy/`).
 - **IoT & Automation:** `SmartIoTSync` (`app/smart-iot/`), `SmartInventoryManager` (`app/smart-inventory/`), `CircadianCaffeineClock` (`app/circadian-clock/`), `WhatsAppVoiceOrderModal` (`app/whatsapp-voice/`).
 
 ## Mongoose Schemas (`models/`)

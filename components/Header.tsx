@@ -44,6 +44,7 @@ import {
   Compass,
   Calendar,
   Mic,
+  Cpu,
   Receipt as ReceiptIcon,
 } from 'lucide-react';
 import { useCartStore } from '@/lib/store/useCartStore';
@@ -109,6 +110,7 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
     badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
     items: [
       { id: 'ai-barista', page: '/ai-barista', label: 'בריסטה Gemini 3.5 AI', desc: 'הזמנה קולית, זיהוי פולים בצילום והמלצות', icon: Sparkles, tag: 'VOICE', category: 'ai_barista' },
+      { id: 'skills-hub', page: '/skills-hub', label: 'פורטל מיומנויות Skills-IL', desc: 'מרכז הרצה אינטראקטיבי ל-41 מיומנויות ו-Agent Mesh', icon: Cpu, tag: 'MESH', category: 'ai_barista' },
       { id: 'cryo-grind', page: '/cryo-grind', label: 'טחינה קריוגנית & PSD AI', desc: 'שבירת תאים ב-18°C- ופיזור מיקרוני אחיד', icon: Snowflake, tag: 'CRYO', category: 'ai_barista' },
       { id: 'gemma-roast-vision', page: '/gemma-roast-vision', label: 'ניתוח פגמי קלייה Gemma', desc: 'זיהוי אופטי של פגמים ועקומת RoR ב-SVG', icon: Sparkles, tag: 'GEMMA', category: 'ai_barista' },
       { id: 'instagram-reel', page: '/instagram-reel', label: 'קונספט אינסטגרם Reel 3D', desc: 'אדים, מזיגת חלב, קרח 3D ופולים צפים', icon: Sparkles, tag: '3D', category: 'ai_barista' },
@@ -137,6 +139,8 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
       { id: 'v60', page: '/v60', label: 'V60 Master Timer', desc: 'טיימר חליטה חיה עם Bloom ומד מזיגה', icon: Clock, tag: 'TIMER', category: 'brew_lab' },
       { id: 'molecular-pairing', page: '/molecular-pairing', label: 'תסיסה אנארובית & אסתרים', desc: 'מעקב 72h וצימוד מאפים מולקולרי', icon: FlaskConical, tag: 'ESTERS', category: 'brew_lab' },
       { id: 'water-chemistry', page: '/water-chemistry', label: 'מחשב כימיית מים SCA', desc: 'מינרלים, קשיות GH/KH ואיזון pH מושלם', icon: TestTube, tag: 'CHEM', category: 'brew_lab' },
+      { id: 'israel-water', page: '/israel-water', label: 'כיול מים בישראל Datagov', desc: 'איכות מים אזורית, חישוב TDS/מינרלים ומתכון SCA', icon: Droplets, tag: 'NEW', category: 'brew_lab' },
+      { id: 'milk-science', page: '/milk-science', label: 'סינתיסייזר חלב קריוגני', desc: 'תרמודינמיקת זיקוק בהקפאה ומיקרו-קצף 50µm', icon: Snowflake, tag: 'CRYO', category: 'brew_lab' },
       { id: 'extraction-telemetry', page: '/extraction-telemetry', label: 'טלמטריית TDS & EY%', desc: 'מדידת אחוז מיצוי אספרסו Gold Cup', icon: Activity, tag: 'EY%', category: 'brew_lab' },
       { id: 'extraction-sim', page: '/extraction-sim', label: 'סימולטור 9Bar לחץ', desc: 'סימולציית לחץ, זרימה וערוצים בחליטה', icon: Activity, category: 'brew_lab' },
       { id: 'cold-brew-calculator', page: '/cold-brew-calculator', label: 'Cold & Nitro Brew', desc: 'רפרקטומטר TDS, מודולטור טמפ׳ וניטרו', icon: Snowflake, tag: 'TDS', category: 'brew_lab' },
@@ -154,6 +158,9 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
       { id: 'roast-analyzer', page: '/roast-analyzer', label: 'מנתח קלייה אופטי & Agtron AI', desc: 'דגימת צבע, סקאלת Agtron ו-ΔAgtron ליבה', icon: Eye, tag: 'AGTRON', category: 'studio_roast' },
       { id: 'cupping-radar', page: '/cupping-radar', label: 'גלגל טעמים 3D & ציון SCA', desc: 'הערכת 100 נקודות ורדאר סנסורי אינטראקטיבי', icon: Star, tag: 'SCA 100', category: 'studio_roast' },
       { id: 'notebooklm-hub', page: '/notebooklm-hub', label: 'מרכז קאפינג NotebookLM', desc: 'דוחות SCA 100pt, סנכרון Docs & Obsidian', icon: BookOpen, tag: 'CLOUD', category: 'studio_roast' },
+      { id: 'barista-lab', page: '/barista-lab', label: 'סנכרון מעבדה Obsidian & Docs', desc: 'ייצוא דוחות SCA לקובצי Markdown ו-Google Docs', icon: BookOpen, tag: 'PKM', category: 'studio_roast' },
+      { id: 'volatiles-radar', page: '/volatiles-radar', label: 'רדאר תרכובות נדיפות GC-MS', desc: 'ספקטרומטריית גזי קלייה וחלון מיצוי שיא', icon: Flame, tag: 'GC-MS', category: 'studio_roast' },
+      { id: 'blend-crafter', page: '/blend-crafter', label: 'אלכימיית בלנדים בוטיק AI', desc: 'איזון זנים רב-ממדי והדפסת תווית אישית', icon: Sparkles, tag: 'ALCHEMY', category: 'studio_roast' },
       { id: 'stitch-studio', page: '/stitch-studio', label: 'סטודיו עיצוב StitchMCP', desc: 'כיוונון טוקנים של Liquid Glass בזמן אמת', icon: Sliders, tag: 'STITCH', category: 'studio_roast' },
       { id: 'roast-profile', page: '/roast-profile', label: 'רדאר קלייה RoR & SCA', desc: 'ניטור First Crack, עקומת RoR וסקאלת צבע', icon: Flame, tag: 'RoR', category: 'studio_roast' },
       { id: 'custom-roast-studio', page: '/custom-roast-studio', label: 'מעבדת קלייה אישית', desc: 'עיצוב פרופילי קלייה מותאמים אישית', icon: Sliders, category: 'studio_roast' },
@@ -174,6 +181,8 @@ const FEATURE_CATEGORIES: CategoryGroup[] = [
     badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
     items: [
       { id: 'coffee-fx-ticker', page: '/coffee-fx-ticker', label: 'אינדקס קפה ירוק & שער מט״ח', desc: 'מחירי חוזים עולמיים ועלויות יבוא בש״ח', icon: Globe, tag: 'FX ILS', category: 'b2b_terroir' },
+      { id: 'direct-trade', page: '/direct-trade', label: 'שקיפות מסחר ישיר ומטבעות', desc: 'שערי מטבע חיים ופרמיית חקלאי מעל C-Market', icon: Globe, tag: 'FX LIVE', category: 'b2b_terroir' },
+      { id: 'terroir-passport', page: '/terroir-passport', label: 'דרכון גנטיקה וטרואר DNA', desc: 'אימות מיקרו-לוטים, עץ גנטיקה בוטני ו-QR', icon: Globe, tag: 'PASSPORT', category: 'b2b_terroir' },
       { id: 'israel-roasters', page: '/israel-roasters', label: 'אינדקס בתי קלייה בישראל', desc: 'רישיונות יצרן משרד הבריאות וכשרות', icon: Store, tag: 'ROASTERS', category: 'b2b_terroir' },
       { id: 'sustainability', page: '/sustainability', label: 'מעקב חוות אפס-פחמן', desc: '0.0kg CO2 וסחר ישיר Direct Trade', icon: Leaf, tag: 'NET-ZERO', category: 'b2b_terroir' },
       { id: 'corporate-lounge', page: '/corporate-lounge', label: 'B2B לאונג׳ משרדים וחברות', desc: 'פתרונות קפה גורמה אקסקלוסיביים לחברות', icon: Building2, tag: 'B2B', category: 'b2b_terroir' },

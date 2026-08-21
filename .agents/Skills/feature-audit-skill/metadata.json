@@ -1,0 +1,19 @@
+﻿{
+  "name": "feature-audit-skill",
+  "displayName": "אודיט פיצ'רים ומחולל מפת דרכים מבוסס MCP",
+  "description": "ניתוח מצב פרויקט, אודיט יכולות, שאיבת השראה משרתי ה-MCP והפקת מפת דרכים לפיצ'רים עתידיים.",
+  "version": "2.0.0",
+  "author": "The Digital Roast AI Team",
+  "category": "architecture-and-audit",
+  "mcpDependencies": [
+    "datagov-israel",
+    "rapidapi_currency",
+    "StitchMCP",
+    "google-gemma-31b",
+    "mcp-obsidian",
+    "notebooklm",
+    "mongodb-mcp-server",
+    "visualization",
+    "github-mcp-server"
+  ]
+}

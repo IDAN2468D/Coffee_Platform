@@ -75,4 +75,18 @@ To maximize execution speed, eliminate token waste, and maintain sub-second resp
 | **`whatsapp-crm-automation`** | Automated WhatsApp coffee order dispatch & smart inventory reordering | `components/WhatsAppVoiceOrderModal.tsx`<br>`app/whatsapp-voice/` |
 | **`liquid-glass-ui`** | Liquid Glass 4.0 Pro UI aesthetics, 3D card payment, and sticky parallax reels | `components/ScrollParallaxCoffeeShowcase.tsx`<br>`app/parallax-experience/` |
 | **`mongodb-authentication`** | NextAuth JWT sessions, user registration, and secure profile dashboard | `components/AuthModal.tsx`<br>`app/auth/`, `app/profile/` |
+| **`il-water-quality-coffee-calibrator`** | Datagov Israel regional water quality, TDS/GH/KH ion balancing & SCA recipe | `components/IsraelWaterCalibrator.tsx`<br>`app/israel-water/` |
+| **`direct-trade-fx-auditor`** | RapidAPI Currency live FX, C-Market benchmark, +448% farmer premium & value chain | `components/DirectTradeTransparencyCalculator.tsx`<br>`app/direct-trade/` |
+| **`barista-obsidian-lab-sync`** | Barista research PKM, Obsidian Vault Markdown/YAML frontmatter & Docs sync | `components/BaristaResearchLabHub.tsx`<br>`app/barista-lab/` |
 | **`token-optimization`** | AST code reading, state minification, and token preservation guardian | `.agents/state/`, `.agents/scripts/` |
+
+---
+
+## 8. Mandatory Continuous Auto-State & Documentation Sync Rule (חובת עדכון רציף ואוטומטי של כלל קובצי המצב והתיעוד)
+- **Continuous Auto-Sync Directive**: Whenever any code changes, new features, bug fixes, refactoring, or architectural additions are implemented in the project, the agent is **strictly mandated to automatically and proactively update all state and documentation files in real time without requiring explicit user requests**.
+- **Mandatory Files to Update on Every Action**:
+  1. **`.agents/state/latest.md`**: Must be updated immediately with the latest date, current sprint summary, list of delivered modules/routes, and verification status (strictly maintaining dense format $<1.5\text{ KB}$).
+  2. **`.agents/state/SPRINTS.md`**: Must record all delivered sprint items with `- [x]`, component/page paths, and keep the product roadmap continuously updated.
+  3. **`.agents/state/task.md` & `.agents/state/ARCHITECTURE_STATE.md`**: Must reflect the active task mesh, new API endpoints, and live architecture.
+- **Zero-Drift Standard**: Source code, documentation, and state mesh must remain in 100% synchronous parity at all times.
+

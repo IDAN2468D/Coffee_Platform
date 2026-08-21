@@ -1,0 +1,8 @@
+﻿{
+  "name": "direct-trade-fx-auditor",
+  "displayName": "מבקר שקיפות מסחר ישיר ומטבעות",
+  "description": "המרת שערי מטבע בזמן אמת דרך rapidapi_currency, פילוח שרשרת ערך וחישוב פרמיית חקלאי מעל C-Market.",
+  "version": "1.0.0",
+  "author": "The Digital Roast AI Team",
+  "category": "direct-trade-economics"
+}

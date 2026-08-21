@@ -1,0 +1,8 @@
+﻿{
+  "name": "il-water-quality-coffee-calibrator",
+  "displayName": "כיול איכות מים לקפה בישראל",
+  "description": "אינטגרציה עם datagov-israel לכיול קשיות מים, מינרלים ומתכוני סינון Specialty Coffee לפי ישובים בישראל.",
+  "version": "1.0.0",
+  "author": "The Digital Roast AI Team",
+  "category": "coffee-chemistry"
+}

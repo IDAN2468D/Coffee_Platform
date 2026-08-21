@@ -6,7 +6,7 @@ description: Master agent stack architecture, state management, and mesh collabo
 # Master Agent Stack Framework (The Digital Roast) ☕
 
 ## 1. Operating Rules
-- **State Directory:** Maintain dense, compressed state files in `.agents/state/` (`task.md`, `latest.md`, `ARCHITECTURE_STATE.md`, `COFFEE_ECOSYSTEM_MAP.md`).
+- **State Directory & Continuous Auto-Sync:** Maintain dense, compressed state files in `.agents/state/` (`task.md`, `latest.md`, `SPRINTS.md`, `ARCHITECTURE_STATE.md`, `COFFEE_ECOSYSTEM_MAP.md`). Automatically and proactively update all state files upon every feature delivery, bug fix, or refactor without waiting for user prompts.
 - **Validation:** Validate all API payloads, cart items, and database models with strict TypeScript and Zod schemas.
 - **Context Efficiency:** Never read full files if inspecting specific functions/lines is sufficient.
 - **RTL Hebrew Communication:** All user-facing text, summaries, and agent commentary must be in natural, professional Hebrew with RTL formatting.

@@ -1,0 +1,8 @@
+﻿{
+  "name": "barista-obsidian-lab-sync",
+  "displayName": "סנכרון מעבדת קפה ל-Obsidian ול-Google Docs",
+  "description": "סנכרון אוטומטי של דוחות קאפינג SCA, עקומות מיצוי ומחקרי חליטה ל-Obsidian Vault ול-Google Workspace.",
+  "version": "1.0.0",
+  "author": "The Digital Roast AI Team",
+  "category": "coffee-research"
+}
