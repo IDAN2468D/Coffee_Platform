@@ -37,7 +37,7 @@ export const PrinterChassis: React.FC<PrinterChassisProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`relative w-72 sm:w-84 max-w-full flex flex-col items-center select-none ${className}`}>
+    <div className={`relative w-full max-w-[340px] sm:max-w-[350px] flex flex-col items-center select-none ${className}`}>
       {/* Upper Printer Housing */}
       <div className="w-full bg-gradient-to-b from-[#18181b] via-[#0f172a] to-[#090d16] rounded-t-3xl border-t border-x border-amber-500/30 p-4 shadow-2xl relative overflow-hidden">
         {/* Subtle Brushed Metal Accent Lines */}

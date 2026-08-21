@@ -1,10 +1,7 @@
-﻿# Active Task: Skills-IL Portal & Next-Gen Flagship Modules (Sprint 12 & 13)
+# Active Task: Payment API 400 Bad Request Fix (Sprint 19)
 
-- [x] Implement `SkillsILInteractiveHub` (`/skills-hub`, `components/SkillsILInteractiveHub.tsx`)
-- [x] Implement `CryoMilkSynthesizer` (`/milk-science`, `components/CryoMilkSynthesizer.tsx`)
-- [x] Implement `RoastVolatilesRadar` (`/volatiles-radar`, `components/RoastVolatilesRadar.tsx`)
-- [x] Implement `CustomBlendCrafter` (`/blend-crafter`, `components/CustomBlendCrafter.tsx`)
-- [x] Implement `MicroLotPassport` (`/terroir-passport`, `components/MicroLotPassport.tsx`)
-- [x] Global integration in `components/Header.tsx`
+- [x] Fix 400 error in `app/api/payments/process/route.ts` with robust body normalization
+- [x] Update `lib/validations/payment.ts` for whitespace stripping and Luhn test card support
+- [x] Update VISA test card to `4580 1234 5678 9015` in `components/ThreeDCardPayment.tsx`
 - [x] Enact Rule 8 Continuous State Synchronization
 - [x] Full TypeScript verification passed (0 errors)

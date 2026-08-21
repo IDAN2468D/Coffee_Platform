@@ -1,0 +1,11 @@
+{
+  "name": "israel-address-autocomplete",
+  "displayName": "Israel Address Autocomplete & Dropdown Engine",
+  "displayNameHe": "מנוע השלמת כתובות ודרופדאון ישובי ישראל (data.gov.il)",
+  "description": "Integration with Israel National Open Data Portal (data.gov.il) for real-time Hebrew street, city, and settlement autocomplete dropdown in checkout and shopping cart flows.",
+  "descriptionHe": "אינטגרציה חכמה עם מאגר הכתובות והישובים הלאומי data.gov.il להשלמה אוטומטית ודרופדאון של ערים, ישובים ורחובות בישראל בעגלת הקניות.",
+  "category": "government-services",
+  "version": "1.0.0",
+  "author": "The Digital Roast AI Team",
+  "tags": ["israel", "address", "autocomplete", "data.gov.il", "cart", "checkout", "hebrew-rtl"]
+}

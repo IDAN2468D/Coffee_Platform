@@ -1,0 +1,11 @@
+{
+  "name": "israel-secure-payment-gateway",
+  "displayName": "Israel Secure Payment Gateway & 3D Clearing Hub",
+  "displayNameHe": "שער סליקה מאובטח ומרכז תשלומים רב-ערוצי (שב\"א / Bit / 3DS)",
+  "description": "Multi-channel PCI-DSS Level 1 compliant secure payment gateway featuring interactive 3D credit card input, Bit QR/deep-link settlement, Apple Pay/Google Pay biometrics, Luhn check, Israeli ID validation, and 3D Secure 2.2 OTP challenge.",
+  "descriptionHe": "מרכז סליקה מאובטח רב-ערוצי העומד בתקן PCI-DSS Level 1 ושב\"א EMV, כולל כרטיס אשראי 3D אינטראקטיבי, תשלום Bit עם QR ו-Deep Link, סליקה ביומטרית Apple Pay/Google Pay, בדיקות Luhn ות\"ז ישראלית, ואימות 3D Secure 2.2 OTP.",
+  "category": "tax-and-finance",
+  "version": "1.0.0",
+  "author": "The Digital Roast AI Team",
+  "tags": ["payment", "clearing", "credit-card", "bit", "apple-pay", "shva", "pci-dss", "3d-secure", "hebrew-rtl"]
+}

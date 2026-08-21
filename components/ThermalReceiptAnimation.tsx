@@ -373,10 +373,10 @@ export const ThermalReceiptAnimation: React.FC<ThermalReceiptAnimationProps> = (
             animate={
               isTorn
                 ? {
-                    y: 24,
-                    rotate: -2,
-                    scale: 1.02,
-                    transition: { type: 'spring', stiffness: 240, damping: 15 },
+                    y: 20,
+                    rotate: 0,
+                    scale: 1,
+                    transition: { type: 'spring', stiffness: 260, damping: 18 },
                   }
                 : controls
             }

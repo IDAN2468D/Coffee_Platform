@@ -1,11 +1,13 @@
-﻿# ☕ Coffee Platform Architecture State (v8.0 Ultra)
+# ☕ Coffee Platform Architecture State (v8.0 Ultra)
 
-## Active Modules & Component Mapping (95 App Routes, 90 Components)
+## Active Modules & Component Mapping (95 App Routes, 91 Components)
+- **Multi-Channel Secure Payment Gateway (Sprint 15):** `ThreeDCardPayment 2.0` (`components/ThreeDCardPayment.tsx`), `Payment Processor API` (`app/api/payments/process/route.ts`), `Payment Validations` (`lib/validations/payment.ts`).
+- **Cart & Israel Address System (Sprint 14):** `CartDrawer` (`components/CartDrawer.tsx`), `IsraelAddressAutocomplete` (`components/IsraelAddressAutocomplete.tsx`), `Israel Address API` (`app/api/israel-addresses/route.ts`), `useCartStore` (`lib/store/useCartStore.ts`).
 - **Skills-IL & AI Mesh Hub:** `SkillsILInteractiveHub` (`app/skills-hub/`), `GeminiBaristaModal` (`app/ai-barista/`), `GlobalVoiceNavigator` (`components/GlobalVoiceNavigator.tsx`).
 - **Israel & Municipal Science:** `IsraelWaterCalibrator` (`app/israel-water/`), `IsraelWaterIntelligence` (`app/israel-water-radar/`), `IsraelRoasterDirectory` (`app/israel-roasters/`).
 - **Commodity, Direct Trade & DNA Passport:** `MicroLotPassport` (`app/terroir-passport/`), `DirectTradeTransparencyCalculator` (`app/direct-trade/`), `CoffeeCommodityFXTicker` (`app/coffee-fx-ticker/`), `GlobalFXCoffeeTicker` (`app/fx-ticker/`).
 - **Research, PKM & Lab Sync:** `BaristaResearchLabHub` (`app/barista-lab/`), `GoogleCalendarCoffeeHub` (`app/calendar-hub/`), `NotebookLMCloudHub` (`app/notebooklm-hub/`), `NotebookLMBrewSync` (`app/notebook-sync/`).
-- **Receipt & Checkout Micro-Interactions:** `ThermalReceiptAnimation` (`app/thermal-receipt/`), `OrderInvoiceModal` (`components/OrderInvoiceModal.tsx`), `GoogleDriveReceiptSync` (`components/OrderHistoryView.tsx`).
+- **Receipt & Checkout Micro-Interactions:** `ThermalReceiptAnimation` (`app/thermal-receipt/`), `ThreeDCardPayment` (`components/ThreeDCardPayment.tsx`), `OrderInvoiceModal` (`components/OrderInvoiceModal.tsx`), `GoogleDriveReceiptSync` (`components/OrderHistoryView.tsx`).
 - **Optical & Vision AI:** `GemmaRoastVisionInspector` (`app/gemma-roast-vision/`), `OpticalRoastAnalyzer` (`app/optical-roast-analyzer/`).
 - **Design Studio & Token Engine:** `StitchDesignThemeStudio` (`app/stitch-studio/`).
 - **Thermal, Volatiles & Roast Science:** `RoastVolatilesRadar` (`app/volatiles-radar/`), `RoastThermalSimulator` (`app/roast-thermal-sim/`), `RoastProfileRadar` (`app/roast-profile/`).

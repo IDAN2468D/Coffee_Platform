@@ -49,7 +49,7 @@ interface ReceiptProps {
   className?: string;
 }
 
-// Realistic 48-tooth micro-serrated edge clip-path (Top & Bottom)
+// Precision 48-tooth micro-serrated edge clip-path (Top & Bottom)
 const SERRATED_CLIP_PATH = `polygon(
   0% 5px, 1% 0px, 2% 5px, 3% 0px, 4% 5px, 5% 0px, 6% 5px, 7% 0px, 8% 5px, 9% 0px, 10% 5px,
   11% 0px, 12% 5px, 13% 0px, 14% 5px, 15% 0px, 16% 5px, 17% 0px, 18% 5px, 19% 0px, 20% 5px,
@@ -75,17 +75,17 @@ const SERRATED_CLIP_PATH = `polygon(
 )`;
 
 const badgeVariants: Variants = {
-  hidden: { scale: 0.85, opacity: 0 },
+  hidden: { scale: 0.9, opacity: 0 },
   visible: {
-    scale: [0.85, 1.08, 1],
+    scale: [0.9, 1.05, 1],
     opacity: 1,
-    transition: { delay: 1.1, duration: 0.35, ease: 'easeOut' },
+    transition: { delay: 0.9, duration: 0.3, ease: 'easeOut' },
   },
 };
 
 export const Receipt: React.FC<ReceiptProps> = ({
   data = {},
-  badgeAnimateDelay = 1.1,
+  badgeAnimateDelay = 0.9,
   isTorn = false,
   canTear = false,
   onTear,
@@ -108,7 +108,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
     totalAmount = 148,
     date = new Date().toLocaleDateString('he-IL'),
     time = new Date().toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-    paymentMethod = 'Apple Pay / Obsidian Card',
+    paymentMethod = 'כרטיס אשראי מאובטח',
     cardLastDigits = '9012',
     authCode = 'AUTH-94021-OK',
     scaScore = 92.5,
@@ -117,73 +117,73 @@ export const Receipt: React.FC<ReceiptProps> = ({
 
   return (
     <div
-      className={`relative w-full max-w-[340px] sm:max-w-[360px] mx-auto transition-all duration-300 ${className}`}
+      className={`relative w-full max-w-[340px] sm:max-w-[350px] mx-auto transition-all duration-300 ${className}`}
       dir="rtl"
       style={{
         filter: isTorn
-          ? 'drop-shadow(0 25px 35px rgba(0, 0, 0, 0.65)) drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4))'
-          : 'drop-shadow(0 15px 25px rgba(0, 0, 0, 0.45))',
+          ? 'drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35))'
+          : 'drop-shadow(0 12px 20px rgba(0, 0, 0, 0.4))',
       }}
     >
-      {/* Physical Paper Card with Serrated Micro-Teeth (No black borders!) */}
+      {/* Physical Thermal Paper Card with Precision Serrated Teeth */}
       <div
-        className="w-full bg-[#F8FAFC] text-stone-900 select-none font-sans pt-3 pb-4 px-5 sm:px-6 relative overflow-hidden"
+        className="w-full bg-[#FAFAF9] text-stone-900 select-none font-sans pt-3 pb-5 px-5 sm:px-6 relative overflow-hidden"
         style={{
           clipPath: SERRATED_CLIP_PATH,
           WebkitClipPath: SERRATED_CLIP_PATH,
         }}
       >
-        {/* Interactive Top Tear Cutting Line Guide when ready to tear */}
+        {/* Interactive Top Tear Cutting Line Guide */}
         {canTear && !isTorn && (
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={onTear}
-            className="group cursor-pointer mb-3 py-1.5 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-dashed border-amber-400/80 flex items-center justify-between text-[11px] font-bold text-amber-900 transition-all shadow-sm"
-            title="לחץ או משוך מטה כדי לגזור/לתלוש את הקבלה"
+            className="group cursor-pointer mb-3 py-1.5 px-3 rounded-lg bg-amber-100/80 hover:bg-amber-200 border border-dashed border-amber-500/80 flex items-center justify-between text-[11px] font-bold text-amber-950 transition-all shadow-sm"
+            title="לחץ כאן לגזירת ותלישת הקבלה"
           >
             <div className="flex items-center gap-1.5">
-              <Scissors className="w-3.5 h-3.5 text-amber-600 group-hover:rotate-45 transition-transform" />
+              <Scissors className="w-3.5 h-3.5 text-amber-800 group-hover:rotate-45 transition-transform" />
               <span>לחץ כאן לגזירת הקבלה</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] font-mono text-amber-700">
+            <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-amber-900">
               <GripHorizontal className="w-3.5 h-3.5 animate-pulse" />
               <span>CUT ✂️</span>
             </div>
           </motion.div>
         )}
 
-        {/* Torn Paper Header Status Badge */}
+        {/* Torn Paper Status Badge */}
         {isTorn && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-3 py-1 px-2.5 rounded-md bg-emerald-50 border border-emerald-300 text-[10px] text-emerald-900 font-bold flex items-center justify-between"
+            className="mb-3 py-1 px-3 rounded-md bg-emerald-100 border border-emerald-400 text-[10px] text-emerald-950 font-bold flex items-center justify-between shadow-sm"
           >
             <span className="flex items-center gap-1.5">
-              <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
+              <FileCheck2 className="w-3.5 h-3.5 text-emerald-700" />
               <span>קבלה נגזרה ונשמרה בהצלחה</span>
             </span>
-            <span className="font-mono text-[9px] text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">
+            <span className="font-mono text-[9px] font-black text-emerald-800 bg-emerald-200/80 px-1.5 py-0.5 rounded">
               VERIFIED
             </span>
           </motion.div>
         )}
 
         {/* Main Thermal Receipt Content */}
-        <div className="space-y-4 pt-1">
+        <div className="space-y-3.5 pt-1 text-stone-900">
           {/* Merchant Branding Header */}
           <div className="text-center space-y-1">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-stone-900 text-amber-400 mb-1 shadow-md">
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-stone-950 text-amber-400 mb-1 shadow-md">
               <Coffee className="w-5 h-5" />
             </div>
-            <h2 className="text-base sm:text-lg font-black tracking-wider text-stone-900 font-mono">
+            <h2 className="text-base sm:text-lg font-black tracking-wider text-stone-950 font-mono">
               {merchantName}
             </h2>
-            <p className="text-[10px] text-stone-500 font-medium leading-tight">
+            <p className="text-[11px] text-stone-700 font-medium leading-tight">
               {merchantSubtext}
             </p>
-            <div className="pt-1 flex items-center justify-center gap-2 text-[10px] font-mono text-stone-600">
+            <div className="pt-1 flex items-center justify-center gap-2 text-[10px] font-mono font-bold text-stone-700">
               <span>הזמנה #{orderNumber}</span>
               <span>•</span>
               <span>ציון SCA {scaScore}</span>
@@ -191,55 +191,64 @@ export const Receipt: React.FC<ReceiptProps> = ({
           </div>
 
           {/* Dotted Divider */}
-          <div className="border-b-2 border-dashed border-stone-300" />
+          <div className="border-b-2 border-dashed border-stone-400" />
 
-          {/* Customer & Timestamp Info */}
-          <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-600 font-mono">
-            <div>
-              <span className="text-stone-400 block text-[9px]">לקוח</span>
-              <span className="font-bold text-stone-800">{customerName}</span>
+          {/* Customer & Timestamp Info Grid (Perfect RTL Alignment) */}
+          <div className="space-y-1.5 text-xs text-stone-800">
+            <div className="flex justify-between items-center">
+              <span className="text-stone-600 font-bold text-[11px]">לקוח:</span>
+              <span className="font-black text-stone-950 font-sans">{customerName}</span>
             </div>
-            <div className="text-left" dir="ltr">
-              <span className="text-stone-400 block text-[9px] text-right">תאריך ושעה</span>
-              <span className="font-bold text-stone-800 text-right block">{date} {time}</span>
+
+            <div className="flex justify-between items-center">
+              <span className="text-stone-600 font-bold text-[11px]">תאריך ושעה:</span>
+              <span className="font-mono font-bold text-stone-900 text-[11px]" dir="ltr">
+                {date} {time}
+              </span>
             </div>
+
             {customerPhone && (
-              <div>
-                <span className="text-stone-400 block text-[9px]">טלפון</span>
-                <span className="text-stone-700">{customerPhone}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-stone-600 font-bold text-[11px]">טלפון:</span>
+                <span className="font-mono font-bold text-stone-900 text-[11px]" dir="ltr">
+                  {customerPhone}
+                </span>
               </div>
             )}
-            <div className="text-left" dir="ltr">
-              <span className="text-stone-400 block text-[9px] text-right">אמצעי תשלום</span>
-              <span className="text-stone-700 text-right block">{paymentMethod} (••{cardLastDigits})</span>
+
+            <div className="flex justify-between items-center">
+              <span className="text-stone-600 font-bold text-[11px]">אמצעי תשלום:</span>
+              <span className="font-bold text-stone-900 text-[11px]">
+                {paymentMethod} {cardLastDigits ? `(••${cardLastDigits})` : ''}
+              </span>
             </div>
           </div>
 
           {/* Dotted Divider */}
-          <div className="border-b border-stone-200" />
+          <div className="border-b border-stone-300" />
 
           {/* Order Items Table */}
           <div className="space-y-2">
-            <div className="flex justify-between text-[10px] font-bold text-stone-400 uppercase tracking-wider pb-1 border-b border-stone-200">
+            <div className="flex justify-between text-[11px] font-black text-stone-700 uppercase tracking-wider pb-1 border-b border-stone-300">
               <span>פריט וכמות</span>
               <span>מחיר</span>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {items.map((item, idx) => (
                 <div key={idx} className="flex justify-between items-start text-xs">
-                  <div className="flex-1 pr-1">
-                    <div className="font-bold text-stone-900 flex items-center gap-1.5">
-                      <span className="text-amber-700 font-mono font-black">{item.quantity}×</span>
+                  <div className="flex-1 pr-1 text-right">
+                    <div className="font-black text-stone-950 flex items-center gap-1.5">
+                      <span className="text-amber-800 font-mono font-black">{item.quantity}×</span>
                       <span>{item.name}</span>
                     </div>
                     {item.detail && (
-                      <div className="text-[10px] text-stone-500 font-sans mt-0.5 leading-tight">
+                      <div className="text-[10px] text-stone-600 font-sans mt-0.5 leading-tight">
                         {item.detail}
                       </div>
                     )}
                   </div>
-                  <div className="font-mono font-bold text-stone-900 text-xs whitespace-nowrap pt-0.5">
+                  <div className="font-mono font-black text-stone-950 text-xs whitespace-nowrap pt-0.5 text-left" dir="ltr">
                     ₪{(item.price * item.quantity).toFixed(2)}
                   </div>
                 </div>
@@ -248,31 +257,31 @@ export const Receipt: React.FC<ReceiptProps> = ({
           </div>
 
           {/* Dotted Divider */}
-          <div className="border-b-2 border-dashed border-stone-300" />
+          <div className="border-b-2 border-dashed border-stone-400" />
 
           {/* Financial Breakdown */}
-          <div className="space-y-1.5 text-xs">
-            <div className="flex justify-between text-stone-600 font-mono text-[11px]">
-              <span>סכום ביניים</span>
-              <span>₪{subtotal.toFixed(2)}</span>
+          <div className="space-y-1.5 text-xs text-stone-800">
+            <div className="flex justify-between text-stone-700 font-mono text-[11px]">
+              <span className="font-bold">סכום ביניים:</span>
+              <span className="font-bold">₪{subtotal.toFixed(2)}</span>
             </div>
 
             {discount > 0 && (
-              <div className="flex justify-between text-emerald-600 font-mono text-[11px]">
-                <span>הנחת מועדון קלייה</span>
+              <div className="flex justify-between text-emerald-700 font-mono text-[11px] font-bold">
+                <span>הנחת מועדון קלייה:</span>
                 <span>-₪{discount.toFixed(2)}</span>
               </div>
             )}
 
-            <div className="flex justify-between text-stone-600 font-mono text-[11px]">
-              <span>דמי משלוח אקספרס</span>
-              <span>{deliveryFee === 0 ? 'חינם (0.00 ₪)' : `₪${deliveryFee.toFixed(2)}`}</span>
+            <div className="flex justify-between text-stone-700 font-mono text-[11px]">
+              <span className="font-bold">דמי משלוח:</span>
+              <span className="font-bold">{deliveryFee === 0 ? 'חינם (0.00 ₪)' : `₪${deliveryFee.toFixed(2)}`}</span>
             </div>
 
             <div className="border-b border-stone-300 pt-1" />
 
             <div className="flex justify-between items-baseline pt-1">
-              <span className="font-bold text-stone-900 text-sm">סה״כ לתשלום (כולל מע״מ)</span>
+              <span className="font-black text-stone-950 text-sm">סה״כ לתשלום (כולל מע״מ):</span>
               <span className="font-black font-mono text-stone-950 text-lg">
                 ₪{totalAmount.toFixed(2)}
               </span>
@@ -285,9 +294,9 @@ export const Receipt: React.FC<ReceiptProps> = ({
               variants={badgeVariants}
               initial="hidden"
               animate="visible"
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 border border-emerald-400"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-600 text-white shadow-md border border-emerald-500"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-100" />
               <span className="text-xs font-black tracking-wide font-sans">
                 שולם במלואו • עסקה מאושרת
               </span>
@@ -296,15 +305,15 @@ export const Receipt: React.FC<ReceiptProps> = ({
           </div>
 
           {/* Dotted Divider */}
-          <div className="border-b-2 border-dashed border-stone-300" />
+          <div className="border-b-2 border-dashed border-stone-400" />
 
           {/* Verification QR Code & Auth Metadata */}
           <div className="flex items-center justify-between pt-1">
-            <div className="flex flex-col text-[9px] font-mono text-stone-500 space-y-0.5">
-              <span className="font-bold text-stone-700">קוד אישור: {authCode}</span>
-              <span>תקן הצפנה: TLS 1.3 / AES-256</span>
-              <span>סריקה לצפייה בחשבונית מקור</span>
-              <span className="text-amber-700 font-bold">digitalroast.io/verify</span>
+            <div className="flex flex-col text-[10px] font-mono text-stone-700 space-y-0.5 text-right">
+              <span className="font-black text-stone-950">קוד אישור: {authCode}</span>
+              <span className="text-stone-600">תקן הצפנה: TLS 1.3 / AES-256</span>
+              <span className="text-stone-600">סריקה לצפייה בחשבונית מקור</span>
+              <span className="text-amber-800 font-black">digitalroast.io/verify</span>
             </div>
             <div className="p-1.5 bg-white border border-stone-300 rounded-lg shadow-sm">
               <QRCodeSVG
@@ -319,7 +328,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
 
           {/* Simulated Barcode */}
           <div className="pt-1 flex flex-col items-center">
-            <div className="w-full h-8 flex justify-center items-center opacity-85">
+            <div className="w-full h-8 flex justify-center items-center opacity-90">
               <svg viewBox="0 0 240 32" className="w-4/5 h-full" fill="#1C1917">
                 <rect x="0" y="0" width="3" height="32" />
                 <rect x="5" y="0" width="1" height="32" />
@@ -367,8 +376,8 @@ export const Receipt: React.FC<ReceiptProps> = ({
           </div>
 
           {/* Footer Note */}
-          <div className="text-center pt-1 border-t border-stone-200">
-            <p className="text-[9px] text-stone-500 font-medium">
+          <div className="text-center pt-1 border-t border-stone-300">
+            <p className="text-[10px] text-stone-700 font-bold">
               תודה שבחרתם באיכות של The Digital Roast. תיהנו מהקפה שלכם! ☕
             </p>
           </div>

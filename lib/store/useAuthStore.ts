@@ -12,6 +12,7 @@ export interface AuthUser {
   cardHolder?: string;
   cardExpiry?: string;
   cardCvv?: string;
+  roastCoins?: number;
 }
 
 interface AuthStore {
